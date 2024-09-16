@@ -16,7 +16,7 @@
 
 ## Overview
 
-Condo Connect is a comprehensive web application designed to streamline communication and management processes between condo tenants and property managers. This platform offers an intuitive interface for both tenants and property managers, facilitating efficient handling of requests, payments, and property-related communications.
+Properly is a comprehensive web application designed to streamline communication and management processes between condo tenants and property managers. This platform offers an intuitive interface for both tenants and property managers, facilitating efficient handling of requests, payments, and property-related communications.
 
 ## Features
 
@@ -51,7 +51,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/CondoMGT/Condo-Tenant-Management.git <folder_name>
+   git clone https://github.com/CondoMGT/Properly.git <folder_name>
    ```
 
 2. Navigate to the project directory:
@@ -136,7 +136,7 @@ condo-mgt/
 
 ## Contributing
 
-We welcome contributions to Condo Connect! Please follow these steps:
+We welcome contributions to Properly! Please follow these steps:
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -152,4 +152,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Properly - [@properly](https://twitter.com/properly) - condotenantmanagement@gmail.com
 
-Project Link: [https://github.com/CondoMGT/Condo-Tenant-Management](https://github.com/CondoMGT/Condo-Tenant-Management)
+Project Link: [https://github.com/CondoMGT/Condo-Tenant-Management](https://github.com/CondoMGT/Properly)
