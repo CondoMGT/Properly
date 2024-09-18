@@ -152,4 +152,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Properly - [@properly](https://twitter.com/properly) - condotenantmanagement@gmail.com
 
-Project Link: [https://github.com/CondoMGT/Condo-Tenant-Management](https://github.com/CondoMGT/Properly)
+Project Link: [https://github.com/CondoMGT/Properly](https://github.com/CondoMGT/Properly)
