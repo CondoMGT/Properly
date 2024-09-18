@@ -13,9 +13,12 @@ import {
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const Footer = ({ className }: { className?: string }) => {
   const { theme, setTheme } = useTheme();
+
+  const pathName = usePathname();
 
   return (
     <footer className={cn("sticky bottom-0", className)}>
@@ -127,51 +130,55 @@ export const Footer = ({ className }: { className?: string }) => {
                 </Link>
               </div>
 
-              <div className="flex space-x-2 border border-slate-400 rounded-full w-fit">
-                <div
-                  className={`flex items-center justify-center p-1 rounded-full${
-                    theme === "system" &&
-                    " border border-slate-400 rounded-full"
-                  }`}
-                >
-                  <Computer
-                    onClick={() => setTheme("system")}
-                    className={`w-4 h-4 cursor-pointer ${
-                      theme === "system"
-                        ? "text-gray-900"
-                        : "text-gray-600 hover:text-gray-900"
+              {pathName === "/" && (
+                <div className="flex space-x-2 border border-slate-400 rounded-full w-fit">
+                  <div
+                    className={`flex items-center justify-center p-1 rounded-full${
+                      theme === "system" &&
+                      " border border-slate-400 rounded-full"
                     }`}
-                  />
-                </div>
-                <div
-                  className={`flex items-center justify-center p-1 rounded-full${
-                    theme === "light" && " border border-slate-400 rounded-full"
-                  }`}
-                >
-                  <Sun
-                    onClick={() => setTheme("light")}
-                    className={`w-4 h-4 cursor-pointer ${
-                      theme === "light"
-                        ? "text-gray-900"
-                        : "text-gray-600 hover:text-gray-900"
+                  >
+                    <Computer
+                      onClick={() => setTheme("system")}
+                      className={`w-4 h-4 cursor-pointer ${
+                        theme === "system"
+                          ? "text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`flex items-center justify-center p-1 rounded-full${
+                      theme === "light" &&
+                      " border border-slate-400 rounded-full"
                     }`}
-                  />
-                </div>
-                <div
-                  className={`flex items-center justify-center p-1 rounded-full${
-                    theme === "dark" && " border border-slate-400 rounded-full"
-                  }`}
-                >
-                  <Moon
-                    onClick={() => setTheme("dark")}
-                    className={`w-4 h-4 cursor-pointer ${
-                      theme === "dark"
-                        ? "text-gray-900"
-                        : "text-gray-600 hover:text-gray-900"
+                  >
+                    <Sun
+                      onClick={() => setTheme("light")}
+                      className={`w-4 h-4 cursor-pointer ${
+                        theme === "light"
+                          ? "text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`flex items-center justify-center p-1 rounded-full${
+                      theme === "dark" &&
+                      " border border-slate-400 rounded-full"
                     }`}
-                  />
+                  >
+                    <Moon
+                      onClick={() => setTheme("dark")}
+                      className={`w-4 h-4 cursor-pointer ${
+                        theme === "dark"
+                          ? "text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,48 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
-import { ModeToggle } from "./theme-switcher";
+import { Header } from "@/components/nav";
 
 export function ResidentLayout() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Sticky Navbar */}
-      <header className="sticky top-0 z-50 px-2 shadow-sm shadow-foreground container mx-auto border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center justify-between">
-          <div className="mr-4 hidden md:flex">
-            <Link className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">My Site</span>
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              <Link href="/about">About</Link>
-              <Link href="/products">Products</Link>
-              <Link href="/contact">Contact</Link>
-            </nav>
-          </div>
-          <ModeToggle />
-          <Button className="md:hidden" variant="outline" size="icon">
-            <span className="sr-only">Toggle menu</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <line x1="3" x2="21" y1="6" y2="6" />
-              <line x1="3" x2="21" y1="12" y2="12" />
-              <line x1="3" x2="21" y1="18" y2="18" />
-            </svg>
-          </Button>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="flex-1 container px-2 py-6 mx-auto">
