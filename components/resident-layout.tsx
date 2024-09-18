@@ -48,16 +48,18 @@ export function ResidentLayout() {
       <main className="flex-1 container px-2 py-6 mx-auto">
         <h1 className="text-2xl font-bold mb-4">Welcome to My Site</h1>
         <p className="mb-4">
-          This is the main content area. It will scroll if there's too much
+          {`This is the main content area. It will scroll if there's too much
           content, while the navbar sticks to the top and the footer sticks to
-          the bottom.
+          the bottom.`}
         </p>
         {/* Add more content here to test scrolling */}
         {Array(50)
           .fill(0)
           .map((_, i) => (
             <p key={i} className="mb-4">
-              This is paragraph {i + 1}. It's here to demonstrate scrolling.
+              {`This is paragraph ${
+                i + 1
+              }. It's here to demonstrate scrolling.`}
             </p>
           ))}
       </main>

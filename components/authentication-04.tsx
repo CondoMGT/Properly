@@ -6,16 +6,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { Icons } from "@/components/ui/icons"
 import { appName } from "@/utils/constants";
 import { Loader } from "lucide-react";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const { theme } = useTheme();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -44,9 +40,7 @@ export default function SignIn() {
         <div className="relative z-20 mt-auto text-foreground">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "{appName} has revolutionized how we manage our properties. It's
-              intuitive, efficient, and has greatly improved our communication
-              with tenants."
+              {`"${appName} has revolutionized how we manage our properties. It's intuitive, efficient, and has greatly improved our communication with tenants."`}
             </p>
             <footer className="text-sm">Sofia Davis, Property Manager</footer>
           </blockquote>
