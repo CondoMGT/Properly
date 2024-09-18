@@ -6,9 +6,9 @@ import Link from "next/link";
 
 const ManagersPage = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-white">
+    <div className="flex flex-col min-h-screen">
       {/* Sticky Navbar */}
-      <header className="sticky top-0 z-50 px-2 shadow-md shadow-blue-100 container mx-auto border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 px-2 shadow-sm shadow-foreground container mx-auto border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
           <div className="mr-4 hidden md:flex">
             <Link className="mr-6 flex items-center space-x-2" href="/">
@@ -28,7 +28,7 @@ const ManagersPage = () => {
         </div>
       </header>
       <div className="flex-1 container px-2 py-6 mx-auto">Managers Page</div>
-      <Footer className="bg-gray-100 mt-16" />
+      <Footer className="bg-gray-100 dark:bg-gray-300 mt-16" />
     </div>
   );
 };

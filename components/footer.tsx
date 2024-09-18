@@ -11,6 +11,7 @@ import {
   LinkedinIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
 
 export const Footer = ({ className }: { className?: string }) => {
@@ -21,13 +22,24 @@ export const Footer = ({ className }: { className?: string }) => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* ABOUT US */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">About {appName}</h3>
-            <p className="text-sm text-gray-600">
-              {appName} is the leading platform for streamlined condo
-              management, enhancing communication between tenants and property
-              managers.
-            </p>
+
+          <div className="flex">
+            <Image
+              src="/frame2.png"
+              width={100}
+              height={50}
+              alt="Condo building"
+              priority
+              className="w-24 md:w-32 h-auto object-contain"
+            />
+            <div>
+              <h3 className="text-lg font-semibold mb-4">About {appName}</h3>
+              <p className="text-sm text-gray-600">
+                {appName} is the leading platform for streamlined condo
+                management, enhancing communication between tenants and property
+                managers.
+              </p>
+            </div>
           </div>
 
           {/* QUICK LINKS */}
