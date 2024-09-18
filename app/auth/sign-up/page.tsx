@@ -150,9 +150,7 @@ export default function SignUp() {
         <div className="relative z-20 mt-auto text-foreground">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              {
-                "Joining {appName} was a game-changer for our community. The ease of communication and management tools have made living here a joy."
-              }
+              {`"Joining ${appName} was a game-changer for our community. The ease of communication and management tools have made living here a joy."`}
             </p>
             <footer className="text-sm">Alex Johnson, Resident</footer>
           </blockquote>
