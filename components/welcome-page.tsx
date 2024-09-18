@@ -20,7 +20,7 @@ export function WelcomePage() {
   const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-white">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-white dark:from-blue-300">
       <main className="flex-grow">
         <div className="relative h-[50vh]">
           <Image
@@ -51,11 +51,9 @@ export function WelcomePage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <UserIcon className="mr-2" />
-                  For Tenants / Homeowners
+                  For Residents
                 </CardTitle>
-                <CardDescription>
-                  Access your tenant / homeowner portal
-                </CardDescription>
+                <CardDescription>Access your resident portal</CardDescription>
               </CardHeader>
               <CardContent>
                 <p>
@@ -65,7 +63,7 @@ export function WelcomePage() {
               </CardContent>
               <CardFooter>
                 <Link href="/tenants" className="w-full">
-                  <Button className="w-full">Enter Tenant Portal</Button>
+                  <Button className="w-full">Enter Resident Portal</Button>
                 </Link>
               </CardFooter>
             </Card>
@@ -96,7 +94,7 @@ export function WelcomePage() {
         </div>
       </main>
 
-      <Footer className="bg-gray-100 mt-16" />
+      <Footer className="bg-gray-100 dark:bg-gray-300 mt-16" />
     </div>
   );
 }

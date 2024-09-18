@@ -1,7 +1,7 @@
-import { StickyLayout } from "@/components/sticky-layout";
+import { ResidentLayout } from "@/components/resident-layout";
 
-const StickyPage = () => {
-  return <StickyLayout />;
+const ResidentPage = () => {
+  return <ResidentLayout />;
 };
 
-export default StickyPage;
+export default ResidentPage;
