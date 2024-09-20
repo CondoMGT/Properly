@@ -1,4 +1,3 @@
-import Image from "next/image";
 import styles from "./page.module.css"; // Import the CSS module
 
 export default function Home() {
@@ -27,7 +26,7 @@ export default function Home() {
             <h3 className={styles["feature-title"]}>Easy Issue Reporting</h3>
             <p className={styles["feature-text"]}>
               Tenants can report problems with a message or photo, directly from
-              the app—whether it's a broken AC or a dirty hallway.
+              the app—whether it&apos;s a broken AC or a dirty hallway.
             </p>
           </div>
           <div className={styles.feature}>
@@ -55,7 +54,7 @@ export default function Home() {
           Make Condo Management Effortless with Properly
         </h2>
         <p className={styles["cta-text"]}>
-          Whether you're a tenant reporting an issue or a property manager
+          Whether you&apos;re a tenant reporting an issue or a property manager
           fixing it, Properly is the tool you need for streamlined condo
           management.
         </p>
