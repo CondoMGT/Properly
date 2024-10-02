@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Kumbh_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,11 +10,25 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+const kyivTypeSans = localFont({
+  src: "./fonts/KyivTypeSans.woff",
+  variable: "--font-kyiv-sans",
+  weight: "100 400 700 800 900",
+});
+
+const kumbhSans = Kumbh_Sans({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-kumbh-sans",
+});
+// const kyivTypeSans = KyivType_Sans({ weight: '400', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -34,10 +49,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased`}
       >
         <Navbar />
-        {children}
+        <div className="px-4 pb-32">{children}</div>
         <Footer />
       </body>
     </html>
