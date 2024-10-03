@@ -1,3 +1,5 @@
+import { Herod } from "./landing-page/herod";
+
 const features = [
   {
     title: "AI-Powered Troubleshooting",
@@ -48,50 +50,7 @@ const plans = [
 export const Hero = () => {
   return (
     <div className="pb-4">
-      <div className="w-full max-w-[1272px] mx-auto h-auto py-[23px] flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-[755px] px-[11px] py-[43px] flex-col justify-center items-center gap-[30px] flex">
-          <div className="font-kyiv self-stretch h-auto text-black text-4xl md:text-6xl font-semibold md:font-medium leading-[60px]">
-            Effortless Property Management and Tenant Communication
-          </div>
-
-          <div className="w-full md:w-[629.42px] text-black text-lg font-normal font-kumbh leading-normal">
-            Streamline maintenance requests, enhance tenant satisfaction, and
-            simplify communication with real-time updates.
-          </div>
-
-          <div className="justify-start items-center gap-4 flex flex-row">
-            <div className="px-4 py-2 md:px-5 md:py-3 bg-[#9fa2a5] rounded-full justify-center items-center gap-2.5 flex">
-              <div className="text-black text-sm md:text-lg font-normal font-kumbh">
-                Get Started
-              </div>
-              <div className="p-2 bg-[#1e1e1e] rounded-[60px] justify-start items-center gap-2.5 flex">
-                <div className="w-6 h-6 justify-center items-center flex">
-                  <div className="w-6 h-6 relative flex-col justify-start items-start flex"></div>
-                </div>
-              </div>
-            </div>
-            <div className="px-4 py-2 md:px-5 md:py-3 bg-[#9fa2a5] rounded-full justify-center items-center gap-2.5 flex">
-              <div className="text-black text-sm md:text-lg font-normal font-kumbh">
-                Request Demo
-              </div>
-              <div className="flex p-2 bg-[#1e1e1e] rounded-[60px] justify-start items-center gap-2.5">
-                <div className="w-6 h-6 justify-center items-center flex">
-                  <div className="w-6 h-6 relative flex-col justify-start items-start flex"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* IMAGE */}
-        <div className="hidden md:flex h-[450px] pb-[9px] bg-[#9d9595] justify-center items-center">
-          <img
-            className="w-[557px] h-[441px]"
-            src="https://via.placeholder.com/557x441"
-            alt="Property Management"
-          />
-        </div>
-      </div>
+      <Herod />
 
       {/* SECOND */}
       <div className="w-full h-auto max-w-[1272px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center">
