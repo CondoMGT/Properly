@@ -36,7 +36,7 @@ export const HowComp = () => {
 
         {/* Tenants Section */}
         <div className="col-span-1 flex justify-center items-center w-full bg-[#008080]">
-          <div className="flex flex-col justify-start items-start px-6 py-10 bg-white rounded-tl-[120px] rounded-br-[120px] w-full">
+          <div className="flex flex-col justify-start items-start px-6 py-10 bg-white rounded-tl-[120px] rounded-br-[120px] w-full h-full">
             <Image
               className="w-[50px] h-[50px]"
               src="/tenants.png"

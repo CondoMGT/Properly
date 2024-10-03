@@ -2,7 +2,9 @@
 
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
+import { Button } from "../ui/button";
 
 export const JoinComp = () => {
   return (
@@ -16,16 +18,21 @@ export const JoinComp = () => {
           management process.
         </div>
         <div className="w-full flex justify-center items-center">
-          <div className="px-4 py-2 md:px-5 md:py-3 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex">
-            <div className="text-white text-sm md:text-lg font-normal font-kumbh">
-              Join the waiting list
-            </div>
-            <div className="flex p-2 bg-[#008080] rounded-[60px] justify-start items-center gap-2.5">
-              <div className="w-6 h-6 justify-center items-center flex">
-                <ArrowUpRight className="w-6 h-6 text-white" />
+          <Button
+            asChild
+            className="p-6 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex"
+          >
+            <Link href="/">
+              <div className="text-white text-sm md:text-lg font-normal font-kumbh">
+                Join the waiting list
               </div>
-            </div>
-          </div>
+              <div className="flex p-2 bg-[#008080] rounded-[60px] justify-start items-center gap-2.5">
+                <div className="w-6 h-6 justify-center items-center flex">
+                  <ArrowUpRight className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </Link>
+          </Button>
         </div>
       </div>
       {/* IMAGE */}
