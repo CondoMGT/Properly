@@ -1,11 +1,8 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import { WaitingListForm } from "../waiting-list-form";
+import { WaitingListForm } from "@/components/waiting-list-form";
 
 export const Herod = () => {
   return (
