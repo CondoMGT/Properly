@@ -5,7 +5,7 @@ import React from "react";
 
 export const Herod = () => {
   return (
-    <div className="w-full max-w-[1272px] mx-auto h-auto py-[23px] flex flex-col-reverse md:flex-row-reverse items-center gap-4">
+    <div className="w-full max-w-[1272px] mx-auto h-auto pt-[23px] flex flex-col-reverse md:flex-row-reverse items-center gap-4 px-4">
       <div className="w-full md:w-1/2 py-[43px] flex flex-col justify-center items-center gap-[30px]">
         <div className="font-kyiv self-stretch h-auto text-black text-6xl font-medium leading-[60px]">
           Effortless Property Management and Tenant Communication

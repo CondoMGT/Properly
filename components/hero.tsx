@@ -1,36 +1,7 @@
+import { FeaturesComp } from "./landing-page/features";
 import { Herod } from "./landing-page/herod";
-
-const features = [
-  {
-    title: "AI-Powered Troubleshooting",
-    description: "Resolve issues faster with built-in AI assistance.",
-  },
-  {
-    title: "Integrated Calendar",
-    description:
-      "Schedule and track maintenance with an easy-to-use calendar feature.",
-  },
-  {
-    title: "Feedback Loop & Dispute Management",
-    description:
-      "Receive and act on tenant feedback, track disputes, and resolve issues efficiently.",
-  },
-  {
-    title: "Real-Time Updates",
-    description:
-      "Tenants can upload photos or videos of issues for faster diagnosis.",
-  },
-  {
-    title: "Messaging System",
-    description:
-      "Communicate directly with tenants or send bulk announcements.",
-  },
-  {
-    title: "Visual Documentation",
-    description:
-      "Tenants can upload photos or videos of issues for faster diagnosis.",
-  },
-];
+import { HowComp } from "./landing-page/how";
+import { WhyComp } from "./landing-page/why";
 
 const plans = [
   {
@@ -49,186 +20,20 @@ const plans = [
 
 export const Hero = () => {
   return (
-    <div className="pb-4">
+    <div className="pb-4 space-y-8">
       <Herod />
 
       {/* SECOND */}
-      <div className="w-full h-auto max-w-[1272px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center">
-        <div className="h-auto py-2.5 flex justify-center items-center gap-2.5">
-          <div className="text-black text-2xl md:text-[40px] font-semibold md:font-medium font-kyiv">
-            Why Choose Properly
-          </div>
-        </div>
-
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 h-auto">
-          <div className="relative">
-            <img
-              className="w-10 h-10 absolute left-0 top-[18.31px]"
-              src="https://via.placeholder.com/40x40"
-              alt="Icon 1"
-            />
-            <div className="pl-12">
-              <div className="text-black text-xl font-medium font-kyiv">
-                Efficient Maintenance Management
-              </div>
-              <div className="text-black text-base font-light font-kumbh leading-normal">
-                Easily handle and track all maintenance requests with AI-powered
-                troubleshooting and real-time updates.
-              </div>
-            </div>
-          </div>
-          <div className="relative">
-            <img
-              className="w-10 h-10 absolute left-0 top-[9px]"
-              src="https://via.placeholder.com/40x40"
-              alt="Icon 2"
-            />
-            <div className="pl-12">
-              <div className="text-black text-xl font-medium font-kyiv">
-                Proactive Communication
-              </div>
-              <div className="text-black text-base font-light font-kumbh leading-normal">
-                Stay in touch with tenants and provide clear updates with
-                automatic notifications and messaging.
-              </div>
-            </div>
-          </div>
-
-          <div className="relative">
-            <img
-              className="w-10 h-10 absolute left-0 top-[18px]"
-              src="https://via.placeholder.com/40x40"
-              alt="Icon 3"
-            />
-            <div className="pl-12">
-              <div className="text-black text-xl font-medium font-kyiv">
-                Smart Analytics
-              </div>
-              <div className="text-black text-base font-light font-kumbh leading-normal">
-                Get powerful insights into your property’s performance, tenant
-                satisfaction, and maintenance efficiency.
-              </div>
-            </div>
-          </div>
-          <div className="relative">
-            <img
-              className="w-10 h-10 absolute left-0 top-[17px]"
-              src="https://via.placeholder.com/60x38"
-              alt="Icon 4"
-            />
-            <div className="pl-12">
-              <div className="text-black text-xl font-medium font-kyiv">
-                Tenant-Friendly
-              </div>
-              <div className="text-black text-base font-light font-kumbh leading-normal">
-                Give tenants a seamless experience with a simple request
-                submission process using AI to troubleshoot issues and upload
-                visual documents.
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="w-full bg-[#f0f1f2] py-8">
+        <WhyComp />
       </div>
 
       {/* THIRD */}
-      <div className="w-full max-w-[1266px] mx-auto h-auto flex-col justify-start items-start gap-10 p-4">
-        <div className="w-full flex justify-center items-center mb-8">
-          <div className="text-black text-[40px] font-medium font-kyiv">
-            How Properly Works
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-start items-center gap-6">
-          {/* Property Managers Section */}
-          <div className="flex flex-col h-auto px-6 pt-[61px] pb-[19px] bg-white w-full md:w-1/3">
-            <div className="flex flex-col justify-start items-start">
-              <img
-                className="w-[50px] h-[50px]"
-                src="https://via.placeholder.com/50x50"
-                alt="Property Managers"
-              />
-              <div className="flex flex-col justify-start items-start">
-                <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
-                  Property Managers
-                </div>
-                <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                  Invite tenants to sign up with a simple link and start
-                  managing all maintenance requests from one centralized
-                  dashboard.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tenants Section */}
-          <div className="flex justify-center items-center w-full md:w-1/3 bg-[#9fa2a5]">
-            <div className="flex flex-col justify-start items-start px-6 py-10 bg-white rounded-tl-[120px] rounded-br-[120px] w-full">
-              <img
-                className="w-[50px] h-[50px]"
-                src="https://via.placeholder.com/50x50"
-                alt="Tenants"
-              />
-              <div className="flex flex-col justify-start items-start">
-                <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
-                  Tenants
-                </div>
-                <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                  Submit requests effortlessly through the portal, receive
-                  temporary solutions, and track the progress of your request in
-                  real-time.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Proactive Resolution Section */}
-          <div className="flex flex-col h-auto px-6 py-[35px] bg-white w-full md:w-1/3">
-            <div className="flex flex-col justify-start items-start">
-              <img
-                className="w-[50px] h-[50px]"
-                src="https://via.placeholder.com/50x50"
-                alt="Proactive Resolution"
-              />
-              <div className="flex flex-col justify-start items-start">
-                <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
-                  Proactive Resolution
-                </div>
-                <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                  Use AI-powered troubleshooting to minimize downtime and
-                  provide actionable solutions to tenants while tracking all
-                  feedback.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HowComp />
 
       {/* FOURTH */}
-      <div className="w-full h-auto relative bg-white p-4 pb-8">
-        <div className="max-w-[1072px] mx-auto py-2.5 flex justify-center items-center gap-2.5">
-          <div className="text-black text-[2.5rem] font-medium font-kyiv leading-[3rem] text-center">
-            Features That Make Properly Easier
-          </div>
-        </div>
-        {/* <div className="w-[1262px] left-[66px] top-[114px] absolute justify-start items-start gap-[33px] inline-flex"> */}
-        <div className="w-full max-w-[1262px] mx-auto flex flex-col gap-5 mt-6">
-          {features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-4">
-              <div className="p-2 bg-[#1e1e1e] rounded-full flex justify-center items-center">
-                <div className="w-6 h-6 relative flex justify-center items-center" />
-              </div>
-              <div className="flex flex-col">
-                <div className="text-black text-lg font-medium font-kyiv leading-normal">
-                  {feature.title}
-                </div>
-                <div className="text-black text-lg font-normal font-kumbh leading-normal">
-                  {feature.description}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="w-full bg-[#f0f1f2]">
+        <FeaturesComp />
       </div>
 
       {/* FIVE */}
