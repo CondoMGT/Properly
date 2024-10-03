@@ -63,10 +63,12 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
 
       if (response.error) {
         setSubmitError(response?.error);
+        setSubmitMessage("");
       }
 
       if (response.success) {
         setSubmitMessage(response?.success);
+        setSubmitError("");
 
         form.reset();
 
@@ -133,18 +135,24 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
               />
             </div>
             <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-[#008080] hover:bg-[#003366] font-semibold w-32"
+              >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </div>
             {submitMessage && (
-              <p className="text-sm text-green-600 text-center">
+              <p className="text-sm text-green-600 text-center bg-[#d3dfdf] py-1 rounded-md">
                 {submitMessage}
               </p>
             )}
 
             {submitError && (
-              <p className="text-sm text-red-600 text-center">{submitError}</p>
+              <p className="text-sm text-red-600 text-center bg-[#d3dfdf] py-1 rounded-md">
+                {submitError}
+              </p>
             )}
           </form>
         </Form>
