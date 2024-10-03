@@ -82,6 +82,8 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
       setIsSubmitting(false);
     } catch (error) {
       setSubmitError("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
