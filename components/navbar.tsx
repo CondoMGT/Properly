@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { WaitingListForm } from "./waiting-list-form";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,13 @@ const Navbar = () => {
           href="/"
           className="text-[#003366] text-xl font-medium font-Kyiv flex"
         >
-          <Image src="/logo.svg" alt="Properly" width={24} height={24} />
+          <Image
+            src="/logo.svg"
+            alt="Properly"
+            width={24}
+            height={24}
+            className="w-6 h-6"
+          />
           Properly
         </Link>
       </div>
@@ -42,14 +49,7 @@ const Navbar = () => {
         </div>
 
         {/* BUTTONS */}
-
-        <Button
-          variant="outline"
-          className="bg-[#003366] hover:bg-[#003366] hover:text-white rounded-full font-kumbh text-lg py-5 text-white"
-          asChild
-        >
-          <Link href="/">Join the waiting list</Link>
-        </Button>
+        <WaitingListForm inNav />
       </div>
       {/* MENU FOR MOBILE */}
       <div

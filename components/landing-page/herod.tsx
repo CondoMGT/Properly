@@ -5,6 +5,7 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { WaitingListForm } from "../waiting-list-form";
 
 export const Herod = () => {
   return (
@@ -20,21 +21,7 @@ export const Herod = () => {
         </div>
 
         <div className="justify-start items-center gap-4 flex flex-row">
-          <Button
-            className="p-6 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex"
-            asChild
-          >
-            <Link href="/">
-              <div className="text-white text-sm md:text-lg font-normal font-kumbh">
-                Join the waiting list
-              </div>
-              <div className="flex p-2 bg-[#008080] rounded-[60px] justify-start items-center gap-2.5">
-                <div className="w-6 h-6 justify-center items-center flex">
-                  <ArrowUpRight className="w-6 h-6 text-white" />
-                </div>
-              </div>
-            </Link>
-          </Button>
+          <WaitingListForm />
         </div>
       </div>
 
