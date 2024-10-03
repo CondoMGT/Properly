@@ -3,7 +3,7 @@ import React from "react";
 
 export const WhyComp = () => {
   return (
-    <div className="w-full h-auto max-w-[1272px] mx-auto py-5 flex flex-col md:flex-row justify-between items-center">
+    <div className="w-full h-auto max-w-[1272px] mx-auto py-5 px-4 flex flex-col md:flex-row justify-between items-center">
       <div className="h-auto py-2.5 flex justify-center items-center gap-2.5">
         <div className="text-black text-4xl font-medium font-kyiv">
           Why Choose Properly

@@ -36,20 +36,19 @@ const features = [
 export const FeaturesComp = () => {
   return (
     <div className="w-full h-auto relative p-4 pb-8">
-      <div className="max-w-[1072px] mx-auto py-2.5 flex justify-center items-center gap-2.5">
-        <div className="text-black text-[2.5rem] font-medium font-kyiv leading-[3rem] text-center">
+      <div className="w-full max-w-[1262px] mx-auto py-2.5 flex justify-start items-center gap-2.5">
+        <div className="w-full text-black text-[2.5rem] font-medium font-kyiv leading-[3rem]">
           Features That Make Properly Easier
         </div>
       </div>
-      {/* <div className="w-[1262px] left-[66px] top-[114px] absolute justify-start items-start gap-[33px] inline-flex"> */}
-      {/* <div className="w-full max-w-[1262px] mx-auto flex flex-col gap-5 mt-6"> */}
+
       <div className="w-full max-w-[1262px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
         {features.map((feature, index) => (
           <div key={index} className="w-full flex items-start gap-4">
             <div className="p-2 bg-[#008080] rounded-full flex justify-center items-center">
               <Check className="w-6 h-6 text-white" />
             </div>
-            {/* <div className="flex items-center justify-center gap-6"> */}
+
             <div className="grid grid-cols-2 w-full">
               <div className="text-black text-lg font-medium font-kyiv leading-normal">
                 {feature.title}

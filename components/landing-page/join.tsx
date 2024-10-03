@@ -4,20 +4,18 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-export const Herod = () => {
+export const JoinComp = () => {
   return (
-    <div className="w-full max-w-[1272px] mx-auto h-auto pt-[23px] flex flex-col-reverse md:flex-row-reverse items-center gap-4 px-4">
-      <div className="w-full md:w-1/2 py-[43px] flex flex-col justify-center items-center gap-[30px]">
-        <div className="font-kyiv self-stretch h-auto text-black text-6xl font-medium leading-[60px]">
-          Effortless Property Management and Tenant Communication
+    <div className="w-full max-w-[1322px] mx-auto h-auto p-4 flex justify-between items-center flex-col lg:flex-row">
+      <div className="flex flex-col justify-center items-start gap-6 lg:w-1/2 p-4">
+        <div className="text-black text-[2.5rem] font-medium font-kyiv leading-[60px]">
+          Ready to Simplify Your Property Management?
         </div>
-
-        <div className="w-full text-black text-lg font-normal font-kumbh leading-normal">
-          Streamline maintenance requests, enhance tenant satisfaction, and
-          simplify communication with real-time updates.
+        <div className="text-black text-lg font-normal font-kumbh leading-normal text-left">
+          Sign up today and experience how Properly can transform your property
+          management process.
         </div>
-
-        <div className="justify-start items-center gap-4 flex flex-row">
+        <div className="w-full flex justify-center items-center">
           <div className="px-4 py-2 md:px-5 md:py-3 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex">
             <div className="text-white text-sm md:text-lg font-normal font-kumbh">
               Join the waiting list
@@ -30,11 +28,10 @@ export const Herod = () => {
           </div>
         </div>
       </div>
-
       {/* IMAGE */}
-      <div className="relative w-full md:w-1/2 h-[50vh]">
+      <div className="relative w-full lg:w-1/2 h-[50vh]">
         <Image
-          src="/leohoho.png"
+          src="/leo.png"
           alt="Hero"
           fill
           priority

@@ -11,7 +11,7 @@ export const HowComp = () => {
       </div>
 
       {/* <div className="flex flex-col md:flex-row justify-start items-center gap-6"> */}
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Property Managers Section */}
         <div className="col-span-1 flex flex-col h-auto px-6 pt-[61px] pb-[19px] bg-[#d3dfdf] w-full">
           <div className="flex flex-col justify-start items-start">
