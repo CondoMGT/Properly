@@ -11,42 +11,80 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ArrowUpRight } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { WaitingListSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { newClient } from "@/actions/new-client";
 
 type WaitingListFormProps = {
   inNav?: boolean;
 };
 
 export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
-  const [email, setEmail] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof WaitingListSchema>>({
+    resolver: zodResolver(WaitingListSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const handleDialogClose = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      setSubmitError("");
+      setSubmitMessage("");
+      form.reset();
+    } else {
+      setIsOpen(true);
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof WaitingListSchema>) => {
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Simulate API call
+      const response = await newClient(values);
 
-    // Here you would typically send the email to your backend
-    console.log("Email submitted:", email);
+      if (response.error) {
+        setSubmitError(response?.error);
+      }
 
-    setIsSubmitting(false);
-    setSubmitMessage("Thank you for joining our waiting list!");
-    setEmail("");
+      if (response.success) {
+        setSubmitMessage(response?.success);
 
-    // Close the modal after a delay
-    setTimeout(() => {
-      setIsOpen(false);
-      setSubmitMessage("");
-    }, 3000);
+        form.reset();
+
+        // Close the modal after a delay
+        setTimeout(() => {
+          setIsOpen(false);
+          setSubmitMessage("");
+        }, 3000);
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      setSubmitError("Something went wrong!");
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogTrigger asChild>
         <Button className="p-6 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex">
           <div className="text-white text-sm md:text-lg font-normal font-kumbh">
@@ -68,31 +106,48 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
             Enter your email to be notified when we launch.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="col-span-3"
-              required
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          </div>
-          {submitMessage && (
-            <p className="text-sm text-green-600 text-center">
-              {submitMessage}
-            </p>
-          )}
-        </form>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid space-y-4"
+          >
+            <div className="gap-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...field}
+                        placeholder="jane@example.com"
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </div>
+            {submitMessage && (
+              <p className="text-sm text-green-600 text-center">
+                {submitMessage}
+              </p>
+            )}
+
+            {submitError && (
+              <p className="text-sm text-red-600 text-center">{submitError}</p>
+            )}
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
