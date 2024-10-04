@@ -7,15 +7,16 @@ import { WaitingListForm } from "@/components/waiting-list-form";
 export const JoinComp = () => {
   return (
     <div className="w-full max-w-[1322px] mx-auto h-auto p-4 flex justify-between items-center flex-col lg:flex-row">
-      <div className="flex flex-col justify-center items-start gap-6 lg:w-1/2 p-4">
-        <div className="text-black text-[2.5rem] font-medium font-kyiv leading-[60px]">
-          Ready to Simplify Your Property Management?
+      <div className="flex flex-col items-start gap-6 lg:w-1/2 p-4">
+        <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
+          Ready to Transform Your Property Management Experience?
         </div>
-        <div className="text-black text-lg font-normal font-kumbh leading-normal text-left">
-          Sign up today and experience how Properly can transform your property
-          management process.
+        <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight text-left">
+          Get 2-week free trial by signing up for a demo today. Discover how
+          Properly can revolutionize your property management processes with
+          zero commitment.
         </div>
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex">
           <WaitingListForm />
         </div>
       </div>

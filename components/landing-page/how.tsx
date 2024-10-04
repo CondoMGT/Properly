@@ -10,70 +10,73 @@ export const HowComp = () => {
         </div>
       </div>
 
-      {/* <div className="flex flex-col md:flex-row justify-start items-center gap-6"> */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Property Managers Section */}
-        <div className="col-span-1 flex flex-col h-auto px-6 pt-[61px] pb-[19px] bg-[#d3dfdf] w-full">
-          <div className="flex flex-col justify-start items-start">
+        <div className="col-span-1 flex flex-col h-auto px-6 pt-[22px] pb-[34px] bg-custom-3 w-full">
+          <div className="flex flex-col justify-start items-start h-full">
             <Image
               className="w-[50px] h-[50px]"
-              src="/managers.png"
+              src="/prop-manager.png"
               alt="Property Managers"
               width={50}
               height={50}
             />
             <div className="flex flex-col justify-start items-start">
-              <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
+              <div className="text-gray-900 text-2xl font-medium font-kyiv leading-[30px] w-full py-2.5">
                 Property Managers
               </div>
-              <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                Invite tenants to sign up with a simple link and start managing
-                all maintenance requests from one centralized dashboard.
+              <div className="w-full text-black text-base font-normal font-kumbh leading-normal tracking-tight">
+                Invite tenants, manage requests via a centralized dashboard, and
+                communicate in real time. Properly tracks requests, uses
+                feedback loops, and offers dispute management to boost
+                transparency and reduce legal risks.
               </div>
             </div>
           </div>
         </div>
 
         {/* Tenants Section */}
-        <div className="col-span-1 flex justify-center items-center w-full bg-[#008080]">
+        <div className="col-span-1 flex justify-center items-center w-full bg-custom-2">
           <div className="flex flex-col justify-start items-start px-6 py-10 bg-white rounded-tl-[120px] rounded-br-[120px] w-full h-full">
             <Image
               className="w-[50px] h-[50px]"
-              src="/tenants.png"
+              src="/resident.png"
               alt="Tenants"
               width={50}
               height={50}
             />
             <div className="flex flex-col justify-start items-start">
-              <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
+              <div className="text-gray-900 text-2xl font-medium font-kyiv leading-[30px] py-2.5 w-full">
                 Tenants
               </div>
-              <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                Submit requests effortlessly through the portal, receive
-                temporary solutions, and track the progress of your request in
-                real-time.
+              <div className="w-full text-black text-base font-normal font-kumbh leading-normal tracking-tight">
+                Easily submit and track requests, upload media for clarity, and
+                receive real-time updates. Properly ensures transparent
+                communication, minimizing delays and frustration.
               </div>
             </div>
           </div>
         </div>
 
         {/* Proactive Resolution Section */}
-        <div className="col-span-1 flex flex-col h-auto px-6 py-[35px] bg-[#d3dfdf] w-full">
+        <div className="col-span-1 flex flex-col h-auto px-6 pt-[22px] pb-[34px] bg-custom-3 w-full">
           <div className="flex flex-col justify-start items-start">
             <Image
               className="w-[50px] h-[50px]"
-              src="/pro.png"
+              src="/resolution.png"
               alt="Proactive Resolution"
               width={50}
               height={50}
             />
             <div className="flex flex-col justify-start items-start">
-              <div className="text-black text-xl font-medium font-kyiv leading-[60px] w-full text-center">
+              <div className="text-gray-900 text-2xl font-medium font-kyiv leading-[30px] py-2.5 w-full">
                 Proactive Resolution
               </div>
-              <div className="w-full text-black text-base font-light font-kumbh leading-normal">
-                Use AI-powered troubleshooting to minimize downtime and provide
-                actionable solutions to tenants while tracking all feedback.
+              <div className="w-full text-black text-base font-normal font-kumbh leading-normal tracking-tight">
+                With AI chatbot Bri, tenants troubleshoot issues quickly. For
+                complex problems, real-time communication ensures fast
+                resolutions, supported by feedback and dispute management to
+                avoid conflicts.
               </div>
             </div>
           </div>
