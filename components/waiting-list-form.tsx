@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -105,8 +106,10 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Join Our Waiting List</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-medium font-kyiv leading-7">
+            Join Our Waiting List
+          </DialogTitle>
+          <DialogDescription className="text-sm font-normal leading-tight tracking-tight">
             Enter your email to be notified when we launch.
           </DialogDescription>
         </DialogHeader>
@@ -129,8 +132,12 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
                         {...field}
                         placeholder="jane@example.com"
                         disabled={isSubmitting}
+                        className="placeholder:text-[#e0e0e0] placeholder:text-base py-4"
                       />
                     </FormControl>
+                    <FormDescription className="text-xs font-medium leading-none tracking-tight text-[#555555]">
+                      Property Managers get a 2-week free trial demo.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -140,7 +147,7 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-custom-2 hover:bg-custom-1 font-semibold w-32"
+                className="bg-custom-1 hover:bg-custom-2 font-semibold w-32"
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
