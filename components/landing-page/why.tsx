@@ -1,92 +1,62 @@
 import Image from "next/image";
 import React from "react";
 
+const properlyWhys = [
+  {
+    name: "AI Chatbot Bri",
+    description:
+      "Bri helps tenants resolve minor issues independently, reducing property managers' workload and providing faster solutions for tenants.",
+    icon: "chatbot.png",
+  },
+  {
+    name: "Automated Feedback Loop",
+    description:
+      "After resolving issues, tenants provide feedback to help property managers improve service quality.",
+    icon: "loop.png",
+  },
+  {
+    name: "Real-time Communication",
+    description:
+      "Instant updates and notifications enable seamless communication, making issue reporting and maintenance tracking efficient for both parties.",
+    icon: "communik.png",
+  },
+  {
+    name: "Prevent Legal and Financial Risks",
+    description:
+      "By ensuring timely issue resolution, Properly minimizes the risk of legal liabilities and financial losses.",
+    icon: "legal.png",
+  },
+];
+
 export const WhyComp = () => {
   return (
-    <div className="w-full h-auto max-w-[1272px] mx-auto py-5 px-4 flex flex-col md:flex-row justify-between items-center">
-      <div className="h-auto py-2.5 flex justify-center items-center gap-2.5">
-        <div className="text-black text-4xl font-medium font-kyiv">
+    <div className="w-full h-auto max-w-[1272px] mx-auto py-5 px-4 flex flex-col md:flex-row justify-between items-center md:gap-16">
+      <div className="flex-[20%] h-auto py-2.5 flex justify-center items-center gap-2.5">
+        <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
           Why Choose Properly
         </div>
       </div>
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 h-auto">
-        <div className="relative space-x-4">
-          <Image
-            src="/span.png"
-            alt="Icon-1"
-            width={40}
-            height={40}
-            className="absolute w-10 h-10 left-0 top-0"
-          />
-          <div className="pl-12">
-            <div className="text-black text-2xl font-medium tracking-tight mb-6">
-              Efficient Maintenance Management
-            </div>
-            <div className="text-black text-base font-light leading-normal tracking-tight">
-              Easily handle and track all maintenance requests with AI-powered
-              troubleshooting and real-time updates.
-            </div>
-          </div>
-        </div>
-
-        <div className="relative space-x-4">
-          <Image
-            src="/bots.png"
-            alt="Icon-1"
-            width={56}
-            height={40}
-            className="absolute w-14 h-10 left-0 top-0"
-          />
-          <div className="pl-12">
-            <div className="text-black text-2xl font-medium tracking-tight mb-6">
-              Tenant-Friendly
-            </div>
-            <div className="text-black text-base font-light leading-normal tracking-tight">
-              Give tenants a seamless experience with a simple request
-              submission process using AI to troubleshoot issues and upload
-              visual documents.
+        {properlyWhys.map((why, index) => (
+          <div className="relative space-x-6" key={index}>
+            <Image
+              src={`/${why.icon}`}
+              alt={why.icon.split(".")[0]}
+              width={60}
+              height={60}
+              className="absolute w-15 h-15 left-0 top-6"
+            />
+            <div className="pl-12">
+              <div className="text-black text-2xl font-medium leading-[30px] font-kyiv mb-4">
+                {why.name}
+              </div>
+              <div className="text-black text-base font-normal leading-normal tracking-tight">
+                {why.description}
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="relative space-x-4">
-          <Image
-            src="/network.png"
-            alt="Icon-1"
-            width={40}
-            height={40}
-            className="absolute w-10 h-10 left-0 top-0"
-          />
-          <div className="pl-12">
-            <div className="text-black text-2xl font-medium tracking-tight mb-6">
-              Proactive Communication
-            </div>
-            <div className="text-black text-base font-light leading-normal tracking-tight">
-              Stay in touch with tenants and provide clear updates with
-              automatic notifications and messaging.
-            </div>
-          </div>
-        </div>
-
-        <div className="relative space-x-4">
-          <Image
-            src="/analytics.png"
-            alt="Icon-1"
-            width={40}
-            height={40}
-            className="absolute w-10 h-10 left-0 top-0"
-          />
-          <div className="pl-12">
-            <div className="text-black text-2xl font-medium tracking-tight mb-6">
-              Smart Analytics
-            </div>
-            <div className="text-black text-base font-light leading-normal tracking-tight">
-              Get powerful insights into your property’s performance, tenant
-              satisfaction, and maintenance efficiency.
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

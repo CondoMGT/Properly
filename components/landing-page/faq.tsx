@@ -10,7 +10,7 @@ const faqs = [
   {
     question: "How does Properly help tenants with maintenance requests?",
     answer:
-      "Tenants can easily submit requests, upload visual documentation, and track the status of their issues in real-time.",
+      "Submit requests quickly, upload photos or videos for clarity, and track the progress in real-time. This ensures transparency and reduces the likelihood of delays or miscommunication.",
   },
   {
     question: "How does the AI-powered troubleshooting work?",
@@ -18,6 +18,10 @@ const faqs = [
   },
   {
     question: "What are the pricing plans?",
+    answer: "",
+  },
+  {
+    question: "How does Properly prevent legal disputes and financial losses?",
     answer: "",
   },
 ];
@@ -37,12 +41,12 @@ export const FaqComp = () => {
               className="pl-4"
             >
               <AccordionTrigger>
-                <div className="text-[#202024] text-[1.375rem] font-medium font-kumbh leading-normal">
+                <div className="text-custom-5 text-xl font-medium font-kumbh leading-7">
                   {faq.question}
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="self-stretch text-[#3c3c43] text-lg font-light font-kumbh leading-7">
+                <div className="self-stretch text-custom-6 text-lg font-normal font-kumbh leading-7 tracking-tight">
                   {faq.answer}
                 </div>
               </AccordionContent>

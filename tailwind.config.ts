@@ -55,6 +55,8 @@ const config: Config = {
           "2": "#008080",
           "3": "#d3dfdf",
           "4": "#f0f1f2",
+          "5": "#202024",
+          "6": "#3c3c43",
         },
       },
       fontFamily: {
