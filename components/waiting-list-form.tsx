@@ -90,12 +90,12 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogTrigger asChild>
-        <Button className="p-6 bg-[#003366] rounded-full justify-center items-center gap-2.5 flex">
+        <Button className="p-6 bg-custom-1 rounded-full justify-center items-center gap-2.5 flex">
           <div className="text-white text-sm md:text-lg font-normal font-kumbh">
             Join the waiting list
           </div>
           {!inNav && (
-            <div className="flex p-2 bg-[#008080] rounded-[60px] justify-start items-center gap-2.5">
+            <div className="flex p-2 bg-custom-2 rounded-[60px] justify-start items-center gap-2.5">
               <div className="w-6 h-6 justify-center items-center flex">
                 <ArrowUpRight className="w-6 h-6 text-white" />
               </div>
@@ -140,19 +140,19 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#008080] hover:bg-[#003366] font-semibold w-32"
+                className="bg-custom-2 hover:bg-custom-1 font-semibold w-32"
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </div>
             {submitMessage && (
-              <p className="text-sm text-green-600 text-center bg-[#d3dfdf] py-1 rounded-md">
+              <p className="text-sm text-green-600 text-center bg-custom-3 py-1 rounded-md">
                 {submitMessage}
               </p>
             )}
 
             {submitError && (
-              <p className="text-sm text-red-600 text-center bg-[#d3dfdf] py-1 rounded-md">
+              <p className="text-sm text-red-600 text-center bg-custom-3 py-1 rounded-md">
                 {submitError}
               </p>
             )}

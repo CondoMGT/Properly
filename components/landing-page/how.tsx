@@ -13,7 +13,7 @@ export const HowComp = () => {
       {/* <div className="flex flex-col md:flex-row justify-start items-center gap-6"> */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Property Managers Section */}
-        <div className="col-span-1 flex flex-col h-auto px-6 pt-[61px] pb-[19px] bg-[#d3dfdf] w-full">
+        <div className="col-span-1 flex flex-col h-auto px-6 pt-[61px] pb-[19px] bg-custom-3 w-full">
           <div className="flex flex-col justify-start items-start">
             <Image
               className="w-[50px] h-[50px]"
@@ -35,7 +35,7 @@ export const HowComp = () => {
         </div>
 
         {/* Tenants Section */}
-        <div className="col-span-1 flex justify-center items-center w-full bg-[#008080]">
+        <div className="col-span-1 flex justify-center items-center w-full bg-custom-2">
           <div className="flex flex-col justify-start items-start px-6 py-10 bg-white rounded-tl-[120px] rounded-br-[120px] w-full h-full">
             <Image
               className="w-[50px] h-[50px]"
@@ -58,7 +58,7 @@ export const HowComp = () => {
         </div>
 
         {/* Proactive Resolution Section */}
-        <div className="col-span-1 flex flex-col h-auto px-6 py-[35px] bg-[#d3dfdf] w-full">
+        <div className="col-span-1 flex flex-col h-auto px-6 py-[35px] bg-custom-3 w-full">
           <div className="flex flex-col justify-start items-start">
             <Image
               className="w-[50px] h-[50px]"

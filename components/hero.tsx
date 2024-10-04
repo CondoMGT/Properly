@@ -12,7 +12,7 @@ export const Hero = () => {
       <Herod />
 
       {/* SECOND */}
-      <div className="w-full bg-[#f0f1f2] py-8">
+      <div className="w-full bg-custom-4 py-8">
         <WhyComp />
       </div>
 
@@ -20,7 +20,7 @@ export const Hero = () => {
       <HowComp />
 
       {/* FOURTH */}
-      <div className="w-full bg-[#f0f1f2]">
+      <div className="w-full bg-custom-4">
         <FeaturesComp />
       </div>
 
@@ -28,7 +28,7 @@ export const Hero = () => {
       <PricingComp />
 
       {/* SIX */}
-      <div className="w-full bg-[#f0f1f2]">
+      <div className="w-full bg-custom-4">
         <JoinComp />
       </div>
 

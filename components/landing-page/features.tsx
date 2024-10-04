@@ -45,7 +45,7 @@ export const FeaturesComp = () => {
       <div className="w-full max-w-[1262px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
         {features.map((feature, index) => (
           <div key={index} className="w-full flex items-start gap-4">
-            <div className="p-2 bg-[#008080] rounded-full flex justify-center items-center">
+            <div className="p-2 bg-custom-2 rounded-full flex justify-center items-center">
               <Check className="w-6 h-6 text-white" />
             </div>
 

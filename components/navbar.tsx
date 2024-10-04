@@ -13,26 +13,26 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full max-w-[1312px] mx-auto h-[74px] px-7 py-3.5 bg-[#d3dfdf] rounded-[60px] flex flex-row justify-between items-center md:gap-8 lg:gap-4">
-      <div className="flex justify-between items-center">
+    <div className="w-full max-w-[1312px] mx-auto h-[74px] px-7 py-3.5 bg-custom-3 rounded-[60px] flex flex-row justify-between items-center md:gap-8 lg:gap-4">
+      <div className="flex-[20%] flex justify-between items-center">
         {/* LOGO */}
 
         <Link
           href="/"
-          className="text-[#003366] text-xl font-medium font-Kyiv flex"
+          className="text-custom-1 text-2xl font-medium font-kyiv flex items-center"
         >
           <Image
             src="/logo.svg"
             alt="Properly"
-            width={24}
-            height={24}
-            className="w-6 h-6"
+            width={28}
+            height={28}
+            className="w-7 h-7"
           />
           Properly
         </Link>
       </div>
 
-      <div className="hidden md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
+      <div className="hidden flex-[50%] md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
         <div className="flex space-x-4 md:space-x-8">
           <Link href="/why-properly" className="text-lg font-medium font-kumbh">
             Why Properly
@@ -62,7 +62,7 @@ const Navbar = () => {
       </div>
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-12 left-0 w-full bg-[#d3dfdf] rounded-b-[20px] flex flex-col items-center space-y-4 p-4 z-10 md:hidden">
+        <div className="absolute top-12 left-0 w-full bg-custom-3 rounded-b-[20px] flex flex-col items-center space-y-4 p-4 z-10 md:hidden">
           {/* Close Button */}
           <button
             className="self-end text-white text-3xl font-medium"
@@ -72,7 +72,7 @@ const Navbar = () => {
           </button>
           <Link
             href="/"
-            className="text-[#003366] text-2xl font-medium font-Kyiv flex mb-4"
+            className="text-custom-1 text-2xl font-medium font-kyiv flex mb-4"
             onClick={handleMobileNavbar}
           >
             <Image src="/logo.svg" alt="Properly" width={24} height={24} />
