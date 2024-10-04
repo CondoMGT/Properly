@@ -1,3 +1,4 @@
+import { AboutComponent } from "./landing-page/about";
 import { FaqComp } from "./landing-page/faq";
 import { FeaturesComp } from "./landing-page/features";
 import { Hero } from "./landing-page/hero";
@@ -11,29 +12,35 @@ export const HeroPage = () => {
     <div className="pb-4 space-y-8">
       <Hero />
 
-      {/* SECOND */}
       <div className="w-full bg-custom-4 py-8">
-        <WhyComp />
+        <AboutComponent />
       </div>
+
+      {/* SECOND */}
+      <WhyComp />
 
       {/* THIRD */}
-      <HowComp />
+      <div className="w-full bg-custom-4">
+        <HowComp />
+      </div>
 
       {/* FOURTH */}
-      <div className="w-full bg-custom-4">
-        <FeaturesComp />
-      </div>
+
+      <FeaturesComp />
 
       {/* FIVE */}
-      <PricingComp />
-
-      {/* SIX */}
       <div className="w-full bg-custom-4">
-        <JoinComp />
+        <PricingComp />
       </div>
 
+      {/* SIX */}
+
+      <JoinComp />
+
       {/* SEVEN */}
-      <FaqComp />
+      <div className="w-full bg-custom-4 pb-8">
+        <FaqComp />
+      </div>
     </div>
   );
 };
