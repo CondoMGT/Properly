@@ -12,7 +12,7 @@ export const JoinComp = () => {
           Ready to Transform Your Property Management Experience?
         </div>
         <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight text-left">
-          Start a 2-week free trial by signing up for a demo today. Discover how
+          Get 2-week free trial by signing up for a demo today. Discover how
           Properly can revolutionize your property management processes with
           zero commitment.
         </div>
