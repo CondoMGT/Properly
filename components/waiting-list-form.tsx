@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { newClient } from "@/actions/new-client";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 type WaitingListFormProps = {
   inNav?: boolean;
@@ -138,6 +139,43 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
                     <FormDescription className="text-xs font-medium leading-none tracking-tight text-[#555555]">
                       Property Managers get a 2-week free trial demo.
                     </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="gap-4">
+              <FormField
+                control={form.control}
+                name="userType"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Are you a...?</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Tenant" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Resident
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Manager" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Property Manager
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

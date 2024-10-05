@@ -29,7 +29,7 @@ const faqs = [
 export const FaqComp = () => {
   return (
     <div className="w-full max-w-[1322px] mx-auto h-auto flex flex-col justify-start items-start gap-6 p-4">
-      <div className="self-stretch text-black text-[2.5rem] font-medium font-kyiv leading-[60px] text-center md:text-left">
+      <div className="self-stretch text-black text-4xl md:text-5xl font-medium font-kyiv leading-[60px] text-center md:text-left">
         Our Frequently Asked Questions
       </div>
       <div className="flex-col justify-end items-start gap-2 flex w-full">

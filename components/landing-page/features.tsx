@@ -36,9 +36,9 @@ const features = [
 
 export const FeaturesComp = () => {
   return (
-    <div className="w-full h-auto relative p-4 pb-8">
+    <div className="w-full h-auto relative p-5 pb-8">
       <div className="w-full max-w-[1262px] mx-auto py-2.5 flex justify-start items-center gap-2.5">
-        <div className="w-full text-black text-5xl font-medium font-kyiv leading-[56px]">
+        <div className="w-full text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
           Features That Make Properly Easier
         </div>
       </div>
@@ -55,7 +55,7 @@ export const FeaturesComp = () => {
               <Check className="w-6 h-6 text-white" />
             </div>
 
-            <div className="flex gap-4 w-full">
+            <div className="grid grid-cols-2 md:flex gap-4 w-full">
               <div className="flex-[30%] text-black text-xl font-medium font-kyiv leading-7">
                 {feature.title}
               </div>
