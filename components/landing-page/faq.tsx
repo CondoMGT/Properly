@@ -33,14 +33,19 @@ export const FaqComp = () => {
         Our Frequently Asked Questions
       </div>
       <div className="flex-col justify-end items-start gap-2 flex w-full">
-        <Accordion type="single" collapsible className="w-full px-2 bg-white">
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full px-2 bg-white"
+          defaultValue="item-1"
+        >
           {faqs.map((faq, index) => (
             <AccordionItem
               key={`item-${index + 1}`}
               value={`item-${index + 1}`}
               className="pl-4"
             >
-              <AccordionTrigger>
+              <AccordionTrigger className="text-start">
                 <div className="text-custom-5 text-xl font-medium font-kumbh leading-7">
                   {faq.question}
                 </div>
