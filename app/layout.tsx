@@ -49,10 +49,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased pt-6`}
+        className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased pt-6 max-[360px]:w-[114vw]`}
       >
         <Navbar />
-        <div>{children}</div>
+        {children}
         <Footer />
       </body>
     </html>

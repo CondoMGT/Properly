@@ -8,6 +8,11 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
+enum waitListType {
+  Tenant
+  Manager
+}
+
 model users {
   id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   name     String @db.VarChar(255)
@@ -16,6 +21,7 @@ model users {
 }
 
 model waitlist {
-  id    String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  email String @unique
+  id       String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email    String       @unique
+  userType waitListType @default(Manager)
 }

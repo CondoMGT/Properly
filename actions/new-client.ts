@@ -11,7 +11,7 @@ export const newClient = async (values: z.infer<typeof WaitingListSchema>) => {
     return { error: "Invalid data!" };
   }
 
-  const { email } = validatedFields.data;
+  const { email, userType } = validatedFields.data;
 
   try {
     if (!email) {
@@ -32,6 +32,7 @@ export const newClient = async (values: z.infer<typeof WaitingListSchema>) => {
     await prisma.waitlist.create({
       data: {
         email,
+        userType,
       },
     });
 

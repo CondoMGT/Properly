@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <div className="w-full h-auto flex-col justify-center items-start gap-0 inline-flex">
       <div className="self-stretch h-auto px-4 py-6 bg-custom-2 flex justify-center items-center">
-        <div className="self-stretch flex justify-start items-center gap-5 flex-wrap text-center md:text-left">
+        <div className="self-stretch flex justify-center items-center gap-5 flex-wrap text-center">
           <Link
             href="/careers"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"

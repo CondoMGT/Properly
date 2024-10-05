@@ -3,8 +3,8 @@ import React from "react";
 export const AboutComponent = () => {
   return (
     <div className="w-full h-auto max-w-[1272px] mx-auto py-8 px-4 flex flex-col md:flex-row justify-between items-center md:gap-16">
-      <div className="flex-[20%] h-auto py-2.5 flex justify-center items-center gap-2.5">
-        <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
+      <div className="w-full flex-[20%] h-auto py-2.5 flex justify-start items-center gap-2.5">
+        <div className="text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
           About Properly
         </div>
       </div>

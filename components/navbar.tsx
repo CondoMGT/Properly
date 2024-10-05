@@ -33,17 +33,23 @@ const Navbar = () => {
       </div>
 
       <div className="hidden flex-[50%] md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
-        <div className="flex space-x-4 md:space-x-8">
-          <Link href="/why-properly" className="text-lg font-medium font-kumbh">
+        <div className="flex items-center space-x-4 md:space-x-8">
+          <Link
+            href="/why-properly"
+            className="text-lg font-medium font-kumbh text-center"
+          >
             Why Properly
           </Link>
           <Link
             href="/about-properly"
-            className="text-lg font-medium font-kumbh"
+            className="text-lg font-medium font-kumbh text-center"
           >
             About Properly
           </Link>
-          <Link href="/pricing" className="text-lg font-medium font-kumbh">
+          <Link
+            href="/pricing"
+            className="text-lg font-medium font-kumbh text-center"
+          >
             Pricing
           </Link>
         </div>

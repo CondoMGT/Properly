@@ -22,7 +22,7 @@ export const PricingComp = () => {
   return (
     <div className="w-full max-w-[1266px] mx-auto p-4 space-y-4">
       <div className="max-w-[1072px] py-2.5 flex justify-start items-center gap-2.5">
-        <div className="w-full text-black text-5xl font-medium font-kyiv leading-[56px]">
+        <div className="w-full text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
           Our Pricing
         </div>
       </div>

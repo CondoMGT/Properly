@@ -6,9 +6,9 @@ import { WaitingListForm } from "@/components/waiting-list-form";
 
 export const Hero = () => {
   return (
-    <div className="w-full max-w-[1272px] mx-auto h-auto pt-[23px] flex flex-col-reverse md:flex-row-reverse items-center gap-4 px-4">
-      <div className="w-full md:w-1/2 py-[43px] flex flex-col justify-center gap-[30px]">
-        <div className="font-kyiv self-stretch h-auto text-black text-6xl font-medium leading-[72px]">
+    <div className="w-full max-w-[1272px] mx-auto pt-[23px] flex flex-col-reverse lg:flex-row-reverse items-stretch gap-4 px-4">
+      <div className="w-full lg:w-1/2 py-[43px] max-[560px]:pr-6 flex flex-col justify-center gap-[30px]">
+        <div className="font-kyiv text-black text-6xl font-medium leading-[72px]">
           Property Management, Done Properly
         </div>
 
@@ -25,14 +25,14 @@ export const Hero = () => {
       </div>
 
       {/* IMAGE */}
-      <div className="relative w-full md:w-1/2 h-[50vh]">
+      <div className="relative w-full lg:w-1/2 h-[50vh] lg:h-auto">
         <Image
           src="/leohoho.png"
           alt="Hero"
           fill
           priority
           className="object-cover"
-          sizes="(max-width: 768px) 50vh, 100vh"
+          sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
         />
       </div>
     </div>

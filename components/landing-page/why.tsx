@@ -30,14 +30,14 @@ const properlyWhys = [
 
 export const WhyComp = () => {
   return (
-    <div className="w-full h-auto max-w-[1272px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:gap-16">
-      <div className="flex-[20%] h-auto py-2.5 flex justify-center items-center gap-2.5">
-        <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
+    <div className="w-full h-auto max-w-[1272px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:gap-8">
+      <div className="w-full flex-[20%] h-auto py-2.5 flex justify-start items-center gap-2.5">
+        <div className="text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
           Why Choose Properly
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-12 h-auto">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 px-2 gap-8 h-auto">
         {properlyWhys.map((why, index) => (
           <div className="relative space-x-6" key={index}>
             <Image
