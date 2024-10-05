@@ -34,18 +34,18 @@ export const PricingComp = () => {
         {plans.map((plan, index) => (
           <div
             key={index}
-            className="flex items-start md:items-center gap-1 md:gap-4 w-full"
+            className="flex items-start md:items-center gap-2 md:gap-4 w-full"
           >
             <div
               className={`w-4 h-4 ${
                 (index + 1) % 2 === 0 ? "bg-custom-2" : "bg-[#1e1e1e]"
               } border p-1 mt-2 md:mt-0 rounded-full`}
             />
-            <div className="w-full flex flex-col justify-start md:flex-row md:items-center gap-16">
-              <div className="text-black text-xl font-medium font-kyiv leading-7 flex-[40%]">
+            <div className="w-full flex justify-start gap-4">
+              <div className="text-black text-xl font-medium font-kyiv leading-7 flex-[50%]">
                 {plan.title}
               </div>
-              <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight flex-[60%]">
+              <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight flex-[50%]">
                 {plan.description}
               </div>
             </div>

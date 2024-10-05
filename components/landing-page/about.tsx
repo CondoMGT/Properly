@@ -2,7 +2,7 @@ import React from "react";
 
 export const AboutComponent = () => {
   return (
-    <div className="w-full h-auto max-w-[1272px] mx-auto py-5 px-4 flex flex-col md:flex-row justify-between items-center md:gap-16">
+    <div className="w-full h-auto max-w-[1272px] mx-auto py-8 px-4 flex flex-col md:flex-row justify-between items-center md:gap-16">
       <div className="flex-[20%] h-auto py-2.5 flex justify-center items-center gap-2.5">
         <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
           About Properly
@@ -10,7 +10,7 @@ export const AboutComponent = () => {
       </div>
 
       <div className="w-full grid h-auto">
-        <div className="w-[852.89px]">
+        <div className="w-full">
           <span className="text-custom-2 text-2xl font-medium font-kyiv leading-[30px]">
             Properly
           </span>
@@ -20,6 +20,7 @@ export const AboutComponent = () => {
             communication and maintenance between property managers and tenants.
             It offers real-time updates, easy issue reporting, and seamless
             communication. <br />
+            <br />
             Our{" "}
           </span>
           <span className="text-custom-2 text-2xl font-medium font-kyiv leading-[30px]">

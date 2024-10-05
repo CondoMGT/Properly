@@ -52,7 +52,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased pt-6`}
       >
         <Navbar />
-        <div className="pb-32">{children}</div>
+        <div>{children}</div>
         <Footer />
       </body>
     </html>
