@@ -122,32 +122,6 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
             <div className="gap-4">
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="email"
-                        type="email"
-                        {...field}
-                        placeholder="jane@example.com"
-                        disabled={isSubmitting}
-                        className="placeholder:text-[#e0e0e0] placeholder:text-base py-4"
-                      />
-                    </FormControl>
-                    <FormDescription className="text-xs font-medium leading-none tracking-tight text-[#555555]">
-                      Property Managers get a 2-week free trial demo.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="gap-4">
-              <FormField
-                control={form.control}
                 name="userType"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
@@ -181,6 +155,33 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
                 )}
               />
             </div>
+
+            <div className="gap-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...field}
+                        placeholder="jane@example.com"
+                        disabled={isSubmitting}
+                        className="placeholder:text-[#e0e0e0] placeholder:text-base py-4"
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs font-medium leading-none tracking-tight text-[#555555]">
+                      Property Managers get a 2-week free trial demo.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <div className="flex justify-end">
               <Button
                 type="submit"
