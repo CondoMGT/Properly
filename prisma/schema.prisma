@@ -15,13 +15,84 @@ enum waitListType {
 
 model users {
   id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name     String @db.VarChar(255)
+  name     String
   email    String @unique
   password String
+
+  phone_number String?
+  image        String?
+
+  role UserRole @default(TENANT)
+
+  tenant          Tenant?
+  propertyManager PropertyManager?
+
+  // messages  Message[]
+  // notifications Notification[]
 }
 
 model waitlist {
   id       String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   email    String       @unique
   userType waitListType @default(Manager)
+}
+
+model Tenant {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  // propertyManagerId String @db.Uuid
+
+  userId String @unique @db.Uuid
+  user   users  @relation(fields: [userId], references: [id])
+
+  propertyId String   @unique @db.Uuid
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model Property {
+  id           String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  propertyName String?
+  address      String
+
+  propertyManagerId String          @db.Uuid
+  propertyManager   PropertyManager @relation(fields: [propertyManagerId], references: [id])
+
+  tenants Tenant[]
+}
+
+model PropertyManager {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  properties Property[]
+
+  userId String @unique @db.Uuid
+  user   users  @relation(fields: [userId], references: [id])
+}
+
+// model Message {
+//   id              String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+//   senderId        String
+//   receiverId      String
+//   content         String
+//   timestamp       DateTime @default(now())
+//   status          MessageStatus
+// }
+
+// model Notification {
+//   id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+//   userId    String
+//   messageId String
+//   isRead    Boolean  @default(false)
+//   createdAt DateTime @default(now())
+// }
+
+enum UserRole {
+  MANAGER
+  TENANT
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
 }
