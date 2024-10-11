@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Kumbh_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
@@ -55,12 +53,11 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased pt-6 max-[360px]:w-[114vw]`}
+          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased max-[360px]:w-[114vw]`}
         >
           <Toaster richColors />
-          <Navbar />
+
           {children}
-          <Footer />
         </body>
       </html>
     </SessionProvider>
