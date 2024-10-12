@@ -99,11 +99,18 @@ export const login = async (
   // }
 
   try {
-    await signIn("credentials", {
+    const redirectUrl =
+      existingUser.role === "TENANT" ? "/tenants" : "/managers";
+    const result = await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: callbackUrl || redirectUrl || DEFAULT_LOGIN_REDIRECT,
+      // redirect: false,
     });
+
+    if (!result) {
+      return { error: "Something went wrong!" };
+    }
 
     return { success: "You have successfully logged in." };
   } catch (error) {

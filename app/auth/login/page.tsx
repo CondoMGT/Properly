@@ -22,9 +22,12 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { useSession } from "next-auth/react";
 
 export default function SignIn() {
   const searchParams = useSearchParams();
+
+  const session = useSession();
 
   const callbackUrl = searchParams.get("callbackUrl");
 
@@ -36,7 +39,8 @@ export default function SignIn() {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     startTransition(async () => {
-      const data = await login(values, callbackUrl);
+      // const data = await login(values, callbackUrl);
+      const data = await login(values);
 
       try {
         if (data?.error) {
@@ -45,7 +49,8 @@ export default function SignIn() {
 
         if (data?.success) {
           form.reset();
-          window.location.href = callbackUrl || DEFAULT_LOGIN_REDIRECT;
+
+          session.update();
         }
       } catch {
         toast.error("Something went wrong!");

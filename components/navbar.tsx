@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
 import UserButton from "@/components/auth/user-button";
 import { useSession } from "next-auth/react";
@@ -19,6 +19,12 @@ const Navbar = () => {
   const handleMobileNavbar = () => {
     setIsOpen(false);
   };
+
+  // Effect to handle session updates (optional)
+  useEffect(() => {
+    // You can add any additional logic here if needed
+    session.update();
+  }, []);
 
   return (
     <div className="w-full max-w-[1312px] mx-auto h-[74px] px-7 py-3.5 bg-custom-3 rounded-[60px] flex flex-row justify-between items-center md:gap-8 lg:gap-4">

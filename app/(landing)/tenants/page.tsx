@@ -3,7 +3,7 @@ import React from "react";
 
 const TenantPage = () => {
   return (
-    <div className="min-h-screen container mx-auto pt-[23px] mb-8">
+    <div className="w-full h-screen max-w-[1312px] mx-auto pt-[23px] mb-8">
       <TenantDashboard />
     </div>
   );
