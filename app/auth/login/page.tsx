@@ -1,24 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Loader } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema } from "@/schemas";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { login } from "@/actions/auth/login";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export default function SignIn() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const searchParams = useSearchParams();
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
+  const callbackUrl = searchParams.get("callbackUrl");
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
+  });
+
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    startTransition(async () => {
+      const data = await login(values, callbackUrl);
+
+      try {
+        if (data?.error) {
+          toast.error(data?.error || "Something went wrong!");
+        }
+
+        if (data?.success) {
+          form.reset();
+          window.location.href = callbackUrl || DEFAULT_LOGIN_REDIRECT;
+        }
+      } catch {
+        toast.error("Something went wrong!");
+      }
+    });
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -84,38 +117,61 @@ export default function SignIn() {
               Enter your email below to sign in to your account
             </p>
           </div>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="grid gap-2">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            disabled={isPending}
+                            {...field}
+                            placeholder="name@example.com"
+                            id="email"
+                            autoCorrect="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            disabled={isPending}
+                            {...field}
+                            placeholder="Enter password"
+                            id="password"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button disabled={isPending} type="submit">
+                  {isPending && (
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Sign In
+                </Button>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  placeholder="Password"
-                  type="password"
-                  autoCapitalize="none"
-                  autoComplete="current-password"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                />
-              </div>
-              <Button disabled={isLoading}>
-                {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
-              </Button>
-            </div>
-          </form>
+            </form>
+          </Form>
           <div className="flex items-center justify-between">
             <Link
               href="/forgot-password"

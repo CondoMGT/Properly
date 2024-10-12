@@ -1,25 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { RegisterSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { register } from "@/actions/auth/register";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignUp() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
+  const [isPending, startTransition] = useTransition();
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }
+  const [showPassword, setShowPassword] = useState(false);
+
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
+  });
+
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    startTransition(async () => {
+      const data = await register(values);
+
+      try {
+        if (data?.success) {
+          form.reset();
+          router.push("/auth/login");
+        }
+      } catch {
+        toast.error("Something went wrong! Please try again.");
+      }
+    });
+  };
 
   return (
     <div className="bg-background flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -52,65 +80,123 @@ export default function SignUp() {
               Enter your details below to create your account
             </p>
           </div>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  type="text"
-                  autoCapitalize="words"
-                  autoComplete="name"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            disabled={isPending}
+                            {...field}
+                            placeholder="John Doe"
+                            id="name"
+                            autoCorrect="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            disabled={isPending}
+                            {...field}
+                            placeholder="name@example.com"
+                            id="email"
+                            autoCorrect="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center relative">
+                            <Input
+                              disabled={isPending}
+                              {...field}
+                              placeholder="Enter password"
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                            />
+                            {!showPassword ? (
+                              <Eye
+                                className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                              />
+                            ) : (
+                              <EyeOff
+                                className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                              />
+                            )}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="term"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            I agree to the{" "}
+                            <Link
+                              href="/terms"
+                              className="text-primary underline hover:text-primary/90"
+                            >
+                              terms and conditions
+                            </Link>
+                          </FormLabel>
+                        </div>
+                        {/* <FormMessage /> */}
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button disabled={isPending} type="submit">
+                  {isPending && (
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Sign Up
+                </Button>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  placeholder="Create a password"
-                  type="password"
-                  autoCapitalize="none"
-                  autoComplete="new-password"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <label
-                  htmlFor="terms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  I agree to the{" "}
-                  <Link
-                    href="/terms"
-                    className="text-primary underline hover:text-primary/90"
-                  >
-                    terms and conditions
-                  </Link>
-                </label>
-              </div>
-              <Button disabled={isLoading}>
-                {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                Sign Up
-              </Button>
-            </div>
-          </form>
+            </form>
+          </Form>
           <p className="px-8 text-center text-sm text-muted-foreground">
             By clicking continue, you agree to our{" "}
             <Link

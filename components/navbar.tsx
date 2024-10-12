@@ -4,9 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
+import UserButton from "@/components/auth/user-button";
+import { useSession } from "next-auth/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import LoginButton from "@/components/auth/login-button";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const session = useSession();
 
   const handleMobileNavbar = () => {
     setIsOpen(false);
@@ -56,6 +64,23 @@ const Navbar = () => {
 
         {/* BUTTONS */}
         <WaitingListForm inNav />
+
+        {session.status === "authenticated" ? (
+          <div className="flex items-center justify-center gap-2">
+            <UserButton />
+          </div>
+        ) : session.status === "loading" ? (
+          <Skeleton className="py-4 w-32 bg-slate-500" />
+        ) : (
+          <LoginButton>
+            <Button
+              size="sm"
+              className="text-xl font-semibold hover:font-bold hover:text-white hover:bg-blue-700 py-4"
+            >
+              <LogIn className="w-4 h-4 mr-2" /> Login
+            </Button>
+          </LoginButton>
+        )}
       </div>
       {/* MENU FOR MOBILE */}
       <div
