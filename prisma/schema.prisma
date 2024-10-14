@@ -27,7 +27,8 @@ model users {
   tenant          Tenant?
   propertyManager PropertyManager?
 
-  // messages  Message[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
   // notifications Notification[]
 }
 
@@ -69,14 +70,21 @@ model PropertyManager {
   user   users  @relation(fields: [userId], references: [id])
 }
 
-// model Message {
-//   id              String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-//   senderId        String
-//   receiverId      String
-//   content         String
-//   timestamp       DateTime @default(now())
-//   status          MessageStatus
-// }
+model Message {
+  id         String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  senderId   String        @db.Uuid
+  receiverId String        @db.Uuid
+  content    String
+  timestamp  DateTime      @default(now())
+  status     MessageStatus
+  isStarred  Boolean       @default(false)
+
+  readBySender   Boolean @default(true) // Tracks if sender has read
+  readByReceiver Boolean @default(false) // Tracks if receiver has read
+
+  sender   users @relation("SentMessages", fields: [senderId], references: [id])
+  receiver users @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
 
 // model Notification {
 //   id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,12 +17,23 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SendHorizontal, Paperclip, Star, Archive } from "lucide-react";
-import { getUserById } from "@/data/user";
-import { useSession } from "next-auth/react";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { getTenantsForManager } from "@/data/manager";
+import { Message, MessageStatus } from "@prisma/client";
+import { toast } from "sonner";
+import { sendMessage } from "@/actions/message";
+import { getTenantMessagesWithManager } from "@/data/tenant";
+
+interface AllUser {
+  id: string;
+  name: string;
+  avatar: string | null;
+  unread: number;
+}
 
 // Mock data for tenants
-const tenants = [
+const tenants: AllUser[] = [
   {
     id: "1",
     name: "Alice Johnson",
@@ -43,59 +54,122 @@ const tenants = [
   },
 ];
 
-interface Message {
-  id: string;
+interface MessageSent {
+  id?: string;
   senderId: string;
   receiverId: string;
   content: string;
-  timestamp: string;
-  status: "sent" | "delivered" | "read";
-  isStarred: boolean;
+  timestamp: string | Date;
+  status: MessageStatus;
+  isStarred?: boolean;
+  readBySender?: boolean;
+  readByReceiver?: boolean;
 }
 
 export default function PropertyMessagingSystem() {
   const [selectedTenant, setSelectedTenant] = useState(tenants[0]);
-  const [messages, setMessages] = useState<Record<string, Message[]>>({});
+  const [allTenant, setAllTenant] = useState<AllUser[]>([]);
+  const [messages, setMessages] = useState<Record<string, MessageSent[]>>({});
   const [newMessage, setNewMessage] = useState("");
   const [attachmentDialogOpen, setAttachmentDialogOpen] = useState(false);
   const [managerId, setManagerId] = useState(
     "4e07b848-25d8-4757-94f1-8a2f41529a6d"
   );
   const user = useCurrentUser();
+
+  const [isPending, startTransition] = useTransition();
   // console.log(user);
   const currentUserId = "4e07b848-25d8-4757-94f1-8a2f41529a6d"; // This should be set dynamically based on the logged-in user
 
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
   const handleSendMessage = () => {
-    const messageData = {
-      senderId: currentUserId,
+    const messageData: MessageSent = {
+      senderId: user?.id as string,
       receiverId: selectedTenant.id,
       content: newMessage,
+      status: "SENT",
+      timestamp: new Date().toISOString(),
     };
+
+    setMessages((prev) => {
+      const currentMessages = prev[selectedTenant.id] || [];
+      return {
+        ...prev,
+        [selectedTenant.id]: [...currentMessages, messageData], // Append new message
+      };
+    });
+
+    startTransition(async () => {
+      const data = await sendMessage(messageData);
+
+      try {
+        if (data?.error) {
+          toast.error(data?.error || "Something went wrong!");
+        }
+
+        if (data?.success) {
+          // form.reset();
+          // session.update();
+        }
+      } catch {
+        toast.error("Something went wrong!");
+      }
+    });
 
     setNewMessage("");
   };
 
-  const handleStarMessage = (messageId: string) => {
-    setMessages((prevMessages) => {
-      const updatedMessages = { ...prevMessages };
-      updatedMessages[selectedTenant.id] = updatedMessages[
-        selectedTenant.id
-      ].map((msg) =>
-        msg.id === messageId ? { ...msg, isStarred: !msg.isStarred } : msg
-      );
-      return updatedMessages;
-    });
-  };
+  // const handleStarMessage = (messageId: string) => {
+  //   setMessages((prevMessages) => {
+  //     const updatedMessages = { ...prevMessages };
+  //     updatedMessages[selectedTenant.id] = updatedMessages[
+  //       selectedTenant.id
+  //     ].map((msg) =>
+  //       msg.id === messageId ? { ...msg, isStarred: !msg.isStarred } : msg
+  //     );
+  //     return updatedMessages;
+  //   });
+  // };
 
   useEffect(() => {
     const tt = async () => {
-      const res = await getUserById(managerId);
+      const res = await getTenantsForManager(currentUserId);
 
-      console.log("MANAGER INFO", res);
+      if (res) {
+        setAllTenant(res.map((r) => r.user));
+      }
     };
 
     tt();
-  }, [user]);
+  }, [managerId]);
+
+  useEffect(() => {
+    const tt = async () => {
+      const d = await getTenantMessagesWithManager(
+        selectedTenant?.id as string
+      );
+
+      console.log("FROM DATABASE", d);
+      setMessages((prev) => {
+        const messagesToAdd = Array.isArray(d) ? d : [];
+        return {
+          ...prev,
+          [selectedTenant.id]: messagesToAdd, // Append new message
+        };
+      });
+    };
+
+    if (selectedTenant) {
+      tt();
+    }
+  }, [selectedTenant]);
 
   const handleArchiveConversation = (tenantId: string) => {
     // In a real application, this would move the conversation to an archived state
@@ -111,7 +185,7 @@ export default function PropertyMessagingSystem() {
         <div className="w-1/3 border-r pr-4">
           <h3 className="text-lg font-semibold mb-4">Tenants</h3>
           <ScrollArea className="h-[520px]">
-            {tenants.map((tenant) => (
+            {/* {tenants.map((tenant) => (
               <Button
                 key={tenant.id}
                 variant={
@@ -121,7 +195,35 @@ export default function PropertyMessagingSystem() {
                 onClick={() => setSelectedTenant(tenant)}
               >
                 <Avatar className="h-8 w-8 mr-2">
-                  <AvatarImage src={tenant.avatar} alt={tenant.name} />
+                  <AvatarImage
+                    src={tenant.avatar as string}
+                    alt={tenant.name}
+                  />
+                  <AvatarFallback>{tenant.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <span className="flex-grow text-left">{tenant.name}</span>
+                {tenant.unread > 0 && (
+                  <Badge variant="destructive" className="absolute right-2">
+                    {tenant.unread}
+                  </Badge>
+                )}
+              </Button>
+            ))} */}
+
+            {allTenant.map((tenant) => (
+              <Button
+                key={tenant.id}
+                variant={
+                  selectedTenant.id === tenant.id ? "secondary" : "ghost"
+                }
+                className="w-full justify-start mb-2 relative"
+                onClick={() => setSelectedTenant(tenant)}
+              >
+                <Avatar className="h-8 w-8 mr-2">
+                  <AvatarImage
+                    src={tenant.avatar as string}
+                    alt={tenant.name}
+                  />
                   <AvatarFallback>{tenant.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <span className="flex-grow text-left">{tenant.name}</span>
@@ -149,9 +251,9 @@ export default function PropertyMessagingSystem() {
             </Button>
           </div>
           <ScrollArea className="flex-grow mb-4">
-            {messages[selectedTenant.id]?.map((message) => (
+            {messages[selectedTenant.id]?.map((message, index) => (
               <div
-                key={message.id}
+                key={`${selectedTenant.id}-${index}`}
                 className={`mb-4 ${
                   message.senderId === currentUserId
                     ? "text-right"
@@ -163,7 +265,7 @@ export default function PropertyMessagingSystem() {
                     variant="ghost"
                     size="sm"
                     className="h-4 w-4 p-0"
-                    onClick={() => handleStarMessage(message.id)}
+                    // onClick={() => handleStarMessage(message.id)}
                   >
                     <Star
                       className={`h-4 w-4 ${
@@ -184,10 +286,15 @@ export default function PropertyMessagingSystem() {
                   {message.content}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {message.timestamp} • {message.status}
+                  {new Date(message.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  • {message.status.toLowerCase()}
                 </div>
               </div>
             ))}
+            <div ref={bottomRef} />
           </ScrollArea>
           <div className="flex items-center">
             <Input

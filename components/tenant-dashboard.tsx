@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,14 @@ import {
   DollarSign,
   Hammer,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { getTenantMessagesWithManager } from "@/data/tenant";
+import { Message, MessageStatus } from "@prisma/client";
+import { toast } from "sonner";
+import { sendMessage } from "@/actions/message";
+import { getManagerId } from "@/data/manager";
+import { randomUUID } from "crypto";
 
 // Mock data for the tenant
 const tenant = {
@@ -39,6 +47,15 @@ const tenant = {
   rentDue: "05/01/2023",
   rentAmount: 1200,
 };
+
+interface MessageSentType {
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: Date;
+  status: MessageStatus;
+  isStarred?: boolean;
+}
 
 const initialMessages = [
   {
@@ -62,40 +79,96 @@ const initialMessages = [
 ];
 
 export default function TenantDashboard() {
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [attachmentDialogOpen, setAttachmentDialogOpen] = useState(false);
+  const [managerId, setManagerId] = useState<string | null>(null);
 
-  const handleSendMessage = () => {
+  const [isPending, startTransition] = useTransition();
+
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  const user = useCurrentUser();
+
+  useEffect(() => {
+    const tt = async () => {
+      const id = await getManagerId(user?.id as string);
+
+      setManagerId(id as string);
+    };
+
+    if (user?.id) {
+      tt();
+    }
+  }, [user]);
+
+  const handleSendMessage = async () => {
     if (newMessage.trim() === "") return;
+
+    const messageData: MessageSentType = {
+      senderId: user?.id as string,
+      receiverId: managerId as string,
+      content: newMessage,
+      status: "SENT",
+      timestamp: new Date(),
+    };
 
     const updatedMessages = [
       ...messages,
       {
-        id: messages.length + 1,
-        sender: "tenant",
-        content: newMessage,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        status: "sent",
+        ...messageData,
+        id: (messages.length + 1).toString(),
         isStarred: false,
+        readBySender: true,
+        readByReceiver: false,
       },
     ];
 
-    setMessages(updatedMessages);
-    setNewMessage("");
+    startTransition(async () => {
+      const data = await sendMessage(messageData);
+
+      try {
+        if (data?.error) {
+          toast.error(data?.error || "Something went wrong!");
+        }
+
+        if (data?.success) {
+          // form.reset();
+          // session.update();
+          setMessages(updatedMessages);
+          setNewMessage("");
+        }
+      } catch {
+        toast.error("Something went wrong!");
+      }
+    });
   };
 
   console.log(messages);
 
-  const handleStarMessage = (messageId: number) => {
-    const updatedMessages = messages.map((msg) =>
-      msg.id === messageId ? { ...msg, isStarred: !msg.isStarred } : msg
-    );
-    setMessages(updatedMessages);
-  };
+  // const handleStarMessage = (messageId: number) => {
+  //   const updatedMessages = messages.map((msg) =>
+  //     msg.id === messageId ? { ...msg, isStarred: !msg.isStarred } : msg
+  //   );
+  //   setMessages(updatedMessages);
+  // };
+
+  useEffect(() => {
+    const tt = async () => {
+      const d = await getTenantMessagesWithManager(user?.id as string);
+
+      console.log("FROM DATABASE", d);
+      setMessages(d as Message[]);
+    };
+
+    tt();
+  }, []);
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -161,7 +234,9 @@ export default function TenantDashboard() {
                     <div
                       key={message.id}
                       className={`mb-4 ${
-                        message.sender === "tenant" ? "text-right" : "text-left"
+                        message.senderId === user?.id
+                          ? "text-right"
+                          : "text-left"
                       }`}
                     >
                       <div className="flex items-center justify-end mb-1">
@@ -169,7 +244,7 @@ export default function TenantDashboard() {
                           variant="ghost"
                           size="sm"
                           className="h-4 w-4 p-0"
-                          onClick={() => handleStarMessage(message.id)}
+                          // onClick={() => handleStarMessage(message.id)}
                         >
                           <Star
                             className={`h-4 w-4 ${
@@ -182,7 +257,7 @@ export default function TenantDashboard() {
                       </div>
                       <div
                         className={`inline-block p-2 rounded-lg ${
-                          message.sender === "tenant"
+                          message.senderId === user?.id
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary"
                         }`}
@@ -190,15 +265,22 @@ export default function TenantDashboard() {
                         {message.content}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {message.timestamp} • {message.status}
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        • {message.status.toLowerCase()}
                       </div>
                     </div>
                   ))}
+
+                  <div ref={bottomRef} />
                 </ScrollArea>
                 <div className="flex items-center">
                   <Input
                     placeholder="Type your message..."
                     value={newMessage}
+                    disabled={isPending}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                     className="flex-grow mr-2"
