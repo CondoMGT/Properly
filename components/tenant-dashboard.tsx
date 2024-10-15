@@ -28,6 +28,10 @@ import {
   Home,
   DollarSign,
   Hammer,
+  Check,
+  CheckCheck,
+  Bird,
+  Eye,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -37,6 +41,7 @@ import { toast } from "sonner";
 import { sendMessage } from "@/actions/message";
 import { getManagerId } from "@/data/manager";
 import { randomUUID } from "crypto";
+import { pusherClient } from "@/lib/pusher";
 
 // Mock data for the tenant
 const tenant = {
@@ -84,17 +89,79 @@ export default function TenantDashboard() {
   const [attachmentDialogOpen, setAttachmentDialogOpen] = useState(false);
   const [managerId, setManagerId] = useState<string | null>(null);
 
+  const [members, setMembers] = useState<{
+    [id: string]: { name: string; email: string };
+  }>({});
+
   const [isPending, startTransition] = useTransition();
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    // bottomRef.current?.scrollIntoView({
+    //   behavior: "smooth",
+    // });
+
+    if (scrollAreaRef.current && bottomRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
   }, [messages]);
 
   const user = useCurrentUser();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = pusherClient.subscribe(`presence-channel-${managerId}`);
+
+    channel.bind("pusher:subscription_succeeded", (members: any) => {
+      setMembers(members.members);
+    });
+
+    channel.bind("user-logged-in", (data: any) => {
+      console.log("Online users", data);
+    });
+
+    // console.log("channel", channel);
+
+    return () => {
+      channel.unbind_all();
+      pusherClient.unsubscribe(`presence-channel-${managerId}`);
+    };
+  }, [user, managerId]);
+
+  // console.log("members", members);
+
+  useEffect(() => {
+    const tt = async () => {
+      const d = await getTenantMessagesWithManager(user?.id as string);
+
+      setMessages(d as Message[]);
+    };
+
+    tt();
+
+    pusherClient.subscribe("chat-app");
+
+    pusherClient.bind("new-message", (data: Message) => {
+      setMessages((prev) => [...prev, data]);
+    });
+
+    return () => {
+      pusherClient.unsubscribe("chat-app");
+    };
+  }, []);
+
+  // Filter Messages to remove duplicate
+  const filteredMessages = messages.filter(
+    (m, index, self) => self.indexOf(m) === index
+  );
 
   useEffect(() => {
     const tt = async () => {
@@ -119,17 +186,6 @@ export default function TenantDashboard() {
       timestamp: new Date(),
     };
 
-    const updatedMessages = [
-      ...messages,
-      {
-        ...messageData,
-        id: (messages.length + 1).toString(),
-        isStarred: false,
-        readBySender: true,
-        readByReceiver: false,
-      },
-    ];
-
     startTransition(async () => {
       const data = await sendMessage(messageData);
 
@@ -139,9 +195,6 @@ export default function TenantDashboard() {
         }
 
         if (data?.success) {
-          // form.reset();
-          // session.update();
-          setMessages(updatedMessages);
           setNewMessage("");
         }
       } catch {
@@ -150,25 +203,12 @@ export default function TenantDashboard() {
     });
   };
 
-  console.log(messages);
-
   // const handleStarMessage = (messageId: number) => {
   //   const updatedMessages = messages.map((msg) =>
   //     msg.id === messageId ? { ...msg, isStarred: !msg.isStarred } : msg
   //   );
   //   setMessages(updatedMessages);
   // };
-
-  useEffect(() => {
-    const tt = async () => {
-      const d = await getTenantMessagesWithManager(user?.id as string);
-
-      console.log("FROM DATABASE", d);
-      setMessages(d as Message[]);
-    };
-
-    tt();
-  }, []);
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -229,8 +269,8 @@ export default function TenantDashboard() {
               </CardHeader>
 
               <CardContent>
-                <ScrollArea className="h-[300px] mb-4">
-                  {messages.map((message) => (
+                <ScrollArea className="h-[300px] mb-4 px-4" ref={scrollAreaRef}>
+                  {filteredMessages.map((message) => (
                     <div
                       key={message.id}
                       className={`mb-4 ${
@@ -264,12 +304,23 @@ export default function TenantDashboard() {
                       >
                         {message.content}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {message.timestamp.toLocaleTimeString([], {
+                      <div
+                        className={`text-xs text-muted-foreground mt-1 flex items-center gap-1${
+                          message.senderId === user?.id ? " justify-end" : ""
+                        }`}
+                      >
+                        {new Date(message.timestamp).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}{" "}
-                        • {message.status.toLowerCase()}
+                        •{" "}
+                        {message.status === "SENT" ? (
+                          <Check className="w-3 h-3" />
+                        ) : message.status === "DELIVERED" ? (
+                          <CheckCheck className="w-3 h-3" />
+                        ) : (
+                          <Eye className="w-3 h-3" />
+                        )}
                       </div>
                     </div>
                   ))}

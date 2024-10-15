@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/client";
+import { pusherServer } from "@/lib/pusher";
 import { MessageStatus } from "@prisma/client";
 
 interface Message {
@@ -36,12 +37,14 @@ export const sendMessage = async (values: Message) => {
     //     return { error: "Email already in use." };
     //   }
 
-    await prisma.message.create({
+    const data = await prisma.message.create({
       data: {
         ...values,
         timestamp: new Date(values.timestamp),
       },
     });
+
+    pusherServer.trigger("chat-app", "new-message", data);
 
     return { success: "Message sent!" };
   } catch (error) {

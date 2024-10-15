@@ -3,26 +3,8 @@
 import { prisma } from "@/lib/client";
 import { getManagerId } from "./manager";
 
-export const getTenantMessagesWithManager = async (
-  userId: string
-  // managerId: string
-) => {
+export const getTenantMessagesWithManager = async (userId: string) => {
   try {
-    // const manager = await prisma.tenant.findFirst({
-    //   where: { userId },
-    //   select: {
-    //     property: {
-    //       select: {
-    //         propertyManager: {
-    //           select: {
-    //             userId: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
     const managerId = await getManagerId(userId);
 
     if (managerId) {
@@ -33,7 +15,6 @@ export const getTenantMessagesWithManager = async (
               senderId: userId,
             },
             {
-              // senderId: manager?.property.propertyManager.userId,
               senderId: managerId as string,
             },
             {
@@ -44,21 +25,6 @@ export const getTenantMessagesWithManager = async (
             },
           ],
         },
-        // select: {
-        //   property: {
-        //     select: {
-        //       address: true,
-        //     },
-        //   },
-        //   user: {
-        //     select: {
-        //       id: true,
-        //       name: true,
-        //       image: true,
-        //       receivedMessages: true,
-        //     },
-        //   },
-        // },
       });
 
       return messages;

@@ -5,6 +5,7 @@ import { signIn } from "@/auth";
 // import { getTwofactorTokenByEmail } from "@/data/two-factor-token";
 import { getUserByEmail } from "@/data/user";
 import { prisma } from "@/lib/client";
+import { pusherServer } from "@/lib/pusher";
 // import { sendVerificationEmail, sendTwofactorTokenEmail } from "@/lib/mail";
 // import {
 //   generateVerificationToken,
@@ -111,6 +112,15 @@ export const login = async (
     if (!result) {
       return { error: "Something went wrong!" };
     }
+
+    // Trigger presence channel addition
+    await pusherServer.trigger(
+      `presence-channel-${existingUser.id}`,
+      "user-logged-in",
+      {
+        userId: existingUser.id,
+      }
+    );
 
     return { success: "You have successfully logged in." };
   } catch (error) {
