@@ -25,9 +25,43 @@ export const getTenantMessagesWithManager = async (userId: string) => {
             },
           ],
         },
+        include: {
+          attachmentMessage: {
+            select: {
+              id: true,
+              attachments: true,
+            },
+          },
+        },
       });
 
-      return messages;
+      const formattedMessages = messages.map(
+        ({
+          id,
+          senderId,
+          receiverId,
+          content,
+          timestamp,
+          status,
+          isStarred,
+          readByReceiver,
+          readBySender,
+          attachmentMessage,
+        }) => ({
+          id,
+          senderId,
+          receiverId,
+          content,
+          timestamp,
+          status,
+          isStarred,
+          readByReceiver,
+          readBySender,
+          attachments: attachmentMessage,
+        })
+      );
+
+      return formattedMessages;
     } else {
       return null;
     }

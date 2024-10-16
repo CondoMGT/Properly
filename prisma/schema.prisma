@@ -84,6 +84,16 @@ model Message {
 
   sender   users @relation("SentMessages", fields: [senderId], references: [id])
   receiver users @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  attachments       String?     @unique @db.Uuid
+  attachmentMessage Attachment? @relation("messageAttachment", fields: [attachments], references: [id])
+}
+
+model Attachment {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  attachments String[]
+
+  messageAttachments Message? @relation("messageAttachment")
 }
 
 // model Notification {

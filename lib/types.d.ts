@@ -1,41 +1,84 @@
 // types.ts
 
-export enum UserRole {
-  MANAGER = "MANAGER",
-  TENANT = "TENANT",
-}
-
-export enum MessageStatus {
-  SENT = "SENT",
-  DELIVERED = "DELIVERED",
-  READ = "READ",
-}
-
-export interface User {
-  id: number;
+export interface AllUser {
+  id: string;
   name: string;
-  email: string;
-  role: UserRole;
+  avatar: string | null;
+  unread: number;
 }
 
-export interface Tenant {
-  id: number;
-  propertyManagerId: number;
-}
-
-export interface Message {
-  id: number;
-  senderId: number;
-  receiverId: number;
+export interface MessageSent {
+  id: string;
+  senderId: string;
+  receiverId: string;
   content: string;
   timestamp: Date;
   status: MessageStatus;
+  isStarred: boolean;
+  readBySender: boolean;
+  readByReceiver: boolean;
+  attachments?: Attachment[];
 }
 
-export interface Notification {
-  id: number;
-  userId: number;
-  messageId: number;
-  isRead: boolean;
-  createdAt: Date;
+export interface MessageReceived {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: Date;
+  status: MessageStatus;
+  isStarred: boolean;
+  readBySender: boolean;
+  readByReceiver: boolean;
+  attachments: { id: string; attachments: string[] } | null;
+}
+
+export interface UserLoggedInEvent {
+  userId: string;
+}
+
+export interface Attachment {
+  id: string;
+  type: "file" | "image" | "link";
+  url: string;
+  name: string;
+  preview?: string;
+}
+
+export interface MessageAttachment {
+  type: string;
+  url: string;
+  name: string;
+}
+
+export interface CloudAttachment {
+  id: string;
+  type: string;
+  name: string;
+  buffer: Uint8Array<ArrayBuffer>;
+}
+
+export interface MessageGroup {
+  date: string;
+  messages: MessageReceived[];
+}
+
+export interface CloudAttachment {
+  id: string;
+  // name: File;
+  name: string;
+  type: string;
+  buffer: Uint8Array<ArrayBuffer>;
+}
+export interface MessageServer {
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: string | Date;
+  status: MessageStatus;
+  attachments?: CloudAttachment[];
+}
+
+export interface CloudinaryUploadResult {
+  secure_url: string;
 }
