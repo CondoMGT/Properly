@@ -18,11 +18,11 @@ export const sendMessage = async (values: MessageServer) => {
   try {
     // Check body size
     const bodySize = JSON.stringify(values).length;
-    console.log("BODY SIZE", bodySize);
+
     if (bodySize > MAX_BODY_SIZE) {
       return {
         error:
-          "Message size exceeds 2MB limit. Please reduce the size of your message or attachments.",
+          "Message size exceeds 7MB limit. Please reduce the size of your message or attachments.",
       };
     }
 
