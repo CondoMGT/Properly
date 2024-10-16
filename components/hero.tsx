@@ -4,7 +4,7 @@ import { FeaturesComp } from "@/components/landing-page/features";
 import { Hero } from "@/components/landing-page/hero";
 import { HowComp } from "@/components/landing-page/how";
 import { JoinComp } from "@/components/landing-page/join";
-import { PricingComp } from "@/components/landing-page/pricing";
+// import { PricingComp } from "@/components/landing-page/pricing";
 import { WhyComp } from "@/components/landing-page/why";
 
 const heroPageComponents = [
@@ -13,7 +13,7 @@ const heroPageComponents = [
   WhyComp,
   HowComp,
   FeaturesComp,
-  PricingComp,
+  // PricingComp,
   JoinComp,
   FaqComp,
 ];
