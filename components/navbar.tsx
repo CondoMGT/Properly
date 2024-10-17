@@ -36,30 +36,18 @@ const Navbar = () => {
 
       <div className="hidden flex-[50%] md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
         <div className="flex items-center space-x-4 md:space-x-8">
-          {pathName === "/" && (
-            <>
-              <Link
-                href="#why-properly"
-                className="text-lg font-medium font-kumbh text-center"
-              >
-                Why Properly
-              </Link>
-              <Link
-                href="#about-properly"
-                className="text-lg font-medium font-kumbh text-center"
-              >
-                About Properly
-              </Link>
-            </>
-          )}
-          {pathName === "/pricing" && (
-            <Link
-              href="/"
-              className="text-lg font-medium font-kumbh text-center"
-            >
-              Home
-            </Link>
-          )}
+          <Link
+            href="/#about-properly"
+            className="text-lg font-medium font-kumbh text-center"
+          >
+            About Properly
+          </Link>
+          <Link
+            href="/#why-properly"
+            className="text-lg font-medium font-kumbh text-center"
+          >
+            Why Properly
+          </Link>
           <Link
             href="/pricing"
             className="text-lg font-medium font-kumbh text-center"
@@ -104,33 +92,22 @@ const Navbar = () => {
             />
             Properly
           </Link>
-          {pathName === "/" && (
-            <>
-              <Link
-                href="#why-properly"
-                className="text-lg font-medium font-kumbh"
-                onClick={handleMobileNavbar}
-              >
-                Why Properly
-              </Link>
-              <Link
-                href="#about-properly"
-                className="text-lg font-medium font-kumbh"
-                onClick={handleMobileNavbar}
-              >
-                About Properly
-              </Link>
-            </>
-          )}
-          {pathName === "/pricing" && (
-            <Link
-              href="/"
-              className="text-lg font-medium font-kumbh"
-              onClick={handleMobileNavbar}
-            >
-              Home
-            </Link>
-          )}
+          <Link
+            href="#about-properly"
+            className="text-lg font-medium font-kumbh"
+            onClick={handleMobileNavbar}
+          >
+            About Properly
+          </Link>
+
+          <Link
+            href="#why-properly"
+            className="text-lg font-medium font-kumbh"
+            onClick={handleMobileNavbar}
+          >
+            Why Properly
+          </Link>
+
           <Link
             href="/pricing"
             className="text-lg font-medium font-kumbh"

@@ -11,10 +11,10 @@ export const JoinComp = () => {
         <div className="text-black text-5xl font-medium font-kyiv leading-[56px]">
           Transform Your Property Management Today!
         </div>
-        <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight text-left">
+        {/* <div className="text-black text-xl font-normal font-kumbh leading-[34px] tracking-tight text-left">
           Start your FREE 2-week trial and see how Properly can revolutionize
           your processes.
-        </div>
+        </div> */}
         <div className="w-full flex">
           <WaitingListForm />
         </div>
