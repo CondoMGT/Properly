@@ -22,6 +22,7 @@ import {
 import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ProperlyLogo } from "@/components/logo/logo";
 
 export default function SignUp() {
   const router = useRouter();
@@ -60,19 +61,7 @@ export default function SignUp() {
       <div className="lg:p-8 w-full">
         <div className="mx-auto flex flex-col justify-center space-y-6 w-[350px] px-4 sm:px-0">
           <div className="flex flex-col space-y-2 text-center">
-            <Link
-              href="/"
-              className="text-custom-1 text-2xl font-medium font-kyiv flex items-center justify-center"
-            >
-              <Image
-                src="/logo.svg"
-                alt="Properly"
-                width={28}
-                height={28}
-                className="w-7 h-7"
-              />
-              Properly
-            </Link>
+            <ProperlyLogo />
             <h1 className="text-2xl font-semibold tracking-tight">
               Create an account
             </h1>
@@ -229,7 +218,7 @@ export default function SignUp() {
         <div className="relative z-20 flex items-center justify-center w-[90%] text-lg font-medium">
           <Link
             href="/"
-            className="text-custom-1 text-3xl font-medium font-kyiv flex items-center"
+            className="text-custom-1 text-3xl font-bold font-kyiv flex items-center"
           >
             <Image
               src="/logo.svg"

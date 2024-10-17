@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useSession } from "next-auth/react";
+import { ProperlyLogo } from "@/components/logo/logo";
 
 export default function SignIn() {
   const searchParams = useSearchParams();
@@ -65,7 +66,7 @@ export default function SignIn() {
         <div className="relative z-20 flex items-center justify-center w-[90%] text-lg font-medium">
           <Link
             href="/"
-            className="text-custom-1 text-3xl font-medium font-kyiv flex items-center"
+            className="text-custom-1 text-3xl font-bold font-kyiv flex items-center"
           >
             <Image
               src="/logo.svg"
@@ -102,19 +103,7 @@ export default function SignIn() {
       <div className="lg:p-8 w-full">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px] px-4 sm:px-0">
           <div className="flex flex-col space-y-2 text-center">
-            <Link
-              href="/"
-              className="text-custom-1 text-2xl font-medium font-kyiv flex items-center justify-center"
-            >
-              <Image
-                src="/logo.svg"
-                alt="Properly"
-                width={28}
-                height={28}
-                className="w-7 h-7"
-              />
-              Properly
-            </Link>
+            <ProperlyLogo />
             <h1 className="text-2xl font-semibold tracking-tight">
               Sign in to your account
             </h1>
@@ -179,7 +168,7 @@ export default function SignIn() {
           </Form>
           <div className="flex items-center justify-between">
             <Link
-              href="/forgot-password"
+              href="/auth/reset-password"
               className="text-sm text-primary hover:underline"
             >
               Forgot password?
