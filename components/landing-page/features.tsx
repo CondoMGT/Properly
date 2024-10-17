@@ -46,7 +46,7 @@ export const FeaturesComp = () => {
       {/* <div className="w-full max-w-[1262px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 mt-6"> */}
       <div className="w-full max-w-[1262px] mx-auto flex flex-col mt-6 gap-8">
         {features.map((feature, index) => (
-          <div key={index} className="w-full flex items-start gap-4">
+          <div key={index} className="w-full flex items-start gap-2 md:gap-4">
             <div
               className={`p-2 ${
                 (index + 1) % 2 === 0 ? "bg-custom-2" : "bg-custom-1"
@@ -55,7 +55,7 @@ export const FeaturesComp = () => {
               <Check className="w-6 h-6 text-white" />
             </div>
 
-            <div className="grid grid-cols-2 md:flex gap-4 w-full">
+            <div className="grid grid-cols-2 md:flex gap-6 md:gap-4 w-full">
               <div className="flex-[30%] text-black text-xl font-medium font-kyiv leading-7">
                 {feature.title}
               </div>

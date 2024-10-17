@@ -54,7 +54,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} ${openSans.variable}  antialiased pt-6 max-[360px]:w-[114vw]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} ${openSans.variable} antialiased pt-6 w-screen`}
       >
         <Navbar />
         {children}
