@@ -85,8 +85,8 @@ export default function CareerPage() {
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-4">No Current Openings</h2>
           <p className="mb-8">
-            We don't have any open positions right now, but we're always on the
-            lookout for talent.
+            We don&apos;t have any open positions right now, but we&apos;re
+            always on the lookout for talent.
           </p>
           <Card className="w-[70%] mx-auto">
             <CardHeader>

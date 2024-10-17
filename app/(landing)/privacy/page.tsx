@@ -6,9 +6,9 @@ export default function PrivacyPolicyPage() {
       <div className="prose max-w-3xl mx-auto">
         <h2>1. Introduction</h2>
         <p>
-          This Privacy Policy describes how <em>Properly</em> ("we", "our" or
-          "us") collects, uses, and shares your personal information when you
-          use our services...
+          This Privacy Policy describes how <em>Properly</em> (&quot;we&quot;,
+          &quot;our&quot; or &quot;us&quot;) collects, uses, and shares your
+          personal information when you use our services...
         </p>
 
         <h2>2. Information We Collect</h2>

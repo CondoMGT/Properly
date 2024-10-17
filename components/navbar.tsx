@@ -4,11 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
-import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const pathName = usePathname();
 
   const handleMobileNavbar = () => {
     setIsOpen(false);

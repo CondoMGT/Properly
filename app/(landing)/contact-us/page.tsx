@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -82,7 +81,7 @@ export default function ContactUsPage() {
                     <Input type="email" placeholder="Your email" {...field} />
                   </FormControl>
                   <FormDescription>
-                    We'll never share your email with anyone else.
+                    We&apos;ll never share your email with anyone else.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
