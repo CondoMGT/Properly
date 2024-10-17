@@ -19,7 +19,7 @@ const Navbar = () => {
 
         <Link
           href="/"
-          className="text-custom-1 text-2xl font-medium font-kyiv flex items-center"
+          className="text-custom-1 text-2xl font-bold font-kyiv flex items-center"
         >
           <Image
             src="/logo.svg"

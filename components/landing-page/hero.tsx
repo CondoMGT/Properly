@@ -8,7 +8,7 @@ export const Hero = () => {
   return (
     <div className="w-full max-w-[1272px] mx-auto pt-[23px] flex flex-col-reverse lg:flex-row-reverse items-stretch gap-4 px-4">
       <div className="w-full lg:w-1/2 py-[43px] max-[560px]:pr-6 flex flex-col justify-center gap-[30px]">
-        <div className="font-kyiv text-black text-6xl font-medium leading-[72px]">
+        <div className="font-kyiv text-black text-6xl font-semibold leading-[72px]">
           Property Management, Done Properly
         </div>
 
