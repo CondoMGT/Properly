@@ -2,29 +2,29 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
-import UserButton from "@/components/auth/user-button";
+// import UserButton from "@/components/auth/user-button";
 import { useSession } from "next-auth/react";
-import { Skeleton } from "@/components/ui/skeleton";
-import LoginButton from "@/components/auth/login-button";
-import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react";
+// import { Skeleton } from "@/components/ui/skeleton";
+// import LoginButton from "@/components/auth/login-button";
+// import { Button } from "@/components/ui/button";
+// import { LogIn } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const session = useSession();
+  // const session = useSession();
 
   const handleMobileNavbar = () => {
     setIsOpen(false);
   };
 
   // Effect to handle session updates (optional)
-  useEffect(() => {
-    // You can add any additional logic here if needed
-    session.update();
-  }, []);
+  // useEffect(() => {
+  //   // You can add any additional logic here if needed
+  //   session.update();
+  // }, []);
 
   return (
     <div className="w-full max-w-[1312px] mx-auto h-[74px] px-7 py-3.5 bg-custom-3 rounded-[60px] flex flex-row justify-between items-center md:gap-8 lg:gap-4">
@@ -33,7 +33,7 @@ const Navbar = () => {
 
         <Link
           href="/"
-          className="text-custom-1 text-2xl font-medium font-kyiv flex items-center"
+          className="text-custom-1 text-2xl font-bold font-kyiv flex items-center"
         >
           <Image
             src="/logo.svg"
@@ -49,16 +49,16 @@ const Navbar = () => {
       <div className="hidden flex-[50%] md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
         <div className="flex items-center space-x-4 md:space-x-8">
           <Link
-            href="/why-properly"
-            className="text-lg font-medium font-kumbh text-center"
-          >
-            Why Properly
-          </Link>
-          <Link
-            href="/about-properly"
+            href="/#about-properly"
             className="text-lg font-medium font-kumbh text-center"
           >
             About Properly
+          </Link>
+          <Link
+            href="/#why-properly"
+            className="text-lg font-medium font-kumbh text-center"
+          >
+            Why Properly
           </Link>
           <Link
             href="/pricing"
@@ -71,12 +71,12 @@ const Navbar = () => {
         {/* BUTTONS */}
         <WaitingListForm inNav />
 
-        {session.status === "authenticated" ? (
+        {/* {session.status === "authenticated" ? (
           <div className="flex items-center justify-center gap-2">
             <UserButton />
           </div>
         ) : session.status === "loading" ? (
-          <Skeleton className="py-4 w-32 bg-slate-500" />
+          <Skeleton className="py-4 w-8 h-8 rounded-full bg-slate-500" />
         ) : (
           <LoginButton>
             <Button
@@ -86,7 +86,7 @@ const Navbar = () => {
               <LogIn className="w-4 h-4 mr-2" /> Login
             </Button>
           </LoginButton>
-        )}
+        )} */}
       </div>
       {/* MENU FOR MOBILE */}
       <div
@@ -109,25 +109,31 @@ const Navbar = () => {
           </button>
           <Link
             href="/"
-            className="text-custom-1 text-2xl font-medium font-kyiv flex mb-4"
+            className="text-custom-1 text-2xl font-bold font-kyiv flex mb-4"
             onClick={handleMobileNavbar}
           >
-            <Image src="/logo.svg" alt="Properly" width={24} height={24} />
+            <Image
+              src="/logo.svg"
+              alt="Properly"
+              width={28}
+              height={28}
+              className="w-7 h-7"
+            />
             Properly
           </Link>
           <Link
-            href="/why-properly"
-            className="text-lg font-medium font-kumbh"
-            onClick={handleMobileNavbar}
-          >
-            Why Properly
-          </Link>
-          <Link
-            href="/about-properly"
+            href="/#about-properly"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
             About Properly
+          </Link>
+          <Link
+            href="/#why-properly"
+            className="text-lg font-medium font-kumbh"
+            onClick={handleMobileNavbar}
+          >
+            Why Properly
           </Link>
           <Link
             href="/pricing"

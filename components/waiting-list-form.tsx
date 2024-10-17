@@ -94,7 +94,7 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
       <DialogTrigger asChild>
         <Button className="p-6 bg-custom-1 rounded-full justify-center items-center gap-2.5 flex">
           <div className="text-white text-sm md:text-lg font-normal font-kumbh">
-            Join the waiting list
+            Become a Tester
           </div>
           {!inNav && (
             <div className="flex p-2 bg-custom-2 rounded-[60px] justify-start items-center gap-2.5">
@@ -107,11 +107,11 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium font-kyiv leading-7">
-            Join Our Waiting List
+          <DialogTitle className="text-sm font-extrabold font-kyiv leading-7">
+            Be among the first to test Properly
           </DialogTitle>
           <DialogDescription className="text-sm font-normal leading-tight tracking-tight">
-            Enter your email to be notified when we launch.
+            Enter your email to get your exclusive testing access.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -173,8 +173,9 @@ export const WaitingListForm = ({ inNav = false }: WaitingListFormProps) => {
                         className="placeholder:text-[#e0e0e0] placeholder:text-base py-4"
                       />
                     </FormControl>
-                    <FormDescription className="text-xs font-medium leading-none tracking-tight text-[#555555]">
-                      Property Managers get a 2-week free trial demo.
+                    <FormDescription className="text-xs font-bold leading-none tracking-tight text-[#555555]">
+                      Property Managers get two months free licensing when the
+                      platform successfully launches!
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

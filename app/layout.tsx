@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Kumbh_Sans } from "next/font/google";
+import { Kumbh_Sans, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
@@ -29,7 +29,12 @@ const kumbhSans = Kumbh_Sans({
   subsets: ["latin"],
   variable: "--font-kumbh-sans",
 });
-// const kyivTypeSans = KyivType_Sans({ weight: '400', subsets: ['latin'] });
+
+const openSans = Open_Sans({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-open-sans",
+});
 
 export const metadata: Metadata = {
   title: "Properly",
@@ -53,7 +58,7 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased max-[360px]:w-[114vw]`}
+          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased pt-6 w-screen `}
         >
           <Toaster richColors />
 

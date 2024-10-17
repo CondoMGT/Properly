@@ -1,36 +1,38 @@
 import Image from "next/image";
-import React from "react";
 
 const properlyWhys = [
   {
     name: "AI Chatbot Bri",
     description:
-      "Bri helps tenants resolve minor issues independently, reducing property managers' workload and providing faster solutions for tenants.",
+      "Meet Bri, the smart assistant that helps tenants fix minor issues themselves, cutting down property managers’ workloads and speeding up solutions. Enhance efficiency, improve tenant satisfaction, and simplify property management with Bri.",
     icon: "chatbot.png",
   },
   {
     name: "Automated Feedback Loop",
     description:
-      "After resolving issues, tenants provide feedback to help property managers improve service quality.",
+      "Enhance your property management with Properly’s Automated Feedback Loop, collecting instant tenant feedback to drive service improvements and foster loyalty.",
     icon: "loop.png",
   },
   {
     name: "Real-time Communication",
     description:
-      "Instant updates and notifications enable seamless communication, making issue reporting and maintenance tracking efficient for both parties.",
+      "Enjoy instant notifications for efficient issue reporting and maintenance tracking, ensuring no concern goes unnoticed and every task is addressed promptly. Transform your property management experience today!.",
     icon: "communik.png",
   },
   {
     name: "Prevent Legal and Financial Risks",
     description:
-      "By ensuring timely issue resolution, Properly minimizes the risk of legal liabilities and financial losses.",
+      "Properly ensures timely issue resolution, reducing legal liabilities and financial risks. Protect your operations today!.",
     icon: "legal.png",
   },
 ];
 
 export const WhyComp = () => {
   return (
-    <div className="w-full h-auto max-w-[1272px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:gap-8">
+    <div
+      id="why-properly"
+      className="w-full h-auto max-w-[1272px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:gap-8"
+    >
       <div className="w-full flex-[20%] h-auto py-2.5 flex justify-start items-center gap-2.5">
         <div className="text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
           Why Choose Properly
@@ -45,7 +47,7 @@ export const WhyComp = () => {
               alt={why.icon.split(".")[0]}
               width={60}
               height={60}
-              className="absolute w-15 h-15 left-0 top-6"
+              className="absolute w-auto h-15 left-0 top-6"
             />
             <div className="pl-12">
               <div className="text-black text-2xl font-medium leading-[30px] font-kyiv mb-4">
