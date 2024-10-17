@@ -4,9 +4,12 @@ import React from "react";
 export const HowComp = () => {
   return (
     <div className="w-full max-w-[1266px] mx-auto h-auto flex-col justify-start items-start gap-10 p-4">
-      <div className="w-full flex justify-start items-center mb-8">
+      <div className="w-full flex flex-col gap-1 justify-start items-start mb-8">
         <div className="text-black text-4xl md:text-5xl font-medium font-kyiv tracking-tight leading-[56px]">
           How Properly Works
+        </div>
+        <div className="text-sm text-muted-foreground ml-1">
+          Streamlined Solutions for Everyone!
         </div>
       </div>
 
@@ -26,10 +29,10 @@ export const HowComp = () => {
                 Property Managers
               </div>
               <div className="w-full text-black text-base font-normal font-kumbh leading-normal tracking-tight">
-                Invite tenants, manage requests via a centralized dashboard, and
-                communicate in real time. Properly tracks requests, uses
-                feedback loops, and offers dispute management to boost
-                transparency and reduce legal risks.
+                Effortlessly invite tenants, manage requests via a centralized
+                dashboard, and communicate in real time. Properly tracks
+                requests, uses feedback loops, and offers dispute management to
+                boost transparency and reduce legal risks.
               </div>
             </div>
           </div>
@@ -73,8 +76,8 @@ export const HowComp = () => {
                 Proactive Resolution
               </div>
               <div className="w-full text-black text-base font-normal font-kumbh leading-normal tracking-tight">
-                With AI chatbot Bri, tenants troubleshoot issues quickly. For
-                complex problems, real-time communication ensures fast
+                With our AI chatbot Bri, tenants troubleshoot issues quickly.
+                For complex problems, real-time communication ensures fast
                 resolutions, supported by feedback and dispute management to
                 avoid conflicts.
               </div>
