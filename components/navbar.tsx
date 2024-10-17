@@ -91,7 +91,7 @@ const Navbar = () => {
             Properly
           </Link>
           <Link
-            href="#about-properly"
+            href="/#about-properly"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
@@ -99,7 +99,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            href="#why-properly"
+            href="/#why-properly"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
