@@ -82,3 +82,8 @@ export interface MessageServer {
 export interface CloudinaryUploadResult {
   secure_url: string;
 }
+
+type FormSuccessErrorProp = {
+  message?: string;
+  forPage?: boolean;
+};

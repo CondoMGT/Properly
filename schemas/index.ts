@@ -48,3 +48,15 @@ export const RegisterSchema = z.object({
     message: "You must agree to the terms and conditions.",
   }),
 });
+
+export const ResetSchema = z.object({
+  email: z.string().email({
+    message: "Email is required",
+  }),
+});
+
+export const NewPasswordSchema = z.object({
+  password: z.string().min(8, {
+    message: "Minimum 8 characters required",
+  }),
+});
