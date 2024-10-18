@@ -133,7 +133,7 @@ const additionalServices = [
 ];
 
 export default function PricingPage() {
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string>("Basic");
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -144,8 +144,14 @@ export default function PricingPage() {
         {plans.map((plan) => (
           <Card
             key={plan.name}
-            className={`flex flex-col ${
-              selectedPlan === plan.name ? "ring-2 ring-custom-2" : ""
+            className={`flex flex-col border-t-4 border-r-4 ${
+              selectedPlan === plan.name
+                ? "ring-2 ring-custom-2 border-t-0 border-r-0"
+                : ""
+            }${
+              plan.name === "Deluxe"
+                ? " border-t-custom-3 border-r-custom-3"
+                : " border-t-custom-2 border-r-custom-2"
             }`}
           >
             <CardHeader>
@@ -177,6 +183,12 @@ export default function PricingPage() {
                   selectedPlan === plan.name
                     ? " bg-custom-1 hover:bg-custom-1"
                     : " bg-transparent"
+                }${
+                  plan.name === "Deluxe"
+                    ? " bg-custom-3 text-black"
+                    : plan.name === "Premium"
+                    ? " bg-custom-2"
+                    : ""
                 }`}
                 onClick={() => setSelectedPlan(plan.name)}
                 variant={selectedPlan === plan.name ? "default" : "outline"}

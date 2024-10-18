@@ -5,7 +5,7 @@ export const HowComp = () => {
   return (
     <div className="w-full max-w-[1266px] mx-auto h-auto flex-col justify-start items-start gap-10 p-4">
       <div className="w-full flex flex-col gap-1 justify-start items-start mb-8">
-        <div className="text-black text-4xl md:text-5xl font-medium font-kyiv tracking-tight leading-[56px]">
+        <div className="text-black text-4xl md:text-5xl font-semibold font-kyiv tracking-tight leading-[56px]">
           How Properly Works
         </div>
         <div className="text-sm text-muted-foreground ml-1">
