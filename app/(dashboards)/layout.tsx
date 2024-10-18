@@ -1,17 +1,13 @@
-import Footer from "@/components/navs/landing/footer";
-import Navbar from "@/components/navs/landing/navbar";
+import { LeftNavbar } from "@/components/navs/dashboard/left-navbar";
 
-const LandingLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen w-full flex flex-col">
-      <>
-        <Navbar />
+    <div className="h-full w-full flex">
+      <LeftNavbar />
 
-        {children}
-        <Footer />
-      </>
+      <main className="flex-1 h-screen">{children}</main>
     </div>
   );
 };
 
-export default LandingLayout;
+export default DashboardLayout;

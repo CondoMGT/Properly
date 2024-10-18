@@ -2,29 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
-// import UserButton from "@/components/auth/user-button";
-import { useSession } from "next-auth/react";
-// import { Skeleton } from "@/components/ui/skeleton";
-// import LoginButton from "@/components/auth/login-button";
-// import { Button } from "@/components/ui/button";
-// import { LogIn } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // const session = useSession();
-
   const handleMobileNavbar = () => {
     setIsOpen(false);
   };
-
-  // Effect to handle session updates (optional)
-  // useEffect(() => {
-  //   // You can add any additional logic here if needed
-  //   session.update();
-  // }, []);
 
   return (
     <div className="w-full max-w-[1312px] mx-auto h-[74px] px-7 py-3.5 bg-custom-3 rounded-[60px] flex flex-row justify-between items-center md:gap-8 lg:gap-4">
@@ -70,23 +56,6 @@ const Navbar = () => {
 
         {/* BUTTONS */}
         <WaitingListForm inNav />
-
-        {/* {session.status === "authenticated" ? (
-          <div className="flex items-center justify-center gap-2">
-            <UserButton />
-          </div>
-        ) : session.status === "loading" ? (
-          <Skeleton className="py-4 w-8 h-8 rounded-full bg-slate-500" />
-        ) : (
-          <LoginButton>
-            <Button
-              size="sm"
-              className="text-xl font-semibold hover:font-bold hover:text-white hover:bg-blue-700 py-4"
-            >
-              <LogIn className="w-4 h-4 mr-2" /> Login
-            </Button>
-          </LoginButton>
-        )} */}
       </div>
       {/* MENU FOR MOBILE */}
       <div

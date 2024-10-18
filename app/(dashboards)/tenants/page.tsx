@@ -4,7 +4,7 @@ import { UserRole } from "@prisma/client";
 
 const TenantPage = () => {
   return (
-    <div className="w-full h-screen max-w-[1312px] mx-auto pt-[23px] mb-8">
+    <div className="w-full h-screen max-w-[1312px] mx-auto pt-[23px]">
       <RoleGate allowedRole={[UserRole.TENANT]}>
         <TenantDashboard />
       </RoleGate>
