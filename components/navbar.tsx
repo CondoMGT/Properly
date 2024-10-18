@@ -4,9 +4,21 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
+import { usePathname } from "next/navigation";
+
+const navLinks = [
+  { title: "About Properly", href: "/#about-properly" },
+  { title: "Why Properly", href: "/#why-properly" },
+  { title: "Pricing", href: "/pricing" },
+];
+
+const navPaths = ["/", "/pricing"];
 
 const Navbar = () => {
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [currentLink, setCurrentLink] = useState<string | null>(null);
 
   const handleMobileNavbar = () => {
     setIsOpen(false);
@@ -20,6 +32,7 @@ const Navbar = () => {
         <Link
           href="/"
           className="text-custom-1 text-2xl font-bold font-kyiv flex items-center"
+          onClick={() => setCurrentLink(null)}
         >
           <Image
             src="/logo.svg"
@@ -34,24 +47,20 @@ const Navbar = () => {
 
       <div className="hidden flex-[50%] md:flex flex-col md:flex-row w-full md:w-auto justify-between items-center space-x-4 md:space-x-8">
         <div className="flex items-center space-x-4 md:space-x-8">
-          <Link
-            href="/#about-properly"
-            className="text-lg font-medium font-kumbh text-center"
-          >
-            About Properly
-          </Link>
-          <Link
-            href="/#why-properly"
-            className="text-lg font-medium font-kumbh text-center"
-          >
-            Why Properly
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-lg font-medium font-kumbh text-center"
-          >
-            Pricing
-          </Link>
+          {navLinks.map((navLink, index) => (
+            <Link
+              key={`md-${index + 1}`}
+              href={navLink.href}
+              className={`text-lg font-medium font-kumbh text-center hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1 hover:font-semibold${
+                currentLink === navLink.title && navPaths.includes(pathname)
+                  ? " border-b-2 border-b-black pb-1 font-semibold"
+                  : ""
+              }`}
+              onClick={() => setCurrentLink(navLink.title)}
+            >
+              {navLink.title}
+            </Link>
+          ))}
         </div>
 
         {/* BUTTONS */}

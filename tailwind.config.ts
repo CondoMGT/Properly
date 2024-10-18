@@ -63,6 +63,7 @@ const config: Config = {
         kyiv: ["var(--font-kyiv-sans)"],
         kumbh: ["var(--font-kumbh-sans)"],
         open: ["var(--font-open-sans)"],
+        nunito: ["var(--font-nunito-sans)"],
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,5 +1,4 @@
 import { Check } from "lucide-react";
-import React from "react";
 
 const features = [
   {
@@ -38,7 +37,7 @@ export const FeaturesComp = () => {
   return (
     <div className="w-full h-auto relative p-5 pb-8">
       <div className="w-full max-w-[1262px] mx-auto py-2.5 flex justify-start items-center gap-2.5">
-        <div className="w-full text-black text-4xl md:text-5xl font-medium font-kyiv leading-[56px]">
+        <div className="w-full text-black text-4xl md:text-5xl font-semibold font-nunito leading-[56px]">
           Features That Make Properly Easier
         </div>
       </div>
@@ -56,7 +55,7 @@ export const FeaturesComp = () => {
             </div>
 
             <div className="grid grid-cols-2 md:flex gap-6 md:gap-4 w-full">
-              <div className="flex-[30%] text-black text-xl font-medium font-kyiv leading-7">
+              <div className="flex-[30%] text-black text-xl font-semibold font-nunito leading-7">
                 {feature.title}
               </div>
               <div className="flex-[70%] text-black text-lg font-normal font-kumbh leading-7 tracking-tight">

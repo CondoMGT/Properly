@@ -7,14 +7,14 @@ export const AboutComponent = () => {
       className="w-full h-auto max-w-[1272px] mx-auto py-8 px-4 flex flex-col md:flex-row justify-between items-center md:gap-16"
     >
       <div className="w-full flex-[20%] h-auto py-2.5 flex justify-start items-center gap-2.5">
-        <div className="text-black text-4xl md:text-5xl font-semibold font-kyiv leading-[56px]">
+        <div className="text-black text-4xl md:text-5xl font-semibold font-nunito leading-[56px]">
           About Properly
         </div>
       </div>
 
       <div className="w-full grid h-auto">
         <div className="w-full">
-          <span className="text-custom-2 text-2xl font-semibold font-kyiv leading-[30px]">
+          <span className="text-custom-2 text-2xl font-semibold font-nunito leading-[30px]">
             Properly
           </span>
           <span className="text-black text-xl font-normal font-['Open Sans'] leading-[34px] tracking-tight">
