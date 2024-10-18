@@ -24,6 +24,12 @@ const kyivTypeSans = localFont({
   weight: "100 400 700 800 900",
 });
 
+const nunitoSans = localFont({
+  weight: "400 500 700 800 900",
+  variable: "--font-nunito-sans",
+  src: "./fonts/NunitoSans.ttf",
+});
+
 const kumbhSans = Kumbh_Sans({
   weight: "400",
   subsets: ["latin"],
@@ -58,7 +64,7 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} antialiased w-screen `}
+          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} ${nunitoSans.variable} antialiased w-screen `}
         >
           <Toaster richColors />
 

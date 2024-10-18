@@ -62,6 +62,7 @@ const config: Config = {
       fontFamily: {
         kyiv: ["var(--font-kyiv-sans)"],
         kumbh: ["var(--font-kumbh-sans)"],
+        nunito: ["var(--font-nunito-sans)"],
       },
       borderRadius: {
         lg: "var(--radius)",
