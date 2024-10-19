@@ -12,7 +12,7 @@ cloudinary.config({
   secure: true,
 });
 
-const MAX_BODY_SIZE = 7 * 1024 * 1024; // 5MB in bytes
+const MAX_BODY_SIZE = 27 * 1024 * 1024; // 5MB in bytes
 
 export const sendMessage = async (values: MessageServer) => {
   try {
@@ -22,7 +22,7 @@ export const sendMessage = async (values: MessageServer) => {
     if (bodySize > MAX_BODY_SIZE) {
       return {
         error:
-          "Message size exceeds 7MB limit. Please reduce the size of your message or attachments.",
+          "Message size exceeds 27MB limit. Please reduce the size of your message or attachments.",
       };
     }
 
@@ -31,6 +31,14 @@ export const sendMessage = async (values: MessageServer) => {
       id: "",
       attachments: [],
     };
+
+    // Validate that either content or attachments are present
+    if (
+      !values.content &&
+      (!values.attachments || values.attachments.length === 0)
+    ) {
+      return { error: "Message must contain either content or attachments." };
+    }
 
     if (values.attachments) {
       // Use Promise.all to handle multiple async uploads
@@ -62,7 +70,7 @@ export const sendMessage = async (values: MessageServer) => {
       try {
         // Wait for all uploads to finish
         const uploadedUrls = await Promise.all(uploadPromises);
-        console.log(uploadedUrls);
+
         files.push(...uploadedUrls);
       } catch (error) {
         return { error: "Failed to upload file" };
