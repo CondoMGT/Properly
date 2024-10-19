@@ -1,7 +1,7 @@
-import React from "react";
+import PropertyMessagingSystem from "@/components/property-messaging";
 
 const MessagePage = () => {
-  return <div>MessagePage</div>;
+  return <PropertyMessagingSystem />;
 };
 
 export default MessagePage;

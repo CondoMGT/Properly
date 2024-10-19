@@ -1,9 +1,5 @@
-"use client";
-
-import PropertyMessagingSystem from "@/components/property-messaging";
-
 const ManagerPage = () => {
-  return <PropertyMessagingSystem />;
+  return <div>Managers DashboardPage</div>;
 };
 
 export default ManagerPage;

@@ -20,10 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   SendHorizontal,
-  User,
   Paperclip,
-  Search,
-  Bell,
   Star,
   FileText,
   Home,
@@ -31,7 +28,6 @@ import {
   Hammer,
   Check,
   CheckCheck,
-  Bird,
   Eye,
   Image,
   LinkIcon,
@@ -45,7 +41,7 @@ import {
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getTenantMessagesWithManager } from "@/data/tenant";
-import { Message, MessageStatus } from "@prisma/client";
+import { MessageStatus } from "@prisma/client";
 import { toast } from "sonner";
 import { sendMessage } from "@/actions/message";
 import { getManagerId } from "@/data/manager";
@@ -79,28 +75,7 @@ interface MessageSentType {
   isStarred?: boolean;
 }
 
-const initialMessages = [
-  {
-    id: 1,
-    sender: "tenant",
-    content:
-      "Hi, the sink in the kitchen is leaking. Can you send someone to fix it?",
-    timestamp: "10:30 AM",
-    status: "read",
-    isStarred: false,
-  },
-  {
-    id: 2,
-    sender: "manager",
-    content:
-      "Hello Alice, I'm sorry to hear that. I'll send a plumber tomorrow morning. Is that okay?",
-    timestamp: "11:15 AM",
-    status: "delivered",
-    isStarred: true,
-  },
-];
-
-export default function TenantDashboard() {
+export const TenantMessage = () => {
   const [messages, setMessages] = useState<MessageReceived[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [attachmentDialogOpen, setAttachmentDialogOpen] = useState(false);
@@ -831,4 +806,4 @@ export default function TenantDashboard() {
       )}
     </>
   );
-}
+};

@@ -17,9 +17,15 @@ import {
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useMediaQuery } from "react-responsive";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import Image from "next/image";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -76,7 +82,8 @@ const managerNavItems = [
 export const LeftNavbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const isLargeScreen = useMediaQuery({ minWidth: 1024 });
+
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   const session = useSession();
   const pathName = usePathname();
@@ -87,10 +94,15 @@ export const LeftNavbar = () => {
   }, []);
 
   useEffect(() => {
-    if (isLargeScreen) {
-      setIsMobileNavOpen(false);
-    }
-  }, [isLargeScreen]);
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const NavContent = () => (
     <ScrollArea className="h-full py-6">
@@ -130,7 +142,11 @@ export const LeftNavbar = () => {
                 }
 
                 return (
-                  <Link key={itemMenu.name} href={itemMenu.href}>
+                  <Link
+                    key={itemMenu.name}
+                    href={itemMenu.href}
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
                     {button}
                   </Link>
                 );
@@ -231,7 +247,16 @@ export const LeftNavbar = () => {
             side="left"
             className="w-56 p-0 pt-10 pb-32 bg-custom-3"
           >
-            <div className="flex items-center px-4">
+            <SheetHeader>
+              <SheetTitle className="sr-only">Nav Bar</SheetTitle>
+              <SheetDescription className="sr-only">
+                Mobile Navigation Bar
+              </SheetDescription>
+            </SheetHeader>
+            <div
+              className="flex items-center px-4"
+              onClick={() => setIsMobileNavOpen(false)}
+            >
               <Link
                 href="/"
                 className="text-custom-1 text-3xl font-semibold font-kyiv flex items-center"

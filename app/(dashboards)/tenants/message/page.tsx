@@ -1,7 +1,7 @@
-import React from "react";
+import { TenantMessage } from "@/components/tenant-message";
 
 const MessagePage = () => {
-  return <div>MessagePage</div>;
+  return <TenantMessage />;
 };
 
 export default MessagePage;

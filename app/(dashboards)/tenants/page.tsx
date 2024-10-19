@@ -1,7 +1,5 @@
-import TenantDashboard from "@/components/tenant-dashboard";
-
 const TenantPage = () => {
-  return <TenantDashboard />;
+  return <div>TenantDashboardPage</div>;
 };
 
 export default TenantPage;
