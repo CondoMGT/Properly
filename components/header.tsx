@@ -1,4 +1,9 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const Header = ({ title }: { title: string }) => {
   return (
@@ -7,6 +12,9 @@ export const Header = ({ title }: { title: string }) => {
         <CardTitle className="flex justify-between items-center font-nunito text-3xl">
           {title}
         </CardTitle>
+        <CardDescription className="sr-only">
+          This is the {title} page
+        </CardDescription>
       </CardHeader>
     </Card>
   );

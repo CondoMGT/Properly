@@ -13,7 +13,11 @@ const Managerslayout = ({ children }: { children: React.ReactNode }) => {
   const modifiedPathname = createSentenceCase(pathname.split("/").slice(-1)[0]);
 
   const headerTitle =
-    modifiedPathname === "Managers" ? "Dashboard" : modifiedPathname;
+    modifiedPathname === "Tenants"
+      ? "Dashboard"
+      : modifiedPathname === "Maintenance"
+      ? "Request"
+      : modifiedPathname;
 
   const session = useSession();
 

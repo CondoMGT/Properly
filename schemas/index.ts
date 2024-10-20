@@ -60,3 +60,36 @@ export const NewPasswordSchema = z.object({
     message: "Minimum 8 characters required",
   }),
 });
+
+const MAX_FILE_SIZE = 26000000; // 26MB
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+export const ACCEPTED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
+
+export const MaintenanceSchema = z.object({
+  title: z.string().min(2).max(50, {
+    message: "Title must be at least 2 characters.",
+  }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  media: z
+    .array(
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 25MB.`)
+        .refine(
+          (file) =>
+            [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_VIDEO_TYPES].includes(
+              file.type
+            ),
+          "Only .jpg, .jpeg, .png, .webp, .mp4, .webm and .ogg formats are supported."
+        )
+    )
+    .optional()
+    .default([]),
+});

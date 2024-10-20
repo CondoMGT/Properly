@@ -10,7 +10,6 @@ import { Home, DollarSign, Hammer } from "lucide-react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getTenantMessagesWithManager } from "@/data/tenant";
-import { MessageStatus } from "@prisma/client";
 import { getManagerId } from "@/data/manager";
 
 import { pusherClient } from "@/lib/pusher";
@@ -27,15 +26,6 @@ const tenant = {
   rentDue: "05/01/2023",
   rentAmount: 1200,
 };
-
-interface MessageSentType {
-  senderId: string;
-  receiverId: string;
-  content: string;
-  timestamp: Date;
-  status: MessageStatus;
-  isStarred?: boolean;
-}
 
 export const TenantMessage = () => {
   const [messages, setMessages] = useState<MessageReceived[]>([]);
@@ -125,7 +115,6 @@ export const TenantMessage = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
             <div className="grid gap-4">
@@ -172,39 +161,6 @@ export const TenantMessage = () => {
                   receiverId={managerId as string}
                   messages={filteredMessages || []}
                 />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="maintenance">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Maintenance Requests</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button className="mb-4">
-                  <Hammer className="mr-2 h-4 w-4" />
-                  New Maintenance Request
-                </Button>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-secondary rounded-lg">
-                    <div>
-                      <h4 className="font-semibold">Kitchen Sink Leak</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Submitted: 04/28/2023
-                      </p>
-                    </div>
-                    <Badge>In Progress</Badge>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-secondary rounded-lg">
-                    <div>
-                      <h4 className="font-semibold">Bedroom Window Stuck</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Submitted: 04/15/2023
-                      </p>
-                    </div>
-                    <Badge variant="outline">Completed</Badge>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
