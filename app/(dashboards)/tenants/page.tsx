@@ -13,14 +13,17 @@ const dashItems = [
   {
     name: "Active Requests",
     count: 1,
+    color: "text-custom-7",
   },
   {
     name: "Resolved Issues",
     count: 1,
+    color: "text-custom-9",
   },
   {
     name: "Unread Messages",
     count: 2,
+    color: "text-custom-8",
   },
 ];
 
@@ -44,13 +47,7 @@ const TenantPage = () => {
               {item.name}:
             </span>
             <span
-              className={`font-semibold text-4xl font-nunito ${
-                item.name === "Active Requests"
-                  ? "text-custom-7"
-                  : item.name === "Resolved Issues"
-                  ? "text-custom-9"
-                  : "text-custom-8"
-              }`}
+              className={`font-semibold text-4xl font-nunito ${item.color}`}
             >
               {item.count}
             </span>
