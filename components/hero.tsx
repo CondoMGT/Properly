@@ -3,7 +3,6 @@ import { FaqComp } from "@/components/landing-page/faq";
 import { FeaturesComp } from "@/components/landing-page/features";
 import { Hero } from "@/components/landing-page/hero";
 import { HowComp } from "@/components/landing-page/how";
-import { JoinComp } from "@/components/landing-page/join";
 import { WhyComp } from "@/components/landing-page/why";
 
 const heroPageComponents = [
@@ -12,7 +11,6 @@ const heroPageComponents = [
   WhyComp,
   HowComp,
   FeaturesComp,
-  JoinComp,
   FaqComp,
 ];
 

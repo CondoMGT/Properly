@@ -102,15 +102,59 @@ const featureComparison: FeatureComparison[] = [
     Deluxe: true,
     Premium: true,
   },
-  { feature: "Online payments", Basic: false, Deluxe: true, Premium: true },
+  // { feature: "Online payments", Basic: false, Deluxe: true, Premium: true },
+  // {
+  //   feature: "Reporting",
+  //   Basic: "Basic",
+  //   Deluxe: "Advanced",
+  //   Premium: "Custom",
+  // },
+  // { feature: "API access", Basic: false, Deluxe: false, Premium: true },
+  // { feature: "Dedicated support", Basic: false, Deluxe: false, Premium: true },
+  { feature: "Keyboard Navigation", Basic: true, Deluxe: true, Premium: true },
   {
-    feature: "Reporting",
-    Basic: "Basic",
-    Deluxe: "Advanced",
-    Premium: "Custom",
+    feature: "Custom AI-Powered Chatbot",
+    Basic: true,
+    Deluxe: true,
+    Premium: true,
   },
-  { feature: "API access", Basic: false, Deluxe: false, Premium: true },
-  { feature: "Dedicated support", Basic: false, Deluxe: false, Premium: true },
+  {
+    feature: "Screen Reader Compatibility",
+    Basic: true,
+    Deluxe: true,
+    Premium: true,
+  },
+  {
+    feature: "Language Customization",
+    Basic: false,
+    Deluxe: true,
+    Premium: true,
+  },
+  { feature: "Custom Branding", Basic: false, Deluxe: true, Premium: true },
+  {
+    feature: "AI-Driven Maintenance Recommendations",
+    Basic: false,
+    Deluxe: true,
+    Premium: true,
+  },
+  {
+    feature: "Tailored User Interface",
+    Basic: false,
+    Deluxe: false,
+    Premium: true,
+  },
+  {
+    feature: "Custom Email Notifications",
+    Basic: false,
+    Deluxe: false,
+    Premium: true,
+  },
+  {
+    feature: "Property Management Marketing Content",
+    Basic: false,
+    Deluxe: false,
+    Premium: true,
+  },
   {
     feature: "Additional tenant pricing",
     Basic: "$50 per 50",
@@ -133,18 +177,29 @@ const additionalServices = [
 ];
 
 const PricingPage = () => {
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string>("Basic");
+
   return (
     <div className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold text-center mb-12">Pricing Plans</h1>
+      <h1 className="text-4xl font-bold font-nunito text-center mb-12">
+        Pricing Plans
+      </h1>
 
       {/* Pricing Cards */}
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         {plans.map((plan) => (
           <Card
             key={plan.name}
-            className={`flex flex-col ${
-              selectedPlan === plan.name ? "ring-2 ring-custom-2" : ""
+            className={`flex flex-col border-t-4 border-r-4 ${
+              selectedPlan === plan.name
+                ? "ring-2 ring-custom-2 border-t-0 border-r-0"
+                : ""
+            }${
+              plan.name === "Deluxe"
+                ? " border-t-custom-3 border-r-custom-3"
+                : plan.name === "Premium"
+                ? " border-t-custom-2 border-r-custom-2"
+                : " border-t-custom-4 border-r-custom-4"
             }`}
           >
             <CardHeader>
@@ -176,6 +231,12 @@ const PricingPage = () => {
                   selectedPlan === plan.name
                     ? " bg-custom-1 hover:bg-custom-1"
                     : " bg-transparent"
+                }${
+                  plan.name === "Deluxe"
+                    ? " bg-custom-3 text-black"
+                    : plan.name === "Premium"
+                    ? " bg-custom-2"
+                    : ""
                 }`}
                 onClick={() => setSelectedPlan(plan.name)}
                 variant={selectedPlan === plan.name ? "default" : "outline"}
@@ -188,7 +249,7 @@ const PricingPage = () => {
       </div>
 
       {/* Feature Comparison Table */}
-      <h2 className="text-3xl font-bold text-center mb-8">
+      <h2 className="text-3xl font-bold font-nunito text-center mb-8">
         Feature Comparison
       </h2>
       <Table>
@@ -243,7 +304,7 @@ const PricingPage = () => {
       </Table>
 
       {/* Additional Services */}
-      <h2 className="text-3xl font-bold text-center mt-16 mb-8">
+      <h2 className="text-3xl font-bold font-nunito text-center mt-16 mb-8">
         Professional Add-On Services
       </h2>
       <div className="grid md:grid-cols-2 gap-8">

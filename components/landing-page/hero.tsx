@@ -7,8 +7,8 @@ import { WaitingListForm } from "@/components/waiting-list-form";
 export const Hero = () => {
   return (
     <div className="w-full max-w-[1272px] mx-auto pt-[23px] flex flex-col-reverse lg:flex-row-reverse items-stretch gap-4 px-4">
-      <div className="w-full lg:w-1/2 py-[43px] max-[560px]:pr-6 flex flex-col justify-center gap-[30px]">
-        <div className="font-kyiv text-black text-5xl text-[52px] md:text-6xl font-semibold leading-[72px]">
+      <div className="w-full lg:w-1/2 py-[43px] max-[560px]:pr-6 flex flex-col justify-center gap-10">
+        <div className="font-nunito text-black text-5xl text-[52px] md:text-6xl font-semibold leading-[72px]">
           Property Management, Done Properly
         </div>
 
@@ -25,15 +25,17 @@ export const Hero = () => {
       </div>
 
       {/* IMAGE */}
-      <div className="relative w-full lg:w-1/2 h-[50vh] lg:h-auto">
-        <Image
-          src="/leohoho.png"
-          alt="Hero"
-          fill
-          priority
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
-        />
+      <div className="relative w-full lg:w-1/2 h-[30vh] sm:h-[40vh] md:h-[50vh] lg:h-auto">
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src="/pm-dashboard.png"
+            alt="Hero"
+            fill
+            priority
+            className="object-contain md:object-fill"
+            sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
+          />
+        </div>
       </div>
     </div>
   );

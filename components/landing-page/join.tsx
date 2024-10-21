@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import React from "react";
 import { WaitingListForm } from "@/components/waiting-list-form";
 
 export const JoinComp = () => {

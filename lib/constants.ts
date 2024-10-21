@@ -2224,3 +2224,132 @@ export const maintenanceRquests = [
     urgency: "low",
   },
 ];
+
+export const features = [
+  {
+    title: "AI-Powered Troubleshooting",
+    description:
+      "Properly's AI-powered chatbot, Bri, helps tenants resolve common maintenance issues quickly, reducing unnecessary escalations and saving time for both tenants and property managers.",
+  },
+  {
+    title: "Real-Time Updates",
+    description:
+      "Instant notifications keep tenants and property managers informed at every step, ensuring transparency and minimizing delays or confusion.",
+  },
+  {
+    title: "Integrated Feedback Loop",
+    description:
+      "Gather tenant feedback after issue resolution to improve service quality and quickly address any disputes, maintaining high tenant satisfaction.",
+  },
+  {
+    title: "White-Label Solutions",
+    description:
+      "Customize Properly to match your brand, providing a seamless experience for tenants while maintaining your unique identity.",
+  },
+  {
+    title: "Partnering with Service Providers",
+    description:
+      "Easily integrate external service providers to handle complex maintenance tasks, ensuring faster and more efficient resolutions.",
+  },
+  // {
+  //   title: "Visual Documentation",
+  //   description:
+  //     "Tenants can upload photos or videos of issues for faster diagnosis.",
+  // },
+];
+
+export const faqs = [
+  {
+    question: "What types of properties can I manage with Properly?",
+    answer:
+      "Properly is designed for various property types, including residential, commercial, and multi-family units.",
+  },
+
+  {
+    question: "How does the pricing structure work?",
+    answer:
+      "We offer tiered pricing plans based on the number of properties managed and additional tenant capacities. Contact us for specific details on our packages.",
+  },
+
+  {
+    question: "Can tenants access Properly on mobile devices?",
+    answer:
+      "Yes, Properly is accessible via mobile devices, allowing tenants to submit requests and receive updates on the go.",
+  },
+
+  {
+    question:
+      "What happens if a tenant experiences a maintenance issue after hours?",
+    answer:
+      "Tenants can submit requests at any time, and property managers will be notified immediately. The platform enables communication to address urgent issues promptly.",
+  },
+  {
+    question: "How does Properly help tenants with maintenance requests?",
+    answer:
+      "Submit requests quickly, upload photos or videos for clarity, and track the progress in real-time. This ensures transparency and reduces the likelihood of delays or miscommunication.",
+  },
+
+  {
+    question: "How do I train my team to use Properly?",
+    answer:
+      "We provide comprehensive onboarding support and training materials to ensure your team can effectively use the platform from day one.",
+  },
+
+  {
+    question:
+      "Can I integrate Properly with my existing property management systems?",
+    answer:
+      "Yes! Properly offers integration options to help streamline your operations and enhance functionality with your current systems.",
+  },
+
+  {
+    question: "How does Properly handle tenant feedback?",
+    answer:
+      "Properly collects and analyzes tenant feedback through automated surveys, helping you identify areas for improvement and enhance service quality.",
+  },
+
+  {
+    question: "What if I need assistance with Properly?",
+    answer:
+      "Our customer support team is available to assist you with any questions or issues you may encounter while using the platform.",
+  },
+
+  {
+    question: "Is there a free trial available?",
+    answer:
+      "Yes! We offer a free trial period so you can explore Properly's features and see how it fits your property management needs.",
+  },
+
+  {
+    question: "How do I get started with Properly?",
+    answer:
+      "To get started, simply reach out to us through our website, and our team will guide you through the setup process!",
+  },
+];
+
+export const properlyWhys = [
+  {
+    name: "AI Chatbot Bri",
+    description:
+      "Meet Bri, the smart assistant that helps tenants fix minor issues themselves, cutting down property managers’ workloads and speeding up solutions. Enhance efficiency, improve tenant satisfaction, and simplify property management with Bri.",
+    icon: "chatbot.png",
+  },
+  {
+    name: "Automated Feedback Loop",
+    description:
+      "Enhance your property management with Properly’s Automated Feedback Loop, collecting instant tenant feedback to drive service improvements and foster loyalty.",
+    icon: "loop.png",
+  },
+  {
+    name: "Real-time Communication",
+    description:
+      "Enjoy instant notifications for efficient issue reporting and maintenance tracking, ensuring no concern goes unnoticed and every task is addressed promptly. Transform your property management experience today!.",
+    icon: "communik.png",
+  },
+  {
+    name: "Prevent Legal and Financial Risks",
+    description:
+      "Properly ensures timely issue resolution, reducing legal liabilities and financial risks. Protect your operations today!.",
+    icon: "legal.png",
+  },
+];
