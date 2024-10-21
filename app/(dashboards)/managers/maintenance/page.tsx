@@ -63,7 +63,7 @@ const MaintenancePage = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-nunito font-semibold">
+          <CardTitle className="text-xl font-nunito font-semibold">
             Maintenance Requests
           </CardTitle>
         </CardHeader>

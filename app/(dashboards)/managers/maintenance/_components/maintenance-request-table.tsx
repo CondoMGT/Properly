@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Check } from "lucide-react";
+import { Eye, Check, PlusCircle } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -24,6 +24,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
@@ -130,11 +131,19 @@ export default function MaintenanceRequestsTable() {
   }) => {
     const [open, setOpen] = React.useState(false);
 
+    const selectedValue = Array.isArray(value) ? value : [];
+
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="justify-start">
-            {value.length > 0 ? `${value.length} selected` : placeholder}
+            {selectedValue && selectedValue.length > 0 ? (
+              `${selectedValue.length} selected`
+            ) : (
+              <>
+                <PlusCircle className="mr-2 h-4 w-4" /> {placeholder}
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
@@ -143,39 +152,44 @@ export default function MaintenanceRequestsTable() {
               placeholder={`Search ${placeholder.toLowerCase()}...`}
             />
             <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option}
-                  onSelect={() => {
-                    onChange(
-                      value.includes(option)
-                        ? value.filter((item) => item !== option)
-                        : [...value, option]
-                    );
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value.includes(option) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                  <span className="ml-auto text-xs text-muted-foreground">
-                    (
-                    {
-                      requests.filter(
-                        (r) =>
-                          r[placeholder.toLowerCase() as keyof Request] ===
-                          option
-                      ).length
-                    }
-                    )
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            <CommandList>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option}
+                    onSelect={() => {
+                      const newValue =
+                        selectedValue && selectedValue.includes(option)
+                          ? selectedValue.filter((item) => item !== option)
+                          : [...selectedValue, option];
+                      console.log(newValue);
+                      onChange(newValue);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedValue && selectedValue.includes(option)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      (
+                      {
+                        requests.filter(
+                          (r) =>
+                            r[placeholder.toLowerCase() as keyof Request] ===
+                            option
+                        ).length
+                      }
+                      )
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
@@ -206,13 +220,13 @@ export default function MaintenanceRequestsTable() {
         </div>
         <ComboboxFilter
           options={statusOptions}
-          value={filters.status}
+          value={filters.status || []}
           onChange={(value) => handleFilterChange("status", value)}
           placeholder="Status"
         />
         <ComboboxFilter
           options={priorityOptions}
-          value={filters.priority}
+          value={filters.priority || []}
           onChange={(value) => handleFilterChange("priority", value)}
           placeholder="Priority"
         />
@@ -231,7 +245,7 @@ export default function MaintenanceRequestsTable() {
         {filteredRequests.length > 0 && (
           <TableBody>
             {filteredRequests.map((request) => (
-              <TableRow key={request.id}>
+              <TableRow key={request.id} className="*:py-5">
                 <TableCell>{request.id}</TableCell>
                 <TableCell>{request.property}</TableCell>
                 <TableCell>{request.issue}</TableCell>
@@ -240,7 +254,7 @@ export default function MaintenanceRequestsTable() {
                     variant={request.status === "new" ? "outline" : "default"}
                     className={`${
                       statusColors[request.status]
-                    } flex justify-center items-center rounded-xl`}
+                    } flex justify-center items-center rounded-xl py-1`}
                   >
                     {request.status}
                   </Badge>
@@ -249,7 +263,7 @@ export default function MaintenanceRequestsTable() {
                   <Badge
                     className={`${
                       priorityColors[request.priority]
-                    } flex items-center justify-center rounded-xl`}
+                    } flex items-center justify-center rounded-xl py-1`}
                   >
                     {request.priority}
                   </Badge>
