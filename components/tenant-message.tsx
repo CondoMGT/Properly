@@ -103,10 +103,13 @@ export const TenantMessage = () => {
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <span>Tenant Dashboard</span>
+          <span></span>
           <Avatar className="h-8 w-8">
-            <AvatarImage src={tenant.avatar} alt={tenant.name} />
-            <AvatarFallback>{tenant.name.charAt(0)}</AvatarFallback>
+            <AvatarImage
+              src={user?.image as string}
+              alt={user?.name as string}
+            />
+            <AvatarFallback>{user?.name?.charAt(0) as string}</AvatarFallback>
           </Avatar>
         </CardTitle>
       </CardHeader>

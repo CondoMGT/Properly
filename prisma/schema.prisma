@@ -27,9 +27,10 @@ model users {
   tenant          Tenant?
   propertyManager PropertyManager?
 
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  sentMessages        Message[]            @relation("SentMessages")
+  receivedMessages    Message[]            @relation("ReceivedMessages")
   // notifications Notification[]
+  maintenanceRequests MaintenanceRequest[]
 
   // accounts Account[]
 }
@@ -74,13 +75,63 @@ model waitlist {
 model Tenant {
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
 
-  // propertyManagerId String @db.Uuid
+  unit String
+
+  startDate DateTime?
+  endDate   DateTime?
+  userId    String    @unique @db.Uuid
+  user      users     @relation(fields: [userId], references: [id])
+
+  propertyId String   @unique @db.Uuid
+  property   Property @relation(fields: [propertyId], references: [id])
+}
+
+model MaintenanceRequest {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  reqId String @unique
+
+  issue       String
+  description String
+  summary     String
+  priority    RequestPriority
+
+  status RequestStatus @default(New)
+
+  category   String?
+  contractor String?
+
+  maintenanceDate DateTime?
 
   userId String @unique @db.Uuid
   user   users  @relation(fields: [userId], references: [id])
 
   propertyId String   @unique @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contractor {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  name String
+
+  specialty         String
+  phoneNumber       String
+  email             String
+  licenseNumber     String
+  yearsOfExperience Int
+  serviceArea       String
+
+  availability String[]
+  emergency    Boolean
+  rating       Float
+
+  insurance Boolean
+
+  ratePerHour Int
 }
 
 model Property {
@@ -92,6 +143,8 @@ model Property {
   propertyManager   PropertyManager @relation(fields: [propertyManagerId], references: [id])
 
   tenants Tenant[]
+
+  maintenanceRequests MaintenanceRequest[]
 }
 
 model PropertyManager {
@@ -140,6 +193,20 @@ model Attachment {
 enum UserRole {
   MANAGER
   TENANT
+  CONTRACTOR
+}
+
+enum RequestPriority {
+  Low
+  Medium
+  High
+}
+
+enum RequestStatus {
+  New
+  In_Progess
+  Closed
+  Pending
 }
 
 enum MessageStatus {

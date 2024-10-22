@@ -69,3 +69,28 @@ export const getTenantMessagesWithManager = async (userId: string) => {
     return null;
   }
 };
+
+export const getTenantRequestInfo = async (userId: string) => {
+  try {
+    const requestInfo = await prisma.tenant.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        unit: true,
+        property: {
+          select: {
+            id: true,
+            propertyName: true,
+            address: true,
+          },
+        },
+      },
+    });
+
+    return requestInfo;
+  } catch (error) {
+    console.error("Error fetching tenant request info:", error);
+    return null;
+  }
+};

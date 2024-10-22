@@ -10,6 +10,12 @@ type Message = {
   content: string;
 };
 
+// Function to clean the response text
+function cleanResponseText(text: string): string {
+  // Remove the markdown code block syntax
+  return text.replace(/```json\n|\n```/g, "").trim();
+}
+
 export async function summarizeMessages(messages: Message[]) {
   try {
     // Convert messages to a string format
@@ -18,19 +24,26 @@ export async function summarizeMessages(messages: Message[]) {
       .join("\n\n");
 
     // Prepare the prompt for Gemini
-    const prompt = `Summarize the following conversation between a user and a maintenance bot. Focus on the main issues discussed, solutions proposed, and any actions taken or decisions made:
+    const prompt = `Summarize the following conversation between a user and a maintenance bot. Also, priority level (Low, Medium or High) to the issue based on severity and urgency. Focus on the main issues discussed, solutions proposed, and any actions taken or decisions made:
 
     ${conversationText}
 
-    Summary:`;
+    Provide the result as a JSON object with the following structure:
+    {
+      "summary": "A concise summary of the main issues, solutions, and actions",
+      "description: "A short description of the issue",
+      "priority": "The overall priority (Low, Medium, or High) based on the most severe issue"
+    }`;
 
     // Generate content using Gemini
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const summary = response.text();
+    const responseText = cleanResponseText(response.text());
 
-    return { success: "Summarized successfully!", summary };
+    const data = JSON.parse(responseText);
+
+    return { success: "Summarized successfully!", data };
   } catch (error) {
     console.error("Error summarizing messages:", error);
     return { error: "An error occurred while summarizing the conversation." };

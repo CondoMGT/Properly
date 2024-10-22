@@ -59,6 +59,9 @@ import { PulseLoader } from "react-spinners";
 import ReactMarkdown from "react-markdown";
 import { summarizeMessages } from "@/actions/ai/summarizeMessages";
 import { toast } from "sonner";
+import { getTenantRequestInfo } from "@/data/tenant";
+import { useSession } from "next-auth/react";
+import { newMaintenance } from "@/actions/maintenance";
 
 type Message = {
   type: "user" | "bot";
@@ -75,9 +78,11 @@ const MaintenancePage = () => {
   const [escalateMessage, setEscalateMessage] = useState("");
 
   const [isPending, startTransition] = useTransition();
+  const user = useCurrentUser();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [issue, setIssue] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showResolution, setShowResolution] = useState(false);
@@ -240,10 +245,9 @@ const MaintenancePage = () => {
     }
   };
 
-  const handleSummarize = async () => {
+  const handleSummarize = () => {
     startTransition(async () => {
       const summary = await summarizeMessages(messages);
-      console.log("Conversation summary:", summary);
 
       try {
         if (summary?.error) {
@@ -257,6 +261,16 @@ const MaintenancePage = () => {
           );
 
           // TODO: CREATE Maintenance Ticket in database
+          const info = await getTenantRequestInfo(user?.id as string);
+
+          const mainReq = await newMaintenance({
+            data: summary.data,
+            issue,
+            userId: user?.id as string,
+            propertyId: info?.property.id as string,
+          });
+
+          toast.success(mainReq.success || "Request submitted.");
         }
       } catch {
         toast.error("Something went wrong!");
@@ -276,6 +290,7 @@ const MaintenancePage = () => {
   const onSubmit = (values: z.infer<typeof MaintenanceSchema>) => {
     setBriBoard(true);
     setInput(values.description);
+    setIssue(values.title);
 
     if (values.media && values.media.length > 0) {
       const file = values.media[0];
@@ -320,6 +335,7 @@ const MaintenancePage = () => {
     setBriBoard(false);
     setMessages([]);
     setInput("");
+    setIssue("");
     setImage(null);
     setIsLoading(false);
     setShowResolution(false);

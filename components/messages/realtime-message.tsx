@@ -365,7 +365,7 @@ export const RealTimeMessage = ({
                       : "bg-secondary"
                   }`}
                 >
-                  <div className="flex items-center justify-end mb-1">
+                  {/* <div className="flex items-center justify-end mb-1">
                     <Button variant="ghost" size="sm" className="h-3 w-3 p-0">
                       <Star
                         className={`h-4 w-4 ${
@@ -375,7 +375,7 @@ export const RealTimeMessage = ({
                         }`}
                       />
                     </Button>
-                  </div>
+                  </div> */}
                   <div>{message.content}</div>
                   {message.attachments &&
                     message.attachments.attachments &&

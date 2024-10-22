@@ -203,7 +203,7 @@ export const LeftNavbar = () => {
                 <AvatarImage
                   src={session.data.user.image || ""}
                   alt="avatar"
-                  className="w-5 h-5"
+                  className="object-cover rounded-full"
                 />
                 <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
                   <CircleUserRound className="text-white" />
@@ -278,7 +278,7 @@ export const LeftNavbar = () => {
                   <AvatarImage
                     src={session.data.user.image || ""}
                     alt="avatar"
-                    className="w-5 h-5"
+                    className="object-cover rounded-full"
                   />
                   <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
                     <CircleUserRound className="text-white" />
