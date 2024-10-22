@@ -33,13 +33,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   ArrowUp,
   CheckCheck,
+  CheckCircle,
   File,
   FileUp,
+  Loader,
   Paperclip,
+  TriangleAlert,
   X,
   XIcon,
 } from "lucide-react";
@@ -55,6 +58,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PulseLoader } from "react-spinners";
 import ReactMarkdown from "react-markdown";
 import { summarizeMessages } from "@/actions/ai/summarizeMessages";
+import { toast } from "sonner";
 
 type Message = {
   type: "user" | "bot";
@@ -65,6 +69,12 @@ type Message = {
 const MaintenancePage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [briBoard, setBriBoard] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+
+  const [escalateMessage, setEscalateMessage] = useState("");
+
+  const [isPending, startTransition] = useTransition();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -215,16 +225,9 @@ const MaintenancePage = () => {
 
   const handleEscalation = async (escalate: boolean) => {
     if (escalate) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: "bot",
-          content:
-            "I've notified property management about your issue. They will contact you soon. Is there anything else I can help you with?",
-        },
-      ]);
-
-      await handleSummarize();
+      setEscalateMessage(
+        "Bri couldn't resolve your issue. Let's submit a maintenance ticket for further assistance."
+      );
     } else {
       setMessages((prev) => [
         ...prev,
@@ -238,9 +241,27 @@ const MaintenancePage = () => {
   };
 
   const handleSummarize = async () => {
-    const summary = await summarizeMessages(messages);
-    console.log("Conversation summary:", summary);
-    // TODO: CREATE Maintenance Ticket
+    startTransition(async () => {
+      const summary = await summarizeMessages(messages);
+      console.log("Conversation summary:", summary);
+
+      try {
+        if (summary?.error) {
+          toast.error(summary.error || "Something went wrong!");
+        }
+
+        if (summary?.success) {
+          setEscalated(true);
+          setEscalateMessage(
+            "Your ticket has been submitted successfully. A maintenance team will be assigned to address your issue."
+          );
+
+          // TODO: CREATE Maintenance Ticket in database
+        }
+      } catch {
+        toast.error("Something went wrong!");
+      }
+    });
   };
 
   const form = useForm<z.infer<typeof MaintenanceSchema>>({
@@ -295,6 +316,29 @@ const MaintenancePage = () => {
     }
   };
 
+  const resetForm = () => {
+    setBriBoard(false);
+    setMessages([]);
+    setInput("");
+    setImage(null);
+    setIsLoading(false);
+    setShowResolution(false);
+    setEscalated(false);
+    setEscalateMessage("");
+    form.reset();
+  };
+
+  const handleDialogClose = () => {
+    if (dialogOpen && escalated) {
+      resetForm();
+      setDialogOpen(false);
+    } else if (dialogOpen && !escalated) {
+      setDialogOpen(false);
+    } else {
+      setDialogOpen(true);
+    }
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
@@ -306,7 +350,7 @@ const MaintenancePage = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6 pr-8">
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
           <DialogTrigger asChild>
             <Button className="bg-custom-1 hover:bg-custom-1 hover:font-bold text-secondary font-nunito font-semibold w-fit">
               New Request
@@ -504,7 +548,12 @@ const MaintenancePage = () => {
             {briBoard && (
               <Card className="w-full max-w-md mx-auto border-none shadow-none bg-custom-4">
                 <CardContent>
-                  <ScrollArea className="h-[400px] px-2" ref={scrollAreaRef}>
+                  <ScrollArea
+                    className={`${
+                      escalateMessage.trim() ? "h-[200px]" : "h-[400px]"
+                    } px-2`}
+                    ref={scrollAreaRef}
+                  >
                     {messages.slice(1).map((message, index) => (
                       <div
                         key={index}
@@ -605,22 +654,23 @@ const MaintenancePage = () => {
                     )}
                     {messages[messages.length - 1]?.content.includes(
                       "escalate this to property management?"
-                    ) && (
-                      <div className="flex justify-center space-x-2 mb-4">
-                        <Button
-                          onClick={() => handleEscalation(true)}
-                          className="bg-custom-2 hover:bg-custom-2"
-                        >
-                          Yes, Escalate
-                        </Button>
-                        <Button
-                          onClick={() => handleEscalation(false)}
-                          className="bg-custom-0 hover:bg-custom-0"
-                        >
-                          No, Thanks
-                        </Button>
-                      </div>
-                    )}
+                    ) &&
+                      !escalateMessage.trim() && (
+                        <div className="flex justify-center space-x-2 mb-4">
+                          <Button
+                            onClick={() => handleEscalation(true)}
+                            className="bg-custom-2 hover:bg-custom-2"
+                          >
+                            Yes, Escalate
+                          </Button>
+                          <Button
+                            onClick={() => handleEscalation(false)}
+                            className="bg-custom-0 hover:bg-custom-0"
+                          >
+                            No, Thanks
+                          </Button>
+                        </div>
+                      )}
                     <div ref={lastChildRef} />
                   </ScrollArea>
                 </CardContent>
@@ -639,45 +689,92 @@ const MaintenancePage = () => {
                     </div>
                   )}
 
-                  <div className="relative w-full -pb-4">
-                    <Input
-                      type="text"
-                      placeholder="Type your message..."
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                      className="pr-24 pl-12 py-6" // Add padding for icons
-                    />
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <Paperclip className="h-4 w-4" />
-                      <span className="sr-only">Upload file</span>
-                    </Button>
-                    <input
-                      type="file"
-                      accept="image/*,video/*"
-                      onChange={handleImageUpload}
-                      ref={fileInputRef}
-                      className="hidden"
-                      capture="environment"
-                    />
-                    <Button
-                      size="icon"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-custom-1 hover:bg-custom-1"
-                      onClick={() => handleSend()}
-                      disabled={isLoading || !input.trim()}
-                    >
-                      <ArrowUp className="h-4 w-4" />
-                      <span className="sr-only">Send message</span>
-                    </Button>
-                  </div>
-                  <div className="text-slate-500 text-xs w-full text-center font-normal leading-normal tracking-tight">
-                    Bri can make mistakes. Check our Terms & Conditions.
-                  </div>
+                  {!escalateMessage.trim() && (
+                    <>
+                      <div className="relative w-full -pb-4">
+                        <Input
+                          type="text"
+                          placeholder="Type your message..."
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                          className="pr-24 pl-12 py-6" // Add padding for icons
+                        />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                          <span className="sr-only">Upload file</span>
+                        </Button>
+                        <input
+                          type="file"
+                          accept="image/*,video/*"
+                          onChange={handleImageUpload}
+                          ref={fileInputRef}
+                          className="hidden"
+                          capture="environment"
+                        />
+                        <Button
+                          size="icon"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-custom-1 hover:bg-custom-1"
+                          onClick={() => handleSend()}
+                          disabled={isLoading || !input.trim()}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                          <span className="sr-only">Send message</span>
+                        </Button>
+                      </div>
+                      <div className="text-slate-500 text-xs w-full text-center font-normal leading-normal tracking-tight">
+                        Bri can make mistakes. Check our Terms & Conditions.
+                      </div>
+                    </>
+                  )}
+
+                  {escalateMessage.trim() && (
+                    <div className="border-2 p-2 rounded-lg">
+                      <div className="font-semibold leading-[34px] tracking-tight flex items-center">
+                        {!escalated ? (
+                          <>
+                            <TriangleAlert className="w-6 h-6 mr-4 text-custom-8" />
+                            Unable to Resolve
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-6 h-6 mr-4 text-custom-2" />
+                            Ticket Submitted
+                          </>
+                        )}
+                      </div>
+                      <div className="text-sm font-normal leading-normal tracking-tight my-2">
+                        {escalateMessage}
+                      </div>
+                      {!escalated && (
+                        <Button
+                          disabled={isPending}
+                          className="bg-custom-1 hover:bg-custom-1"
+                          onClick={handleSummarize}
+                        >
+                          {isPending ? (
+                            <>
+                              <Loader className="w-4 h-4 animate-spin mr-2" />{" "}
+                              Submitting
+                            </>
+                          ) : (
+                            "Submit Ticket"
+                          )}
+                        </Button>
+                      )}
+
+                      {escalated && (
+                        <Badge className="bg-custom-1 hover:bg-custom-1 py-2">
+                          In Progress
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </CardFooter>
               </Card>
             )}

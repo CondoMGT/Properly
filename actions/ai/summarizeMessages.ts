@@ -30,9 +30,9 @@ export async function summarizeMessages(messages: Message[]) {
     const response = await result.response;
     const summary = response.text();
 
-    return summary;
+    return { success: "Summarized successfully!", summary };
   } catch (error) {
     console.error("Error summarizing messages:", error);
-    return "An error occurred while summarizing the conversation.";
+    return { error: "An error occurred while summarizing the conversation." };
   }
 }
