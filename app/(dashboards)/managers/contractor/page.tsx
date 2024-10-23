@@ -1,7 +1,7 @@
-import React from "react";
+import { ContractorManagement } from "@/components/contractor/contractor-management";
 
 const ContractorPage = () => {
-  return <div>ContractorPage</div>;
+  return <ContractorManagement />;
 };
 
 export default ContractorPage;
