@@ -152,7 +152,7 @@ const ManagerPage = () => {
         {/* Maintenance Requests */}
         <Card className="md:col-span-2 flex flex-col">
           <CardHeader>
-            <CardTitle>Maintenance Requests</CardTitle>
+            <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow overflow-y-auto space-y-4">
             {maintenanceRequests.map((request) => (

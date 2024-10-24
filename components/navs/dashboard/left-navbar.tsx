@@ -94,14 +94,16 @@ export const LeftNavbar = () => {
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= 1024);
-    };
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setIsLargeScreen(window.innerWidth >= 1024);
+      };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
+      window.addEventListener("resize", handleResize);
+      handleResize();
 
-    return () => window.removeEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
   }, []);
 
   const NavContent = () => (

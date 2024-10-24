@@ -35,8 +35,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getRequestInfoForManager } from "@/data/request";
+import { RequestDialog } from "./request-dialog";
 
-type Request = {
+export type Request = {
   id: string;
   property: string;
   issue: string;
@@ -87,6 +88,16 @@ const priorityOptions = ["Low", "Medium", "High"];
 
 export default function MaintenanceRequestsTable() {
   const user = useCurrentUser();
+
+  const [viewDialog, setViewDialog] = React.useState(false);
+  const [selectedRequest, setSelectedRequest] = React.useState<Request | null>(
+    null
+  );
+
+  const handleCloseViewDialog = () => {
+    setSelectedRequest(null);
+    setViewDialog(false);
+  };
 
   const [filteredRequests, setFilteredRequests] = React.useState(requests);
   const [filters, setFilters] = React.useState({
@@ -224,129 +235,145 @@ export default function MaintenanceRequestsTable() {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex">
-          <select
-            className="px-3 py-2 bg-background border border-r-0 border-input rounded-l-md text-sm"
-            value={filters.searchType}
-            onChange={(e) =>
-              setFilters({ ...filters, searchType: e.target.value })
-            }
-          >
-            <option value="id">ID</option>
-            <option value="property">Property</option>
-            <option value="issue">Issue</option>
-          </select>
-          <Input
-            className="rounded-l-none"
-            placeholder={`Filter by ${filters.searchType}`}
-            value={filters.searchValue}
-            onChange={(e) => handleFilterChange("searchValue", e.target.value)}
+    <>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex">
+            <select
+              className="px-3 py-2 bg-background border border-r-0 border-input rounded-l-md text-sm"
+              value={filters.searchType}
+              onChange={(e) =>
+                setFilters({ ...filters, searchType: e.target.value })
+              }
+            >
+              <option value="id">ID</option>
+              <option value="property">Property</option>
+              <option value="issue">Issue</option>
+            </select>
+            <Input
+              className="rounded-l-none"
+              placeholder={`Filter by ${filters.searchType}`}
+              value={filters.searchValue}
+              onChange={(e) =>
+                handleFilterChange("searchValue", e.target.value)
+              }
+            />
+          </div>
+          <ComboboxFilter
+            options={statusOptions}
+            value={filters.status || []}
+            onChange={(value) => handleFilterChange("status", value)}
+            placeholder="Status"
+          />
+          <ComboboxFilter
+            options={priorityOptions}
+            value={filters.priority || []}
+            onChange={(value) => handleFilterChange("priority", value)}
+            placeholder="Priority"
           />
         </div>
-        <ComboboxFilter
-          options={statusOptions}
-          value={filters.status || []}
-          onChange={(value) => handleFilterChange("status", value)}
-          placeholder="Status"
-        />
-        <ComboboxFilter
-          options={priorityOptions}
-          value={filters.priority || []}
-          onChange={(value) => handleFilterChange("priority", value)}
-          placeholder="Priority"
-        />
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Request ID</TableHead>
-            <TableHead>Property</TableHead>
-            <TableHead>Issue</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Priority</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        {filteredRequests.length > 0 && (
-          <TableBody>
-            {filteredRequests.map((request) => (
-              <TableRow key={request.id} className="*:py-5">
-                <TableCell>{request.id}</TableCell>
-                <TableCell>{request.property}</TableCell>
-                <TableCell>{request.issue}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={request.status === "New" ? "outline" : "default"}
-                    className={`${
-                      statusColors[request.status]
-                    } flex justify-center items-center rounded-xl py-1`}
-                  >
-                    {request.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    className={`${
-                      priorityColors[request.priority]
-                    } flex items-center justify-center rounded-xl py-1`}
-                  >
-                    {request.priority}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => console.log(`View request ${request.id}`)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Request ID</TableHead>
+              <TableHead>Property</TableHead>
+              <TableHead>Issue</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Priority</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          {filteredRequests.length > 0 && (
+            <TableBody>
+              {paginatedRequests.map((request) => (
+                <TableRow key={request.id} className="*:py-5">
+                  <TableCell>{request.id}</TableCell>
+                  <TableCell>{request.property}</TableCell>
+                  <TableCell>{request.issue}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={request.status === "New" ? "outline" : "default"}
+                      className={`${
+                        statusColors[request.status]
+                      } flex justify-center items-center rounded-xl py-1`}
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${
+                        priorityColors[request.priority]
+                      } flex items-center justify-center rounded-xl py-1`}
+                    >
+                      {request.priority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        console.log(`View request ${request.id}`);
+                        setSelectedRequest(request);
+                        setViewDialog(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
+        </Table>
+        {filteredRequests.length === 0 && (
+          <div className="w-full mt-2 text-center text-gray-400">
+            No item found.
+          </div>
         )}
-      </Table>
-      {filteredRequests.length === 0 && (
-        <div className="w-full mt-2 text-center text-gray-400">
-          No item found.
-        </div>
-      )}
-      {filteredRequests.length > 0 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-            {Math.min(currentPage * itemsPerPage, filteredRequests.length)} of{" "}
-            {filteredRequests.length} results
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-sm font-medium">
-              Page {currentPage} of {pageCount}
+        {paginatedRequests.length > 0 && (
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, filteredRequests.length)} of{" "}
+              {filteredRequests.length} results
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, pageCount))
-              }
-              disabled={currentPage === pageCount}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="text-sm font-medium">
+                Page {currentPage} of {pageCount}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, pageCount))
+                }
+                disabled={currentPage === pageCount}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {selectedRequest && (
+        <RequestDialog
+          viewDialog={viewDialog}
+          setViewDialog={handleCloseViewDialog}
+          request={selectedRequest}
+        />
       )}
-    </div>
+    </>
   );
 }

@@ -281,11 +281,45 @@ export const ContractorManagement = () => {
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!file) {
+        toast.error("No file selected.");
+        return;
+      }
+
+      // Check the file type
+      const validFileTypes = [".csv", ".xlsx", ".xls"];
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+      if (!validFileTypes.includes(`.${fileExtension}`)) {
+        toast.error(
+          "Invalid file type. Please upload a .csv, .xlsx, or .xls file."
+        );
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target?.result as string;
+
+        // Check if the content is empty
+        if (!content) {
+          toast.error("The file is empty or could not be read.");
+          return;
+        }
+
         const lines = content.split("\n");
-        const newContractors: Contractor[] = lines.slice(1).map((line) => {
+
+        // Validate the expected format
+        if (lines.length < 2) {
+          toast.error("The file does not contain enough data.");
+          return;
+        }
+
+        const existingEmails = new Set(
+          contractors.map((contractor) => contractor.email.toLowerCase())
+        );
+        const newContractors: Contractor[] = [];
+
+        lines.slice(1).forEach((line) => {
           const [
             name,
             specialty,
@@ -303,7 +337,24 @@ export const ContractorManagement = () => {
             insurance,
             ratePerHour,
           ] = line.split(",");
-          return {
+
+          // Validate each field as needed (this is a basic example)
+          if (!name || !email || !phoneNumber) {
+            toast.error("Missing required fields in the file.");
+            throw new Error("Validation error");
+          }
+
+          // Check for duplicate email
+          if (existingEmails.has(email.toLowerCase())) {
+            toast.error(
+              `Duplicate email found: ${email}. This contractor will be skipped.`
+            );
+            return; // Skip adding this contractor
+          }
+
+          existingEmails.add(email.toLowerCase());
+
+          newContractors.push({
             id: Math.random().toString(36).substr(2, 9),
             name,
             specialty,
@@ -320,14 +371,18 @@ export const ContractorManagement = () => {
             rating: parseFloat(rating),
             insurance: insurance === "true",
             ratePerHour: parseInt(ratePerHour),
-          };
+          });
         });
-        console.log("NEW CONT", newContractors);
         setContractors([...contractors, ...newContractors]);
         toast.success("Contractors Imported", {
           description: `${newContractors.length} contractors have been imported.`,
         });
       };
+
+      reader.onerror = () => {
+        toast.error("An error occurred while reading the file.");
+      };
+
       reader.readAsText(file);
     }
   };

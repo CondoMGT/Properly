@@ -54,14 +54,16 @@ export const PropertyMessagingSystem = () => {
   }, 300);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileOpen(window.innerWidth < 1024);
-    };
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setIsMobileOpen(window.innerWidth < 1024);
+      };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
+      window.addEventListener("resize", handleResize);
+      handleResize();
 
-    return () => window.removeEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
   }, []);
 
   const user = useCurrentUser();

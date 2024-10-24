@@ -2,10 +2,10 @@ import { LeftNavbar } from "@/components/navs/dashboard/left-navbar";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-full w-full flex bg-custom-4">
+    <div className="h-screen w-full flex bg-custom-4 min-h-screen overflow-auto">
       <LeftNavbar />
 
-      <main className="flex-1 h-screen">{children}</main>
+      <main className="flex-1 h-screen overflow-auto">{children}</main>
     </div>
   );
 };
