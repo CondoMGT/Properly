@@ -133,13 +133,16 @@ model Contractor {
   emergency    Boolean
   rating       Float
 
+  startHour Int @default(9)
+  endHour   Int @default(17)
+
   insurance Boolean
 
   ratePerHour Int
 
   properties PropertyContractor[]
 
-  createdAt DateTime @default(now())
+  addedAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
