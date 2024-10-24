@@ -94,7 +94,6 @@ export const PresenceProvider: React.FC<{ children: React.ReactNode }> = ({
       "client-path-change",
       ({ userId, path }: { userId: string; path: string }) => {
         updateUserPath(userId, path);
-        console.log("Path change received:", { userId, path });
       }
     );
 

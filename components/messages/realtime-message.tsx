@@ -34,8 +34,6 @@ import {
   LinkIcon,
   Loader2,
   Paperclip,
-  SendHorizontal,
-  Star,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -393,7 +391,7 @@ export const RealTimeMessage = ({
                       );
                     })}
                   <div
-                    className={`text-xs text-[10px] ${
+                    className={`text-xs text-[8px] ${
                       message.senderId === user?.id
                         ? "text-primary-foreground"
                         : "text-muted-foreground"

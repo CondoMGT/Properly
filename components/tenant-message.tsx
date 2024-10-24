@@ -5,8 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Home, DollarSign, Hammer } from "lucide-react";
+import { Home, DollarSign } from "lucide-react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getTenantMessagesWithManager } from "@/data/tenant";
@@ -17,6 +16,14 @@ import { MessageReceived } from "@/lib/types";
 
 import { RealTimeMessage } from "@/components/messages/realtime-message";
 import { useUserPresence } from "@/contexts/PresenceContext";
+import { useBeams } from "@/hooks/use-Beams";
+import { usePathname } from "next/navigation";
+
+interface NotificationPayload {
+  title: string;
+  body: string;
+  icon?: string; // Optional icon property
+}
 
 // Mock data for the tenant
 const tenant = {
@@ -30,58 +37,56 @@ const tenant = {
 
 export const TenantMessage = () => {
   const user = useCurrentUser();
+  useBeams(user?.id);
+
+  const pathname = usePathname();
 
   const [messages, setMessages] = useState<MessageReceived[]>([]);
 
   const [managerId, setManagerId] = useState<string | null>(null);
 
-  const [members, setMembers] = useState<{
-    [id: string]: { name: string; email: string };
-  }>({});
-
   const { isUserOnline, getUserPath } = useUserPresence();
 
-  // console.log("tenant", isUserOnline(user?.id as string));
-  // console.log("tenant path", getUserPath(user?.id as string));
-
-  // Presence
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   const channel = pusherClient.subscribe(`presence-channel-${managerId}`);
-
-  //   channel.bind("pusher:subscription_succeeded", (members: any) => {
-  //     setMembers(members.members);
-  //   });
-
-  //   channel.bind("user-logged-in", (data: any) => {
-  //     console.log("Online users", data);
-  //   });
-
-  //   // console.log("channel", channel);
-
-  //   return () => {
-  //     channel.unbind_all();
-  //     pusherClient.unsubscribe(`presence-channel-${managerId}`);
-  //   };
-  // }, [user, managerId]);
-
-  // console.log("members", members);
-
   useEffect(() => {
-    const tt = async () => {
-      const d = await getTenantMessagesWithManager(user?.id as string);
+    // Request notification permission
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
 
+    const handleNotification = (payload: NotificationPayload) => {
+      const notification = new Notification(payload.title, {
+        body: payload.body,
+        icon: payload.icon,
+      });
+
+      notification.onclick = () => {
+        // Handle notification click
+        console.log("Notification clicked");
+      };
+    };
+
+    const subscribeToPusher = () => {
+      pusherClient.subscribe("chat-app");
+
+      pusherClient.bind("new-message", (data: MessageReceived) => {
+        setMessages((prev) => [...prev, data]);
+
+        // Show a notification for the new message
+        handleNotification({
+          title: "New Message",
+          body: "You have received a new message",
+        });
+      });
+    };
+
+    subscribeToPusher();
+
+    const fetchMessages = async () => {
+      const d = await getTenantMessagesWithManager(user?.id as string);
       setMessages(d as MessageReceived[]);
     };
 
-    tt();
-
-    pusherClient.subscribe("chat-app");
-
-    pusherClient.bind("new-message", (data: MessageReceived) => {
-      setMessages((prev) => [...prev, data]);
-    });
+    fetchMessages();
 
     return () => {
       pusherClient.unsubscribe("chat-app");
@@ -93,15 +98,22 @@ export const TenantMessage = () => {
     (m, index, self) => self.indexOf(m) === index
   );
 
+  if (pathname.includes("message")) {
+    // Change all message statuses to "READ"
+    filteredMessages.forEach((m) => {
+      m.status = "DELIVERED"; // Assuming each message has a 'status' property
+    });
+  }
+
   useEffect(() => {
-    const tt = async () => {
+    const fetchManagerId = async () => {
       const id = await getManagerId(user?.id as string);
 
       setManagerId(id as string);
     };
 
     if (user?.id) {
-      tt();
+      fetchManagerId();
     }
   }, [user]);
 

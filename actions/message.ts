@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/client";
 import { pusherServer } from "@/lib/pusher";
 import { CloudinaryUploadResult, MessageServer } from "@/lib/types";
+import PushNotifications from "@pusher/push-notifications-server";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -10,6 +11,11 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
+});
+
+const beamsClient = new PushNotifications({
+  instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
+  secretKey: process.env.BEAMS_SECRET_KEY!,
 });
 
 const MAX_BODY_SIZE = 27 * 1024 * 1024; // 5MB in bytes
@@ -96,6 +102,21 @@ export const sendMessage = async (values: MessageServer) => {
     });
 
     pusherServer.trigger("chat-app", "new-message", data);
+
+    // Send push notification via Pusher Beams
+    try {
+      await beamsClient.publishToUsers([values.receiverId], {
+        web: {
+          notification: {
+            title: "New Message",
+            body: "You have received a new message",
+          },
+        },
+      });
+      console.log("Notification sent successfully");
+    } catch (notificationError) {
+      console.error("Failed to send notification:", notificationError);
+    }
 
     return { success: "Message sent!" };
   } catch (error) {

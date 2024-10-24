@@ -2,6 +2,11 @@
 
 import { pusherClient } from "@/lib/pusher";
 import { signOut, useSession } from "next-auth/react";
+import * as PusherPushNotifications from "@pusher/push-notifications-web";
+
+const beamsClient = new PusherPushNotifications.Client({
+  instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
+});
 
 export const LogoutButton = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
@@ -11,7 +16,7 @@ export const LogoutButton = ({ children }: { children: React.ReactNode }) => {
       // Remove user from presence channel
       pusherClient.unsubscribe(`presence-channel`);
     }
-
+    await beamsClient.stop().catch(console.error);
     await signOut();
   };
 

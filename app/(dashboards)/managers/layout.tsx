@@ -1,5 +1,6 @@
 "use client";
 
+import SignIn from "@/app/auth/login/page";
 import { RoleGate } from "@/components/auth-gate/role-gate";
 import { Header } from "@/components/header";
 import { createSentenceCase } from "@/lib/helper";
@@ -27,11 +28,13 @@ const Managerslayout = ({ children }: { children: React.ReactNode }) => {
         <div className="h-full flex justify-center items-center">
           <Loader className="animate-spin w-24 h-24" />
         </div>
-      ) : (
+      ) : session.status === "authenticated" ? (
         <RoleGate allowedRole={[UserRole.MANAGER]}>
           <Header title={headerTitle} />
           <div className="w-full max-w-4xl mx-auto">{children}</div>
         </RoleGate>
+      ) : (
+        <SignIn />
       )}
     </div>
   );

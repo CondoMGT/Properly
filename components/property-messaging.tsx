@@ -6,33 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import { Badge } from "@/components/ui/badge";
-import {
-  Archive,
-  ChevronLeft,
-  ChevronRight,
-  Info,
-  StopCircle,
-} from "lucide-react";
+import { Archive, Info } from "lucide-react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getTenantsForManager } from "@/data/manager";
 
 import { getTenantMessagesWithManager } from "@/data/tenant";
 import { pusherClient } from "@/lib/pusher";
-import { AllUser, MessageReceived, UserLoggedInEvent } from "@/lib/types";
+import { AllUser, MessageReceived } from "@/lib/types";
 import { RealTimeMessage } from "@/components/messages/realtime-message";
 import { useUserPresence } from "@/contexts/PresenceContext";
 import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
+import { useBeams } from "@/hooks/use-Beams";
+import { usePathname } from "next/navigation";
+
+interface NotificationPayload {
+  title: string;
+  body: string;
+  icon?: string; // Optional icon property
+}
 
 export const PropertyMessagingSystem = () => {
   const [selectedTenant, setSelectedTenant] = useState<AllUser | null>(null);
@@ -41,14 +36,22 @@ export const PropertyMessagingSystem = () => {
     {}
   );
 
+  const pathname = usePathname();
+
+  if (pathname.includes("message")) {
+    Object.keys(messages).forEach((key) => {
+      messages[key].forEach((message) => {
+        message.status = "DELIVERED"; // Assuming each MessageReceived has a 'status' property
+      });
+    });
+  }
+
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [filter, setFilter] = useState("");
 
   const debounced = useDebouncedCallback((value: string) => {
     setFilter(value);
   }, 300);
-
-  console.log("filter", filter);
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,30 +66,28 @@ export const PropertyMessagingSystem = () => {
 
   const user = useCurrentUser();
 
+  useBeams(user?.id);
+
   const { isUserOnline, getUserPath, users } = useUserPresence();
 
-  console.log("tenants path", getUserPath(selectedTenant?.id as string));
-
-  // Presence
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   const channel = pusherClient.subscribe(`presence-channel-${user?.id}`);
-
-  //   channel.bind("user-logged-in", (data: UserLoggedInEvent) => {
-  //     console.log("Online users", data.userId);
-  //   });
-
-  //   // console.log("channel", channel);
-
-  //   return () => {
-  //     channel.unbind_all();
-  //     pusherClient.unsubscribe(`presence-channel-${user?.id}`);
-  //   };
-  // }, [user]);
-
   useEffect(() => {
-    const tt = async () => {
+    // Request notification permission
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    const handleNotification = (payload: NotificationPayload) => {
+      const notification = new Notification(payload.title, {
+        body: payload.body,
+        icon: payload.icon,
+      });
+
+      notification.onclick = () => {
+        // Handle notification click
+        console.log("Notification clicked");
+      };
+    };
+    const fetchTenantsMessages = async () => {
       const d = await getTenantMessagesWithManager(
         selectedTenant?.id as string
       );
@@ -101,20 +102,30 @@ export const PropertyMessagingSystem = () => {
     };
 
     if (selectedTenant) {
-      tt();
+      fetchTenantsMessages();
     }
 
-    pusherClient.subscribe("chat-app");
+    const subscribeToPusher = () => {
+      pusherClient.subscribe("chat-app");
 
-    pusherClient.bind("new-message", (data: MessageReceived) => {
-      setMessages((prev) => {
-        const currentMessages = prev[selectedTenant?.id as string] || [];
-        return {
-          ...prev,
-          [selectedTenant?.id as string]: [...currentMessages, data], // Append new message
-        };
+      pusherClient.bind("new-message", (data: MessageReceived) => {
+        setMessages((prev) => {
+          const currentMessages = prev[selectedTenant?.id as string] || [];
+          return {
+            ...prev,
+            [selectedTenant?.id as string]: [...currentMessages, data], // Append new message
+          };
+        });
+
+        // Show a notification for the new message
+        handleNotification({
+          title: "New Message",
+          body: "You have received a new message",
+        });
       });
-    });
+
+      subscribeToPusher();
+    };
 
     return () => {
       pusherClient.unsubscribe("chat-app");
@@ -122,7 +133,7 @@ export const PropertyMessagingSystem = () => {
   }, [selectedTenant]);
 
   useEffect(() => {
-    const tt = async () => {
+    const fetchTenants = async () => {
       const res = await getTenantsForManager(user?.id as string);
 
       if (res) {
@@ -130,7 +141,7 @@ export const PropertyMessagingSystem = () => {
       }
     };
 
-    tt();
+    fetchTenants();
   }, [user]);
 
   const handleArchiveConversation = (tenantId: string) => {
@@ -197,7 +208,7 @@ export const PropertyMessagingSystem = () => {
                 </Button>
               ))}
 
-            {filteredTenants.length === 0 && (
+            {!messages && filteredTenants.length === 0 && (
               <div className="flex flex-col space-y-4 items-center justify-center border p-4 rounded bg-custom-3">
                 <Info className="w-4 h-4 text-custom-8" />
                 <span className="text-xs italic">Close but no Ciggar</span>
