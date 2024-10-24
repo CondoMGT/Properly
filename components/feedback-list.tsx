@@ -1,7 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
-import { useState, useEffect } from "react";
+// import { useState } from "react";
 
 interface Feedback {
   id: string;
@@ -67,8 +67,8 @@ const dummyFeedback: Feedback[] = [
 ];
 
 export default function FeedbackList() {
-  const [feedback, setFeedback] = useState<Feedback[]>(dummyFeedback || []);
-  const [error, setError] = useState("");
+  // const [feedback, setFeedback] = useState<Feedback[]>(dummyFeedback || []);
+  // const [error, setError] = useState("");
 
   // useEffect(() => {
   //   fetchFeedback();
@@ -92,14 +92,14 @@ export default function FeedbackList() {
   //   }
   // };
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
+  // if (error) {
+  //   return <div className="text-red-500">{error}</div>;
+  // }
 
   return (
     <div className="space-y-4 mb-8">
       <h2 className="text-2xl font-bold mb-4">Feedback List</h2>
-      {feedback.map((item) => (
+      {dummyFeedback.map((item) => (
         <div
           key={item.id}
           className="bg-white shadow-md rounded-lg p-4 space-y-2"

@@ -18,18 +18,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
 import { useSession } from "next-auth/react";
 import { ProperlyLogo } from "@/components/logo/logo";
 
 export default function SignIn() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
+  // const callbackUrl = searchParams.get("callbackUrl");
 
   const session = useSession();
-
-  const callbackUrl = searchParams.get("callbackUrl");
 
   const [isPending, startTransition] = useTransition();
 

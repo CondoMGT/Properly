@@ -60,7 +60,6 @@ import ReactMarkdown from "react-markdown";
 import { summarizeMessages } from "@/actions/ai/summarizeMessages";
 import { toast } from "sonner";
 import { getTenantRequestInfo } from "@/data/tenant";
-import { useSession } from "next-auth/react";
 import { newMaintenance } from "@/actions/maintenance";
 import { uploadToCloudinary } from "@/actions/file/cloudinary-upload";
 
@@ -176,7 +175,7 @@ const MaintenancePage = () => {
         throw new Error("Failed to get response reader");
       }
 
-      let botMessage: Message = { type: "bot", content: "" };
+      const botMessage: Message = { type: "bot", content: "" };
       setMessages((prev) => [...prev, botMessage]);
 
       while (true) {

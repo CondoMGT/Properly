@@ -12,7 +12,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,14 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dispatch, SetStateAction } from "react";
 import { Request } from "./maintenance-request-table";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface RequestDialogProp {
   viewDialog: boolean;

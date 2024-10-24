@@ -83,6 +83,13 @@ const requests: Request[] = [
   },
 ];
 
+type FilterValue = {
+  searchType: "id" | "property" | "issue"; // Assuming these are the only search types
+  searchValue: string;
+  status: string[]; // Array of selected status strings
+  priority: string[]; // Array of selected priority strings
+};
+
 const statusOptions = ["New", "In Progress", "Pending", "Closed"];
 const priorityOptions = ["Low", "Medium", "High"];
 
@@ -115,9 +122,12 @@ export default function MaintenanceRequestsTable() {
     };
 
     getInfo();
-  }, []);
+  }, [user?.id]);
 
-  const handleFilterChange = (key: string, value: any) => {
+  const handleFilterChange = (
+    key: string,
+    value: FilterValue[keyof FilterValue]
+  ) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
 

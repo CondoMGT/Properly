@@ -17,7 +17,7 @@ import { getTenantMessagesWithManager } from "@/data/tenant";
 import { pusherClient } from "@/lib/pusher";
 import { AllUser, MessageReceived } from "@/lib/types";
 import { RealTimeMessage } from "@/components/messages/realtime-message";
-import { useUserPresence } from "@/contexts/PresenceContext";
+// import { useUserPresence } from "@/contexts/PresenceContext";
 import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { useBeams } from "@/hooks/use-Beams";
@@ -70,7 +70,7 @@ export const PropertyMessagingSystem = () => {
 
   useBeams(user?.id);
 
-  const { isUserOnline, getUserPath, users } = useUserPresence();
+  // const { isUserOnline, getUserPath, users } = useUserPresence();
 
   useEffect(() => {
     // Request notification permission
@@ -125,9 +125,8 @@ export const PropertyMessagingSystem = () => {
           body: "You have received a new message",
         });
       });
-
-      subscribeToPusher();
     };
+    subscribeToPusher();
 
     return () => {
       pusherClient.unsubscribe("chat-app");

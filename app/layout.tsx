@@ -66,7 +66,7 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} ${nunitoSans.variable} antialiased w-screen `}
+          className={`${geistSans.variable} ${geistMono.variable} ${kyivTypeSans.variable} ${kumbhSans.className} ${nunitoSans.variable} ${openSans.variable} antialiased w-screen `}
         >
           <Toaster richColors />
 

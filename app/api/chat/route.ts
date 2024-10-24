@@ -24,7 +24,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-    let parts: Part[] = [{ text: prompt }];
+    const parts: Part[] = [{ text: prompt }];
 
     if (image) {
       const [mimeType, base64Data] = image.split(",");

@@ -29,8 +29,8 @@ import {
   FileCode,
   FileSpreadsheet,
   FileText,
-  Image,
   ImageIcon,
+  ImageUpIcon,
   LinkIcon,
   Loader2,
   Paperclip,
@@ -40,6 +40,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns";
+import Image from "next/image";
 
 interface RealTimeMessageProp {
   messages: MessageReceived[] | Record<string, MessageReceived[]>;
@@ -180,7 +181,7 @@ export const RealTimeMessage = ({
     return (
       <div className="flex items-center space-x-2 rounded text-primary-foreground">
         {attachment.type === "file" && <FileText className="h-4 w-4" />}
-        {attachment.type === "image" && <Image className="h-4 w-4" />}
+        {attachment.type === "image" && <ImageUpIcon className="h-4 w-4" />}
         {attachment.type === "link" && <LinkIcon className="h-4 w-4" />}
         <span className="flex-grow">{attachment.name}</span>
         {allowRemove && (
@@ -225,7 +226,7 @@ export const RealTimeMessage = ({
         </div>
         <div className="mt-2">
           {attachment.type.startsWith("image/") && (
-            <img
+            <Image
               src={attachment.url}
               alt={attachment.name}
               className="w-56 h-auto rounded cursor-pointer"
@@ -479,7 +480,7 @@ export const RealTimeMessage = ({
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" />
                 <Label htmlFor="terms">
-                  I confirm this file doesn't contain sensitive information
+                  I confirm this file doesn&apos;t contain sensitive information
                 </Label>
               </div>
             </div>
@@ -516,7 +517,7 @@ export const RealTimeMessage = ({
               </DialogDescription>
             </DialogHeader>
             <div className="relative">
-              <img
+              <Image
                 src={selectedAttachImage.url}
                 alt={selectedAttachImage.name}
                 className="w-full h-auto"
