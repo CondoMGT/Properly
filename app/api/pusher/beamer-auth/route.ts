@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
 const beamsClient = new PushNotifications({
-  instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
+  instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID! as string,
   secretKey: process.env.BEAMS_SECRET_KEY!,
 });
 
