@@ -102,10 +102,13 @@ export const login = async (
   try {
     const redirectUrl =
       existingUser.role === "TENANT" ? "/tenants" : "/managers";
+    const finalRedirectUrl =
+      callbackUrl || redirectUrl || DEFAULT_LOGIN_REDIRECT;
+
     const result = await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl || redirectUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: finalRedirectUrl,
       // redirect: false,
     });
 
@@ -119,6 +122,7 @@ export const login = async (
       "user-logged-in",
       {
         userId: existingUser.id,
+        path: finalRedirectUrl,
       }
     );
 

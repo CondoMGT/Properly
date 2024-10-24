@@ -21,6 +21,7 @@ import {
 } from "@/lib/types";
 import { MessageStatus } from "@prisma/client";
 import {
+  ArrowUp,
   Check,
   CheckCheck,
   Download,
@@ -214,7 +215,7 @@ export const RealTimeMessage = ({
   ) => {
     return (
       <div
-        className={`flex flex-col space-y-2 p-4 border rounded-lg ${
+        className={`flex flex-col space-y-2 p-4 rounded-lg ${
           sender === user?.id ? "text-primary-foreground" : ""
         }`}
       >
@@ -243,14 +244,14 @@ export const RealTimeMessage = ({
                   setSelectedAttachPdf(attachment);
                   setIsPdfDialogOpen(true);
                 }}
-                className={sender === user?.id ? "border border-white" : ""}
+                className={`bg-custom-0`}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View PDF
               </Button>
               <Button
                 onClick={() => window.open(attachment.url, "_blank")}
-                className={sender === user?.id ? "border border-white" : ""}
+                className={`bg-custom-2`}
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download PDF
@@ -341,7 +342,7 @@ export const RealTimeMessage = ({
 
   return (
     <>
-      <ScrollArea className="flex-grow mb-4 px-4 h-[500px]" ref={scrollAreaRef}>
+      <ScrollArea className="flex-grow mb-4 px-4 h-[400px]" ref={scrollAreaRef}>
         {groupMessagesByDate(refinedMessages).map((group, groupIndex) => (
           <div key={groupIndex} className="mb-4">
             <div className="text-center text-sm text-muted-foreground mb-2">
@@ -361,8 +362,8 @@ export const RealTimeMessage = ({
                 <div
                   className={`inline-block p-2 rounded-lg ${
                     message.senderId === user?.id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary"
+                      ? "bg-custom-1 text-primary-foreground"
+                      : "bg-custom-3"
                   }`}
                 >
                   {/* <div className="flex items-center justify-end mb-1">
@@ -435,13 +436,13 @@ export const RealTimeMessage = ({
         )}
         <div ref={bottomRef} />
       </ScrollArea>
-      <div className="flex items-center">
+      <div className="relative w-full">
         <Input
           placeholder="Type your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-          className="flex-grow mr-2"
+          className="pr-24 pl-12 py-6"
         />
         <Dialog
           open={attachmentDialogOpen}
@@ -450,9 +451,9 @@ export const RealTimeMessage = ({
           <DialogTrigger asChild>
             <Button
               disabled={isPending}
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="mr-2"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent"
             >
               <Paperclip className="h-4 w-4" />
             </Button>
@@ -489,13 +490,18 @@ export const RealTimeMessage = ({
             </Button>
           </DialogContent>
         </Dialog>
-        <Button onClick={handleSendMessage} disabled={isPending}>
+        <Button
+          onClick={handleSendMessage}
+          disabled={isPending}
+          size="icon"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-custom-1 hover:bg-custom-1"
+        >
           {isPending ? (
             <Loader2 className="h-4 w-4" />
           ) : (
             <>
-              <SendHorizontal className="h-4 w-4 mr-2" />
-              Send
+              <ArrowUp className="h-4 w-4" />
+              <span className="sr-only">Send Message</span>
             </>
           )}
         </Button>

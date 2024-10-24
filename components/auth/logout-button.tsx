@@ -1,10 +1,18 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { pusherClient } from "@/lib/pusher";
+import { signOut, useSession } from "next-auth/react";
 
 export const LogoutButton = ({ children }: { children: React.ReactNode }) => {
-  const logout = () => {
-    signOut();
+  const { data: session } = useSession();
+
+  const logout = async () => {
+    if (session?.user?.id) {
+      // Remove user from presence channel
+      pusherClient.unsubscribe(`presence-channel`);
+    }
+
+    await signOut();
   };
 
   return (

@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
       user_info: {
         name: session.user.name,
         email: session.user.email,
+        role: session.user.role,
+        path: session.user.role === "TENANT" ? "/tenants" : "/managers",
       },
     };
 

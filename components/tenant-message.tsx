@@ -16,6 +16,7 @@ import { pusherClient } from "@/lib/pusher";
 import { MessageReceived } from "@/lib/types";
 
 import { RealTimeMessage } from "@/components/messages/realtime-message";
+import { useUserPresence } from "@/contexts/PresenceContext";
 
 // Mock data for the tenant
 const tenant = {
@@ -28,6 +29,8 @@ const tenant = {
 };
 
 export const TenantMessage = () => {
+  const user = useCurrentUser();
+
   const [messages, setMessages] = useState<MessageReceived[]>([]);
 
   const [managerId, setManagerId] = useState<string | null>(null);
@@ -36,29 +39,32 @@ export const TenantMessage = () => {
     [id: string]: { name: string; email: string };
   }>({});
 
-  const user = useCurrentUser();
+  const { isUserOnline, getUserPath } = useUserPresence();
+
+  // console.log("tenant", isUserOnline(user?.id as string));
+  // console.log("tenant path", getUserPath(user?.id as string));
 
   // Presence
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const channel = pusherClient.subscribe(`presence-channel-${managerId}`);
+  //   const channel = pusherClient.subscribe(`presence-channel-${managerId}`);
 
-    channel.bind("pusher:subscription_succeeded", (members: any) => {
-      setMembers(members.members);
-    });
+  //   channel.bind("pusher:subscription_succeeded", (members: any) => {
+  //     setMembers(members.members);
+  //   });
 
-    channel.bind("user-logged-in", (data: any) => {
-      console.log("Online users", data);
-    });
+  //   channel.bind("user-logged-in", (data: any) => {
+  //     console.log("Online users", data);
+  //   });
 
-    // console.log("channel", channel);
+  //   // console.log("channel", channel);
 
-    return () => {
-      channel.unbind_all();
-      pusherClient.unsubscribe(`presence-channel-${managerId}`);
-    };
-  }, [user, managerId]);
+  //   return () => {
+  //     channel.unbind_all();
+  //     pusherClient.unsubscribe(`presence-channel-${managerId}`);
+  //   };
+  // }, [user, managerId]);
 
   // console.log("members", members);
 
@@ -101,24 +107,22 @@ export const TenantMessage = () => {
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          <span></span>
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={user?.image as string}
-              alt={user?.name as string}
-            />
-            <AvatarFallback>{user?.name?.charAt(0) as string}</AvatarFallback>
-          </Avatar>
-        </CardTitle>
-      </CardHeader>
+      <CardHeader></CardHeader>
       <CardContent>
         <Tabs defaultValue="overview">
-          <TabsList className="mb-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-          </TabsList>
+          <div className=" flex justify-between">
+            <TabsList className="mb-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="messages">Messages</TabsTrigger>
+            </TabsList>
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                src={user?.image as string}
+                alt={user?.name as string}
+              />
+              <AvatarFallback>{user?.name?.charAt(0) as string}</AvatarFallback>
+            </Avatar>
+          </div>
           <TabsContent value="overview">
             <div className="grid gap-4">
               <Card>
@@ -155,7 +159,7 @@ export const TenantMessage = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  Messages with Property Manager
+                  Communicate with your Property Manager
                 </CardTitle>
               </CardHeader>
 

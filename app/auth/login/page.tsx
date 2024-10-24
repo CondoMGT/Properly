@@ -21,7 +21,6 @@ import {
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useSession } from "next-auth/react";
 import { ProperlyLogo } from "@/components/logo/logo";
 
