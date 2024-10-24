@@ -14,6 +14,7 @@ interface newMaintenanceProps {
   issue: string;
   userId: string;
   propertyId: string;
+  attachments: string[];
 }
 
 export const newMaintenance = async (vals: newMaintenanceProps) => {
@@ -22,7 +23,7 @@ export const newMaintenance = async (vals: newMaintenanceProps) => {
   }
 
   const { summary, description, priority } = vals.data;
-  const { issue, userId, propertyId } = vals;
+  const { issue, userId, propertyId, attachments } = vals;
 
   try {
     if (!userId || !propertyId) {
@@ -31,6 +32,19 @@ export const newMaintenance = async (vals: newMaintenanceProps) => {
 
     if (!issue || !summary || !description || !priority) {
       return { error: "Please provide details of the request." };
+    }
+
+    let attach: { id: string; attachments: string[] } = {
+      id: "",
+      attachments: [],
+    };
+
+    if (attachments && attachments.length > 0) {
+      attach = await prisma.attachment.create({
+        data: {
+          attachments,
+        },
+      });
     }
 
     await prisma.maintenanceRequest.create({
@@ -42,6 +56,7 @@ export const newMaintenance = async (vals: newMaintenanceProps) => {
         priority,
         userId,
         propertyId,
+        attachments: attach.id || null,
       },
     });
 

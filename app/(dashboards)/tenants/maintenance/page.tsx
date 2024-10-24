@@ -62,6 +62,7 @@ import { toast } from "sonner";
 import { getTenantRequestInfo } from "@/data/tenant";
 import { useSession } from "next-auth/react";
 import { newMaintenance } from "@/actions/maintenance";
+import { uploadToCloudinary } from "@/actions/file/cloudinary-upload";
 
 type Message = {
   type: "user" | "bot";
@@ -79,6 +80,8 @@ const MaintenancePage = () => {
 
   const [isPending, startTransition] = useTransition();
   const user = useCurrentUser();
+
+  const [attachments, setAttachments] = useState<string[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -118,6 +121,19 @@ const MaintenancePage = () => {
 
     if (currentImage) {
       newMessage.image = currentImage;
+      // Upload image to Cloudinary and store the URL
+      const uploadResult = await uploadToCloudinary(currentImage, {
+        resourceType: "image" as const,
+        folder: "maintenance_requests",
+      });
+      if (uploadResult) {
+        const resultString = JSON.stringify({
+          url: uploadResult.url,
+          type: uploadResult.type,
+          name: uploadResult.name,
+        });
+        setAttachments((prev) => [...prev, resultString]);
+      }
     }
 
     setMessages((prev) => [...prev, newMessage]);
@@ -268,6 +284,7 @@ const MaintenancePage = () => {
             issue,
             userId: user?.id as string,
             propertyId: info?.property.id as string,
+            attachments: attachments || [],
           });
 
           toast.success(mainReq.success || "Request submitted.");

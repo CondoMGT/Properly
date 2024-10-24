@@ -93,3 +93,49 @@ export const MaintenanceSchema = z.object({
     .optional()
     .default([]),
 });
+
+export const ContractorSchema = z
+  .object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    specialty: z.string().min(1, { message: "Please select a specialty." }),
+    companyName: z
+      .string()
+      .min(2, { message: "Company Name must be at least 2 characters." }),
+    phoneNumber: z
+      .string()
+      .min(10, { message: "Please enter a valid phone number." }),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+    licenseNumber: z
+      .string()
+      .min(1, { message: "License number is required." }),
+    yearsOfExperience: z
+      .number()
+      .min(0, { message: "Years of experience must be 0 or greater." }),
+    serviceArea: z
+      .string()
+      .min(1, { message: "Please select a service area." }),
+    availability: z
+      .array(z.string())
+      .min(1, { message: "Please select at least one availability." }),
+    startHour: z
+      .number()
+      .min(0)
+      .max(23, { message: "Start hour must be between 0 and 23." }),
+    endHour: z
+      .number()
+      .min(0)
+      .max(23, { message: "Start hour must be between 0 and 23." }),
+    emergency: z.boolean(),
+    rating: z
+      .number()
+      .min(0)
+      .max(5, { message: "Rating must be between 0 and 5." }),
+    insurance: z.boolean(),
+    ratePerHour: z
+      .number()
+      .min(0, { message: "Rate per hour must be 0 or greater." }),
+  })
+  .refine((data) => data.startHour < data.endHour, {
+    message: "End hour must be after start hour",
+    path: ["endHour"],
+  });

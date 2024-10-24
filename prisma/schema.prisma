@@ -109,6 +109,9 @@ model MaintenanceRequest {
   propertyId String   @unique @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
 
+  attachments       String?     @unique @db.Uuid
+  requestAttachment Attachment? @relation("requestAttachment", fields: [attachments], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -116,7 +119,8 @@ model MaintenanceRequest {
 model Contractor {
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
 
-  name String
+  name        String
+  companyName String
 
   specialty         String
   phoneNumber       String
@@ -132,6 +136,23 @@ model Contractor {
   insurance Boolean
 
   ratePerHour Int
+
+  properties PropertyContractor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PropertyContractor {
+  contractor   Contractor @relation(fields: [contractorId], references: [id])
+  contractorId String     @db.Uuid
+  property     Property   @relation(fields: [propertyId], references: [id])
+  propertyId   String     @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([contractorId, propertyId])
 }
 
 model Property {
@@ -145,6 +166,8 @@ model Property {
   tenants Tenant[]
 
   maintenanceRequests MaintenanceRequest[]
+
+  contractors PropertyContractor[]
 }
 
 model PropertyManager {
@@ -179,7 +202,8 @@ model Attachment {
   id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   attachments String[]
 
-  messageAttachments Message? @relation("messageAttachment")
+  messageAttachments Message?            @relation("messageAttachment")
+  requestAttachments MaintenanceRequest? @relation("requestAttachment")
 }
 
 // model Notification {
