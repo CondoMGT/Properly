@@ -1,4 +1,3 @@
-import LoginButton from "@/components/auth/login-button";
 import { MainNav } from "@/components/navs/main/Navbar";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, LogIn } from "lucide-react";
