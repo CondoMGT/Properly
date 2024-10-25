@@ -155,7 +155,11 @@ export default function SignIn() {
                     )}
                   />
                 </div>
-                <Button disabled={isPending} type="submit">
+                <Button
+                  disabled={isPending}
+                  type="submit"
+                  className="bg-custom-1 hover:bg-custom-1"
+                >
                   {isPending && (
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
                   )}

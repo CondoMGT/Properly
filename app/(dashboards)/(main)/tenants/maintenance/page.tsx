@@ -94,21 +94,15 @@ const MaintenancePage = () => {
   const lastChildRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const scrollToBottom = () => {
-      if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    if (scrollAreaRef.current && lastChildRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
-    };
-
-    if (lastChildRef.current) {
-      lastChildRef.current.scrollIntoView({ behavior: "smooth" });
     }
-
-    // Use a timeout to ensure the scroll occurs after the DOM updates
-    const timeoutId = setTimeout(scrollToBottom, 100);
-
-    return () => clearTimeout(timeoutId); // Cleanup timeout
-  }, [messages]);
+  }, [messages, input]);
 
   const handleSend = async (initialInput?: string, initialImage?: string) => {
     const currentInput = initialInput || input;
@@ -666,7 +660,7 @@ const MaintenancePage = () => {
                         </div>
                       </div>
                     )}
-                    {showResolution && (
+                    {showResolution && !input.trim() && (
                       <div className="flex justify-center space-x-2 mb-4">
                         <Button
                           onClick={() => handleResolution(true)}
@@ -753,7 +747,7 @@ const MaintenancePage = () => {
                           size="icon"
                           className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-custom-1 hover:bg-custom-1"
                           onClick={() => handleSend()}
-                          disabled={isLoading || !input.trim()}
+                          disabled={isLoading || (!input.trim() && !image)}
                         >
                           <ArrowUp className="h-4 w-4" />
                           <span className="sr-only">Send message</span>

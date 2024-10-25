@@ -103,7 +103,11 @@ export const NewPasswordForm = () => {
             <FormError message={error} />
             <FormSuccess message={success} />
 
-            <Button disabled={isPending} type="submit" className="w-full">
+            <Button
+              disabled={isPending}
+              type="submit"
+              className="w-full bg-custom-1 hover:bg-custom-1"
+            >
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (
