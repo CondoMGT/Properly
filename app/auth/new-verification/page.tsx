@@ -68,7 +68,8 @@ const VerificationPage = () => {
           Verify Your Email
         </span>
         <span className="text-[18px] font-semibold font-nunito leading-[34px]">
-          We've sent a verification code to your email. Please enter it below.
+          We&apos;ve sent a verification code to your email. Please enter it
+          below.
         </span>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
