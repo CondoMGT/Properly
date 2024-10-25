@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { CheckCheck, ImageIcon, X } from "lucide-react";
+import { CheckCheck, ImageIcon } from "lucide-react";
 
 interface AITroubleshootingProps {
   title: string;
