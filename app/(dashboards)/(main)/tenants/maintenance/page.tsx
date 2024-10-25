@@ -35,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState, useTransition } from "react";
 import {
+  AlertCircle,
   ArrowUp,
   CheckCheck,
   CheckCircle,
@@ -55,13 +56,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PulseLoader } from "react-spinners";
+import { BeatLoader, PulseLoader } from "react-spinners";
 import ReactMarkdown from "react-markdown";
 import { summarizeMessages } from "@/actions/ai/summarizeMessages";
 import { toast } from "sonner";
 import { getTenantRequestInfo } from "@/data/tenant";
 import { newMaintenance } from "@/actions/maintenance";
 import { uploadToCloudinary } from "@/actions/file/cloudinary-upload";
+import { getRequestInfoForTenant } from "@/data/request";
+import { RequestStatus } from "@prisma/client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { format } from "date-fns";
 
 type Message = {
   type: "user" | "bot";
@@ -69,11 +74,21 @@ type Message = {
   image?: string;
 };
 
+type ReqType = {
+  id: string;
+  issue: string;
+  createdAt: Date;
+  status: RequestStatus;
+};
+
 const MaintenancePage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [briBoard, setBriBoard] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [escalated, setEscalated] = useState(false);
+
+  const [tenantRequests, setTenantRequests] = useState<ReqType[] | null>(null);
+  const [requestLoading, setRequestLoading] = useState(false);
 
   const [escalateMessage, setEscalateMessage] = useState("");
 
@@ -92,6 +107,18 @@ const MaintenancePage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastChildRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setRequestLoading(true);
+    const fetchRequests = async () => {
+      const req = await getRequestInfoForTenant(user?.id as string);
+
+      setTenantRequests(req);
+      setRequestLoading(false);
+    };
+
+    fetchRequests();
+  }, []);
 
   useEffect(() => {
     if (scrollAreaRef.current && lastChildRef.current) {
@@ -264,11 +291,6 @@ const MaintenancePage = () => {
         }
 
         if (summary?.success) {
-          setEscalated(true);
-          setEscalateMessage(
-            "Your ticket has been submitted successfully. A maintenance team will be assigned to address your issue."
-          );
-
           // TODO: CREATE Maintenance Ticket in database
           const info = await getTenantRequestInfo(user?.id as string);
 
@@ -280,7 +302,17 @@ const MaintenancePage = () => {
             attachments: attachments || [],
           });
 
-          toast.success(mainReq.success || "Request submitted.");
+          try {
+            if (mainReq.success) {
+              setEscalated(true);
+              setEscalateMessage(
+                "Your ticket has been submitted successfully. A maintenance team will be assigned to address your issue."
+              );
+              toast.success(mainReq.success || "Request submitted.");
+            }
+          } catch {
+            toast.error(mainReq.error);
+          }
         }
       } catch {
         toast.error("Something went wrong!");
@@ -808,26 +840,56 @@ const MaintenancePage = () => {
         </Dialog>
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center p-4 bg-custom-3 rounded-lg">
-            <div className="space-y-2">
-              <h4 className="font-semibold">Kitchen Sink Leak</h4>
-              <p className="text-sm text-muted-foreground">
-                Submitted: 04/28/2023
-              </p>
+          {!requestLoading &&
+            (!tenantRequests || tenantRequests.length === 0) && (
+              <Alert className="bg-custom-3">
+                <AlertCircle className="w-4 h-4" />
+                <AlertTitle className="font-semibold font-nunito">
+                  No Maintenance Requests
+                </AlertTitle>
+                <AlertDescription className="font-nunito italic">
+                  Seems like everything is running like a well oiled machine
+                  here.
+                  <br />
+                  If the machine seems jenky, click the button above to log a
+                  maintenance request
+                </AlertDescription>
+              </Alert>
+            )}
+
+          {requestLoading && (
+            <div className="flex justify-center items-center p-8 bg-custom-3 rounded-lg">
+              <BeatLoader color="#003366" />
             </div>
-            <Badge className="border border-black">In Progress</Badge>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-custom-3 rounded-lg">
-            <div className="space-y-2">
-              <h4 className="font-semibold">Bedroom Window Stuck</h4>
-              <p className="text-sm text-muted-foreground">
-                Submitted: 04/15/2023
-              </p>
-            </div>
-            <Badge variant="outline" className="border border-black">
-              Completed
-            </Badge>
-          </div>
+          )}
+
+          {tenantRequests &&
+            tenantRequests.map((req) => (
+              <div
+                key={req.id}
+                className="flex justify-between items-center p-4 bg-custom-3 rounded-lg"
+              >
+                <div className="space-y-2">
+                  <h4 className="font-semibold">{req.issue}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Submitted: {format(req.createdAt, "MM/dd/yyyy")}
+                  </p>
+                </div>
+                <Badge
+                  className={`border border-black w-24 inline-flex justify-center ${
+                    ["New", "In_Progress"].includes(req.status)
+                      ? "bg-custom-1"
+                      : req.status === "Pending"
+                      ? "bg-custom-5"
+                      : "bg-custom-2"
+                  }`}
+                >
+                  {["New", "In_Progress"].includes(req.status)
+                    ? "In Progress"
+                    : req.status}
+                </Badge>
+              </div>
+            ))}
         </div>
       </CardContent>
     </Card>

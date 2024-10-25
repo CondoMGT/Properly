@@ -9,7 +9,12 @@ export const getRequestInfoForTenant = async (userId: string) => {
     });
 
     return reqInfo.map((r) => {
-      r.id, r.issue, r.createdAt, r.status;
+      return {
+        id: r.id,
+        issue: r.issue,
+        createdAt: r.createdAt,
+        status: r.status,
+      };
     });
   } catch (error) {
     console.log("Error:", error);

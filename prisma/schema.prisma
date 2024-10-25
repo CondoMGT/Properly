@@ -103,10 +103,10 @@ model MaintenanceRequest {
 
   maintenanceDate DateTime?
 
-  userId String @unique @db.Uuid
+  userId String @db.Uuid
   user   users  @relation(fields: [userId], references: [id])
 
-  propertyId String   @unique @db.Uuid
+  propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
 
   attachments       String?     @unique @db.Uuid

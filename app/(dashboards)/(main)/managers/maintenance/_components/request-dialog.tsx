@@ -31,6 +31,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AITroubleshootingPreview from "@/components/ai-preview/ai-troubleshooting";
 
 interface RequestDialogProp {
   viewDialog: boolean;
@@ -137,12 +138,19 @@ export const RequestDialog = ({
             <span className="text-sm font-semibold leading-[34px] tracking-tight">
               AI attempt
             </span>
-            <span className="text-sm font-normal leading-7 tracking-tight">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Blanditiis eius sit possimus laboriosam id tempora corporis
-              labore, cupiditate quae facere fugiat delectus non earum,
-              dignissimos a. Velit tempora possimus sunt.
-            </span>
+            <div className="">
+              <AITroubleshootingPreview
+                title="AI Troubleshooting Attempt"
+                subtitle="The tenant used AI to attempt to resolve the issue before submitting this request."
+                suggestion={{
+                  avatar: "/ellipse.svg",
+                  name: "Bri's Summary",
+                  message:
+                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis eius sit possimus laboriosam id tempora corporis labore, cupiditate quae facere fugiat delectus non earum, dignissimos a. Velit tempora possimus sunt.",
+                  time: "11:25",
+                }}
+              />
+            </div>
           </div>
         </ScrollArea>
 
