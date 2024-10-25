@@ -7,31 +7,31 @@ const Footer = () => {
       <div className="self-stretch h-auto px-4 py-6 bg-custom-2 flex justify-center items-center">
         <div className="self-stretch flex justify-center items-center gap-5 flex-wrap text-center">
           <Link
-            href="/careers"
+            href="/marketing/careers"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"
           >
             Careers
           </Link>
           <Link
-            href="/contact-us"
+            href="/marketing/contact-us"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"
           >
             Contact Us
           </Link>
           <Link
-            href="/data-policy"
+            href="/marketing/data-policy"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"
           >
             Data Policy
           </Link>
           <Link
-            href="/terms"
+            href="/marketing/terms"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"
           >
             Terms
           </Link>
           <Link
-            href="/privacy"
+            href="/marketing/privacy"
             className="text-white text-lg md:text-xl font-semibold font-kumbh"
           >
             Privacy

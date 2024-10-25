@@ -9,6 +9,10 @@ import {
 
 const { auth } = NextAuth(authConfig);
 
+const isPublicorMarketingRoute = (pathname: string) => {
+  return publicRoutes.includes(pathname) || pathname.startsWith("/marketing");
+};
+
 export default auth((req) => {
   const { nextUrl } = req;
 
@@ -17,7 +21,7 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isPublicRoute = isPublicorMarketingRoute(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   // if (isApiAuthRoute) return null;

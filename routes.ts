@@ -7,12 +7,11 @@
 export const publicRoutes = [
   "/",
   "/auth/new-verification",
-  "/pricing",
-  "/careers",
-  "/contact-us",
-  "/data-policy",
-  "/privacy",
-  "/terms",
+  "/marketing/careers",
+  "/marketing/contact-us",
+  "/marketing/data-policy",
+  "/marketing/privacy",
+  "/marketing/terms",
 ];
 
 /**

@@ -7,12 +7,12 @@ import { WaitingListForm } from "@/components/waiting-list-form";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { title: "About Properly", href: "/#about-properly" },
-  { title: "Why Properly", href: "/#why-properly" },
-  { title: "Pricing", href: "/pricing" },
+  { title: "About Properly", href: "/marketing/#about-properly" },
+  { title: "Why Properly", href: "/marketing/#why-properly" },
+  { title: "Pricing", href: "/marketing/pricing" },
 ];
 
-const navPaths = ["/", "/pricing"];
+const navPaths = ["/marketing", "/marketing/pricing"];
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -30,7 +30,7 @@ const Navbar = () => {
         {/* LOGO */}
 
         <Link
-          href="/"
+          href="/marketing"
           className="text-custom-1 text-2xl font-bold font-kyiv flex items-center"
           onClick={() => setCurrentLink(null)}
         >
@@ -86,7 +86,7 @@ const Navbar = () => {
             &times; {/* Close icon */}
           </button>
           <Link
-            href="/"
+            href="/marketing"
             className="text-custom-1 text-2xl font-bold font-kyiv flex mb-4"
             onClick={handleMobileNavbar}
           >
@@ -100,7 +100,7 @@ const Navbar = () => {
             Properly
           </Link>
           <Link
-            href="/#about-properly"
+            href="/marketing/#about-properly"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
@@ -108,7 +108,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            href="/#why-properly"
+            href="/marketing/#why-properly"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
@@ -116,7 +116,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            href="/pricing"
+            href="/marketing/pricing"
             className="text-lg font-medium font-kumbh"
             onClick={handleMobileNavbar}
           >
