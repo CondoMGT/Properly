@@ -1,37 +1,5 @@
+import { features } from "@/lib/constants";
 import { Check } from "lucide-react";
-
-const features = [
-  {
-    title: "AI-Powered Troubleshooting",
-    description:
-      "Properly's AI-powered chatbot, Bri, helps tenants resolve common maintenance issues quickly, reducing unnecessary escalations and saving time for both tenants and property managers.",
-  },
-  {
-    title: "Real-Time Updates",
-    description:
-      "Instant notifications keep tenants and property managers informed at every step, ensuring transparency and minimizing delays or confusion.",
-  },
-  {
-    title: "Integrated Feedback Loop",
-    description:
-      "Gather tenant feedback after issue resolution to improve service quality and quickly address any disputes, maintaining high tenant satisfaction.",
-  },
-  {
-    title: "White-Label Solutions",
-    description:
-      "Customize Properly to match your brand, providing a seamless experience for tenants while maintaining your unique identity.",
-  },
-  {
-    title: "Partnering with Service Providers",
-    description:
-      "Easily integrate external service providers to handle complex maintenance tasks, ensuring faster and more efficient resolutions.",
-  },
-  // {
-  //   title: "Visual Documentation",
-  //   description:
-  //     "Tenants can upload photos or videos of issues for faster diagnosis.",
-  // },
-];
 
 export const FeaturesComp = () => {
   return (

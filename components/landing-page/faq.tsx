@@ -1,79 +1,10 @@
-import React from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const faqs = [
-  {
-    question: "What types of properties can I manage with Properly?",
-    answer:
-      "Properly is designed for various property types, including residential, commercial, and multi-family units.",
-  },
-
-  {
-    question: "How does the pricing structure work?",
-    answer:
-      "We offer tiered pricing plans based on the number of properties managed and additional tenant capacities. Contact us for specific details on our packages.",
-  },
-
-  {
-    question: "Can tenants access Properly on mobile devices?",
-    answer:
-      "Yes, Properly is accessible via mobile devices, allowing tenants to submit requests and receive updates on the go.",
-  },
-
-  {
-    question:
-      "What happens if a tenant experiences a maintenance issue after hours?",
-    answer:
-      "Tenants can submit requests at any time, and property managers will be notified immediately. The platform enables communication to address urgent issues promptly.",
-  },
-  {
-    question: "How does Properly help tenants with maintenance requests?",
-    answer:
-      "Submit requests quickly, upload photos or videos for clarity, and track the progress in real-time. This ensures transparency and reduces the likelihood of delays or miscommunication.",
-  },
-
-  {
-    question: "How do I train my team to use Properly?",
-    answer:
-      "We provide comprehensive onboarding support and training materials to ensure your team can effectively use the platform from day one.",
-  },
-
-  {
-    question:
-      "Can I integrate Properly with my existing property management systems?",
-    answer:
-      "Yes! Properly offers integration options to help streamline your operations and enhance functionality with your current systems.",
-  },
-
-  {
-    question: "How does Properly handle tenant feedback?",
-    answer:
-      "Properly collects and analyzes tenant feedback through automated surveys, helping you identify areas for improvement and enhance service quality.",
-  },
-
-  {
-    question: "What if I need assistance with Properly?",
-    answer:
-      "Our customer support team is available to assist you with any questions or issues you may encounter while using the platform.",
-  },
-
-  {
-    question: "Is there a free trial available?",
-    answer:
-      "Yes! We offer a free trial period so you can explore Properly's features and see how it fits your property management needs.",
-  },
-
-  {
-    question: "How do I get started with Properly?",
-    answer:
-      "To get started, simply reach out to us through our website, and our team will guide you through the setup process!",
-  },
-];
+import { faqs } from "@/lib/constants";
 
 export const FaqComp = () => {
   return (
