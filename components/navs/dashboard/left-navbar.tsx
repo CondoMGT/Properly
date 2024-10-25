@@ -91,7 +91,7 @@ export const LeftNavbar = () => {
   useEffect(() => {
     // You can add any additional logic here if needed
     session.update();
-  }, [session]);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
