@@ -31,7 +31,7 @@ const Tenantslayout = ({ children }: { children: React.ReactNode }) => {
       ) : session.status === "authenticated" ? (
         <RoleGate allowedRole={[UserRole.TENANT]}>
           <Header title={headerTitle} />
-          <div className="w-full max-w-4xl mx-auto">{children}</div>
+          <div className="w-full max-w-4xl mx-auto mb-8">{children}</div>
         </RoleGate>
       ) : (
         <SignIn />

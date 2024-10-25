@@ -129,9 +129,13 @@ export const LeftNavbar = () => {
                     }`}
                   >
                     <itemMenu.icon
-                      className={`h-5 w-5 ${isCollapsed ? "mr-0" : "mr-2"}`}
+                      className={`h-5 w-5 ${
+                        isLargeScreen && isCollapsed ? "mr-0" : "mr-2"
+                      }`}
                     />
-                    {!isCollapsed && <span>{itemMenu.name}</span>}
+                    {!isLargeScreen || !isCollapsed ? (
+                      <span>{itemMenu.name}</span>
+                    ) : null}
                   </Button>
                 );
 
@@ -286,16 +290,15 @@ export const LeftNavbar = () => {
                     <CircleUserRound className="text-white" />
                   </AvatarFallback>
                 </Avatar>
-                {!isCollapsed && (
-                  <div className="flex flex-col gap-1 items-start">
-                    <span className="text-gray-700 text-sm">
-                      {session.data.user?.name}
-                    </span>
-                    <span className="text-gray-500 text-xs truncate">
-                      {session.data.user?.email}
-                    </span>
-                  </div>
-                )}
+
+                <div className="flex flex-col gap-1 items-start">
+                  <span className="text-gray-700 text-sm">
+                    {session.data.user?.name}
+                  </span>
+                  <span className="text-gray-500 text-xs truncate">
+                    {session.data.user?.email}
+                  </span>
+                </div>
               </div>
             )}
             {session.status === "loading" && (
