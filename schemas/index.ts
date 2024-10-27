@@ -139,3 +139,34 @@ export const ContractorSchema = z
     message: "End hour must be after start hour",
     path: ["endHour"],
   });
+
+export const TenantSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
+    unit: z.string().min(1, "Unit number is required"),
+    startDate: z.date({
+      required_error: "Start date is required",
+    }),
+    endDate: z.date({
+      required_error: "End date is required",
+    }),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  })
+  .refine(
+    (data) => {
+      const sixMonthsFromStart = new Date(data.startDate);
+      sixMonthsFromStart.setMonth(sixMonthsFromStart.getMonth() + 6);
+      return data.endDate >= sixMonthsFromStart;
+    },
+    {
+      message: "End date must be at least 6 months after start date",
+      path: ["endDate"],
+    }
+  );
+
+export type TenantFormValues = z.infer<typeof TenantSchema>;

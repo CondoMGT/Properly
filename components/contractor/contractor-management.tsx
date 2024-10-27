@@ -278,12 +278,12 @@ export const ContractorManagement = () => {
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (!file) {
-        toast.error("No file selected.");
-        return;
-      }
+    if (!file) {
+      toast.error("No file selected.");
+      return;
+    }
 
+    if (file) {
       // Check the file type
       const validFileTypes = [".csv", ".xlsx", ".xls"];
       const fileExtension = file.name.split(".").pop()?.toLowerCase();

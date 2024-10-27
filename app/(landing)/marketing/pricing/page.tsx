@@ -91,7 +91,7 @@ const PricingPage = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>("Basic");
 
   return (
-    <div className="container mx-auto h-screen px-4 py-16">
+    <div className="container mx-auto min-h-screen px-4 py-16 md:pb-4">
       <h1 className="text-4xl text-custom-1 font-bold font-nunito text-center mb-2">
         Properly Pricing Plans
       </h1>
@@ -101,7 +101,7 @@ const PricingPage = () => {
       </h4>
 
       {/* Pricing Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         {plans.map((plan) => (
           <Card
             key={plan.name}

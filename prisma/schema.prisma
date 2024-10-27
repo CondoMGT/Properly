@@ -14,24 +14,28 @@ enum waitListType {
 }
 
 model users {
-  id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name     String
-  email    String @unique
-  password String
+  id           String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name         String
+  email        String  @unique
+  password     String
+  tempPassword String?
 
-  phone_number String?
-  image        String?
+  phoneNumber String?
+  image       String?
+
+  verified DateTime?
 
   role UserRole @default(TENANT)
 
   tenant          Tenant?
   propertyManager PropertyManager?
 
-  sentMessages        Message[]            @relation("SentMessages")
-  receivedMessages    Message[]            @relation("ReceivedMessages")
-  // notifications Notification[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
   maintenanceRequests MaintenanceRequest[]
 
+  // notifications Notification[]
   // accounts Account[]
 }
 
