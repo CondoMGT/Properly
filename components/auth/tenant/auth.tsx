@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -30,7 +29,6 @@ import { ChevronRight, Eye, EyeOff, LogIn } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const signUpSchema = z.object({
   name: z.string().min(2).max(50),
@@ -46,8 +44,6 @@ const signUpSchema = z.object({
 export const TenantAuth = () => {
   const [cardTitle, setCardTitle] = useState("Create");
   const [showPassword, setShowPassword] = useState(false);
-
-  console.log(cardTitle);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -77,31 +73,32 @@ export const TenantAuth = () => {
   return (
     <Card className="w-[60%]">
       <CardHeader className="bg-custom-3 mb-4 relative">
-        <Link
-          href="/"
-          className="text-custom-1 text-xl font-bold font-kyiv flex items-center absolute top-1 left-1"
-        >
-          <Image
-            src="/logo.svg"
-            alt="Properly"
-            width={20}
-            height={20}
-            className="w-5 h-5"
-          />
-          Properly
-        </Link>
-        {/* <div className="flex flex-col md:flex-row gap-2 items-center md:items-start"> */}
+        <div className="flex justify-start md:justify-start items-center absolute top-1 left-1 right-1 md:left-auto md:right-auto md:top-1">
+          <Link
+            href="/"
+            className="text-custom-1 text-xl font-bold font-kyiv flex items-center mx-auto md:mx-0"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Properly"
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
+            Properly
+          </Link>
+        </div>
+
         <div className="w-full flex flex-col justify-center items-center">
-          <CardTitle className="text-2xl md:text-4xl font-semibold font-nunito">
+          <CardTitle className="text-2xl md:text-4xl text-center font-semibold font-nunito mt-4 md:mt-0">
             {cardTitle} Your Account
           </CardTitle>
-          <CardDescription className="text-lg md:text-xl font-semibold font-nunito">
+          <CardDescription className="text-lg md:text-xl text-center font-semibold font-nunito">
             {cardTitle === "Create"
               ? "Let's get your account set up"
               : "Let's get you into your account"}
           </CardDescription>
         </div>
-        {/* </div> */}
       </CardHeader>
       <CardContent className="px-8">
         <Tabs defaultValue="account">
@@ -124,7 +121,6 @@ export const TenantAuth = () => {
           <div className="relative h-[550px]">
             <TabsContent value="signup" className="absolute inset-0">
               <Card className="w-full border-none shadow-none">
-                {/* <ScrollArea className="h-[500px]"> */}
                 <CardContent className="space-y-2 mt-4 px-0">
                   <Form {...form}>
                     <form
@@ -223,7 +219,6 @@ export const TenantAuth = () => {
                   </Form>
                   <Socials text="signing in" />
                 </CardContent>
-                {/* </ScrollArea> */}
               </Card>
             </TabsContent>
             <TabsContent value="login" className="absolute inset-0">
