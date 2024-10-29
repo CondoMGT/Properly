@@ -25,19 +25,21 @@ export type SkippedTenant = {
 
 type SkippedTenantsModalProps = {
   skippedTenants: SkippedTenant[];
+  type?: string;
 };
 
 export function SkippedTenantsModal({
   skippedTenants,
+  type = "Tenants",
 }: SkippedTenantsModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">View Skipped Tenants</Button>
+        <Button variant="outline">View Skipped {type}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Skipped Tenants</DialogTitle>
+          <DialogTitle>Skipped {type}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[400px] w-full rounded-md border p-4">
           <Table>

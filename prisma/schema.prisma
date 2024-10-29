@@ -14,16 +14,20 @@ enum waitListType {
 }
 
 model users {
-  id           String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name         String
-  email        String  @unique
-  password     String
-  tempPassword String?
+  id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name     String
+  email    String @unique
+  password String
+
+  firstTimerLogin DateTime?
 
   phoneNumber String?
   image       String?
 
   verified DateTime?
+
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
 
   role UserRole @default(TENANT)
 
@@ -37,6 +41,32 @@ model users {
 
   // notifications Notification[]
   // accounts Account[]
+}
+
+model VerificationToken {
+  id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId String @db.Uuid
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
 }
 
 // model Account {
@@ -86,7 +116,7 @@ model Tenant {
   userId    String    @unique @db.Uuid
   user      users     @relation(fields: [userId], references: [id])
 
-  propertyId String   @unique @db.Uuid
+  propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
 }
 

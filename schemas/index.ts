@@ -44,9 +44,9 @@ export const RegisterSchema = z.object({
       message:
         "Password must not contain three consecutive identical characters.",
     }),
-  term: z.boolean().refine((value) => value === true, {
-    message: "You must agree to the terms and conditions.",
-  }),
+  phoneNumber: z
+    .string()
+    .min(10, { message: "Please enter a valid phone number." }),
 });
 
 export const ResetSchema = z.object({
@@ -56,9 +56,24 @@ export const ResetSchema = z.object({
 });
 
 export const NewPasswordSchema = z.object({
-  password: z.string().min(8, {
-    message: "Minimum 8 characters required",
-  }),
+  password: z
+    .string()
+    .min(10, {
+      message: "Minimum 10 characters required",
+    })
+    .refine((value) => /[A-Z]/.test(value), {
+      message: "Password must contain at least one capital letter.",
+    })
+    .refine((value) => /[0-9]/.test(value), {
+      message: "Password must contain at least one number.",
+    })
+    .refine((value) => /[!@#$%^&*(),.?":{}|<>]/.test(value), {
+      message: "Password must contain at least one special character.",
+    })
+    .refine((value) => !/(.)\1{2,}/.test(value), {
+      message:
+        "Password must not contain three consecutive identical characters.",
+    }),
 });
 
 const MAX_FILE_SIZE = 26000000; // 26MB

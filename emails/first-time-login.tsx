@@ -12,19 +12,21 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface ProperlyResetPasswordEmailProps {
+interface ProperlyFirstTimeLoginEmailProps {
   userFirstname?: string;
-  resetPasswordLink?: string;
+  loginLink?: string;
+  temp?: string;
 }
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "";
 
-export const ProperlyResetPasswordEmail = ({
+export const ProperlyFirstTimeLoginEmail = ({
   userFirstname,
-  resetPasswordLink,
-}: ProperlyResetPasswordEmailProps) => {
+  loginLink,
+  temp,
+}: ProperlyFirstTimeLoginEmailProps) => {
   return (
     <Html>
       <Head />
@@ -37,19 +39,17 @@ export const ProperlyResetPasswordEmail = ({
           <Section>
             {userFirstname && <Text style={text}>Hi {userFirstname},</Text>}
             <Text style={text}>
-              Someone recently requested a password change for your{" "}
-              <strong>Properly</strong> account. If this was you, you can set a
-              new password here:
+              Thank you for registering for your <strong>Properly</strong>{" "}
+              account. You can access your dashboard here:
             </Text>
-            <Button style={button} href={resetPasswordLink}>
-              Reset password
+            <Button style={button} href={loginLink}>
+              Login Here
             </Button>
-            <Text style={paragraph}>
-              This link will only be valid for the next 15 minutes.
+            <Text style={text}>
+              Temporary Password: <strong>{temp}</strong>
             </Text>
             <Text style={text}>
-              If you don&apos;t want to change your password or didn&apos;t
-              request this, just ignore and delete this message.
+              After login in, you will asked to reset your password.
             </Text>
             <Text style={text}>
               To keep your account secure, please don&apos;t forward this email
@@ -63,12 +63,13 @@ export const ProperlyResetPasswordEmail = ({
   );
 };
 
-ProperlyResetPasswordEmail.PreviewProps = {
+ProperlyFirstTimeLoginEmail.PreviewProps = {
   userFirstname: "Alan",
   resetPasswordLink: "https://dropbox.com",
-} as ProperlyResetPasswordEmailProps;
+  temp: "Test",
+} as ProperlyFirstTimeLoginEmailProps;
 
-export default ProperlyResetPasswordEmail;
+export default ProperlyFirstTimeLoginEmail;
 
 const main = {
   backgroundColor: "#f6f9fc",

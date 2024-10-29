@@ -1,41 +1,47 @@
 "use client";
 
+import { newVerification } from "@/actions/auth/new-verification";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-const formSchema = z.object({
-  code: z
-    .string()
-    .length(6, { message: "Verification Code must be 6 characters longs." }),
-});
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const VerificationPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      code: "",
-    },
-  });
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | undefined>();
+  const [success, setSuccess] = useState<string | undefined>();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-  };
+  useEffect(() => {
+    const token = searchParams.get("token");
+
+    const verifyEmail = async () => {
+      if (!token) {
+        // setError("error");
+        toast.error("Missing token");
+        return;
+      }
+
+      try {
+        const data = await newVerification(token);
+
+        if (data.error) {
+          setError(data.error);
+        }
+
+        setSuccess(data.success);
+      } catch {
+        setError("Something went wrong!");
+      }
+    };
+
+    verifyEmail();
+  }, [searchParams]);
 
   return (
-    <div>
+    <div className="bg-custom-4 h-screen">
       <div className="w-full h-52 bg-custom-3 px-4 md:px-8 flex flex-col md:flex-row items-center">
         <div className="flex justify-start w-1/3 pt-4">
           <Link
@@ -58,54 +64,53 @@ const VerificationPage = () => {
             Welcome
           </span>
           <span className="text-[28px] font-semibold font-nunito leading-[34px]">
-            Let&apos;s get your account verified
+            We&apos;re verifying your account
           </span>
         </div>
       </div>
 
       <div className="flex flex-col px-4 md:px-8 pt-4 space-y-8">
-        <span className="text-4xl font-semibold font-nunito leading-[56px]">
-          Verify Your Email
+        <span className="text-2xl text-center font-semibold font-nunito leading-[56px]">
+          Email Verification
         </span>
-        <span className="text-[18px] font-semibold font-nunito leading-[34px]">
-          We&apos;ve sent a verification code to your email. Please enter it
-          below.
-        </span>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Verification Code</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* <div className=""> */}
-            <Button
-              variant="link"
-              className="text-sm text-primary font-nunito hover:underline -ml-4"
-            >
-              Resend Verification Code
-            </Button>
-            {/* </div> */}
-
-            <div className="flex justify-end">
+        <div className="flex flex-col items-center space-y-4">
+          {!success && !error && (
+            <>
+              <Loader2 className="h-16 w-16 text-custom-1 animate-spin" />
+              <span className="text-[18px] font-semibold font-nunito">
+                Verifying your email...
+              </span>
+            </>
+          )}
+          {!error && success && (
+            <>
+              <CheckCircle className="h-16 w-16 text-green-500" />
+              <span className="text-[18px] font-semibold font-nunito">
+                Your email has been successfully verified!
+              </span>
               <Button
-                type="submit"
-                className="bg-custom-1 hover:bg-custom-1 px-8"
+                asChild
+                className="bg-custom-1 hover:bg-custom-1 px-8 mt-4"
               >
-                Verify Email
+                <Link href="/auth/login">Go to Login</Link>
               </Button>
-            </div>
-          </form>
-        </Form>
+            </>
+          )}
+          {!success && !error && (
+            <>
+              <XCircle className="h-16 w-16 text-red-500" />
+              <span className="text-[18px] font-semibold font-nunito">
+                There was an error verifying your email.
+              </span>
+              <span className="text-[16px] font-nunito">
+                Please try again or contact support if the problem persists.
+              </span>
+              <Button asChild variant="outline" className="px-8 mt-4">
+                <Link href="/auth/loginh">Back to Login</Link>
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

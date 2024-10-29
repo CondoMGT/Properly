@@ -6,6 +6,7 @@ import ProperlyResetPasswordEmail from "@/emails/password-reset";
 import { auth } from "@/auth";
 import ProperlyUserEmail from "@/emails/verification";
 import ProperlyVerifyEmail from "@/emails/two-factor";
+import ProperlyFirstTimeLoginEmail from "@/emails/first-time-login";
 
 const domain = process.env.NEXT_PUBLIC_API_URL;
 const from = "Properly <condotenantmanagement@gmail.com>";
@@ -42,6 +43,32 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     from,
     to: email,
     subject: "Reset your password",
+    html: htmlContent,
+  });
+};
+
+export const firstTimeLoginEmail = async (
+  email: string,
+  tempPassword: string
+) => {
+  const resetLink = `${domain}/auth/login`;
+
+  const session = await auth();
+
+  const transporter = await mailerTransporter();
+
+  const htmlContent = await render(
+    ProperlyFirstTimeLoginEmail({
+      userFirstname: session?.user.name || "",
+      loginLink: resetLink,
+      temp: tempPassword,
+    })
+  );
+
+  await transporter.sendMail({
+    from,
+    to: email,
+    subject: "Welcome to Properly",
     html: htmlContent,
   });
 };

@@ -303,10 +303,10 @@ export const TenantAuth = () => {
   );
 };
 
-const Socials = ({ text }: { text: string }) => {
+export const Socials = ({ text }: { text: string }) => {
   return (
     <div className="flex flex-col">
-      <Separator className="mt-4" />
+      <Separator className="mt-8 mb-4 bg-custom-1" />
       <span className="text-[#555555] text-sm font-normal font-open leading-7 tracking-tight block text-center">
         or Continue with
       </span>

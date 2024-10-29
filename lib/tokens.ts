@@ -1,6 +1,9 @@
 import { getPasswordResetTokenByEmail } from "@/data/auth/password-reset-token";
 import { v4 as uuidv4 } from "uuid";
+import crypto from "crypto";
 import { prisma } from "@/lib/client";
+import { getVerificationTokenByEmail } from "@/data/auth/verification-token";
+import { getTwofactorTokenByEmail } from "@/data/auth/two-factor-token";
 
 export const generatePasswordResetToken = async (email: string) => {
   const token = uuidv4();
@@ -26,4 +29,56 @@ export const generatePasswordResetToken = async (email: string) => {
   });
 
   return passwordResetToken;
+};
+
+export const generateVerificationToken = async (email: string) => {
+  const token = uuidv4();
+
+  const expires = new Date(new Date().getTime() + 900 * 1000);
+
+  const existingToken = await getVerificationTokenByEmail(email);
+
+  if (existingToken) {
+    await prisma.verificationToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+  }
+
+  const verificationToken = await prisma.verificationToken.create({
+    data: {
+      email,
+      token,
+      expires,
+    },
+  });
+
+  return verificationToken;
+};
+
+export const generateTwoFactorToken = async (email: string) => {
+  const token = crypto.randomInt(100_000, 1_000_000).toString();
+
+  const expires = new Date(new Date().getTime() + 900 * 1000);
+
+  const existingToken = await getTwofactorTokenByEmail(email);
+
+  if (existingToken) {
+    await prisma.twoFactorToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+  }
+
+  const twoFactorToken = await prisma.twoFactorToken.create({
+    data: {
+      email,
+      token,
+      expires,
+    },
+  });
+
+  return twoFactorToken;
 };

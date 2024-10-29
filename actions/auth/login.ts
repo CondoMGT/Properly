@@ -1,20 +1,22 @@
 "use server";
 
 import { signIn } from "@/auth";
-// import { getTwofactorConfirmationByUserId } from "@/data/two-factor-confirmation";
-// import { getTwofactorTokenByEmail } from "@/data/two-factor-token";
+import { getTwofactorConfirmationByUserId } from "@/data/auth/two-factor-confirmation";
+import { getTwofactorTokenByEmail } from "@/data/auth/two-factor-token";
 import { getUserByEmail } from "@/data/user";
 import { prisma } from "@/lib/client";
 import { pusherServer } from "@/lib/pusher";
-// import { sendVerificationEmail, sendTwofactorTokenEmail } from "@/lib/mail";
-// import {
-//   generateVerificationToken,
-//   generateTwoFactorToken,
-// } from "@/lib/tokens";
+import { sendVerificationEmail, sendTwofactorTokenEmail } from "@/lib/mail";
+import {
+  generateVerificationToken,
+  generateTwoFactorToken,
+  generatePasswordResetToken,
+} from "@/lib/tokens";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { LoginSchema } from "@/schemas";
 import { AuthError } from "next-auth";
 import { z } from "zod";
+import { redirect } from "next/navigation";
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -34,70 +36,77 @@ export const login = async (
     return { error: "Email does not exist!" };
   }
 
-  // if (!existingUser.emailVerified) {
-  //   const verificationToken = await generateVerificationToken(
-  //     existingUser.email
-  //   );
+  // Check if user (tenant) is logging in for the first time
+  if (existingUser.role === "TENANT" && !existingUser.firstTimerLogin) {
+    const passwordToken = await generatePasswordResetToken(existingUser.email);
 
-  //   // Send verification email
-  //   await sendVerificationEmail(
-  //     verificationToken.email,
-  //     verificationToken.token
-  //   );
+    redirect(`/auth/new-password?token=${passwordToken}`);
+  }
 
-  //   return { success: "Confirmation email sent!" };
-  // }
+  if (!existingUser.verified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email
+    );
 
-  // if (existingUser.isTwoFactorEnabled && existingUser.email) {
-  //   if (code) {
-  //     // TODO: Verify Code
-  //     const twoFactorToken = await getTwofactorTokenByEmail(existingUser.email);
+    // Send verification email
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
 
-  //     if (!twoFactorToken) {
-  //       return { error: "Invalid code!" };
-  //     }
+    return { success: "Confirmation email sent!" };
+  }
 
-  //     if (twoFactorToken.token !== code) {
-  //       return { error: "Invalid code!" };
-  //     }
+  if (existingUser.isTwoFactorEnabled && existingUser.email) {
+    if (code) {
+      // TODO: Verify Code
+      const twoFactorToken = await getTwofactorTokenByEmail(existingUser.email);
 
-  //     const hasExpired = new Date(twoFactorToken.expires) < new Date();
+      if (!twoFactorToken) {
+        return { error: "Invalid code!" };
+      }
 
-  //     if (hasExpired) {
-  //       return { error: "Code expired!" };
-  //     }
+      if (twoFactorToken.token !== code) {
+        return { error: "Invalid code!" };
+      }
 
-  //     await prisma.twoFactorToken.delete({
-  //       where: {
-  //         id: twoFactorToken.id,
-  //       },
-  //     });
+      const hasExpired = new Date(twoFactorToken.expires) < new Date();
 
-  //     const existingConfirmation = await getTwofactorConfirmationByUserId(
-  //       existingUser.id
-  //     );
+      if (hasExpired) {
+        return { error: "Code expired!" };
+      }
 
-  //     if (existingConfirmation) {
-  //       await prisma.twoFactorConfirmation.delete({
-  //         where: {
-  //           id: existingConfirmation.id,
-  //         },
-  //       });
-  //     }
+      await prisma.twoFactorToken.delete({
+        where: {
+          id: twoFactorToken.id,
+        },
+      });
 
-  //     await prisma.twoFactorConfirmation.create({
-  //       data: {
-  //         userId: existingUser.id,
-  //       },
-  //     });
-  //   } else {
-  //     const twoFactorToken = await generateTwoFactorToken(existingUser.email);
+      const existingConfirmation = await getTwofactorConfirmationByUserId(
+        existingUser.id
+      );
 
-  //     await sendTwofactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+      if (existingConfirmation) {
+        await prisma.twoFactorConfirmation.delete({
+          where: {
+            id: existingConfirmation.id,
+          },
+        });
+      }
 
-  //     return { twoFactor: true };
-  //   }
-  // }
+      await prisma.twoFactorConfirmation.create({
+        data: {
+          userId: existingUser.id,
+        },
+      });
+    } else {
+      const twoFactorToken = await generateTwoFactorToken(existingUser.email);
+
+      await sendTwofactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+
+      return { twoFactor: true };
+    }
+  }
 
   try {
     const redirectUrl =

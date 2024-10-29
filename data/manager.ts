@@ -81,3 +81,30 @@ export const getManagerId = async (userId: string) => {
     return null;
   }
 };
+
+export const getPropertyId = async (userId: string) => {
+  try {
+    const propertyInfo = await prisma.users.findUnique({
+      where: { id: userId },
+      select: {
+        propertyManager: {
+          select: {
+            properties: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!propertyInfo) {
+      return null;
+    }
+
+    return propertyInfo.propertyManager?.properties[0].id;
+  } catch {
+    return null;
+  }
+};
