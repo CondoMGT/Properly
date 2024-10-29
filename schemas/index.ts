@@ -44,9 +44,9 @@ export const RegisterSchema = z.object({
       message:
         "Password must not contain three consecutive identical characters.",
     }),
-  term: z.boolean().refine((value) => value === true, {
-    message: "You must agree to the terms and conditions.",
-  }),
+  phoneNumber: z
+    .string()
+    .min(10, { message: "Please enter a valid phone number." }),
 });
 
 export const ResetSchema = z.object({
@@ -56,9 +56,24 @@ export const ResetSchema = z.object({
 });
 
 export const NewPasswordSchema = z.object({
-  password: z.string().min(8, {
-    message: "Minimum 8 characters required",
-  }),
+  password: z
+    .string()
+    .min(10, {
+      message: "Minimum 10 characters required",
+    })
+    .refine((value) => /[A-Z]/.test(value), {
+      message: "Password must contain at least one capital letter.",
+    })
+    .refine((value) => /[0-9]/.test(value), {
+      message: "Password must contain at least one number.",
+    })
+    .refine((value) => /[!@#$%^&*(),.?":{}|<>]/.test(value), {
+      message: "Password must contain at least one special character.",
+    })
+    .refine((value) => !/(.)\1{2,}/.test(value), {
+      message:
+        "Password must not contain three consecutive identical characters.",
+    }),
 });
 
 const MAX_FILE_SIZE = 26000000; // 26MB
@@ -139,3 +154,34 @@ export const ContractorSchema = z
     message: "End hour must be after start hour",
     path: ["endHour"],
   });
+
+export const TenantSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
+    unit: z.string().min(1, "Unit number is required"),
+    startDate: z.date({
+      required_error: "Start date is required",
+    }),
+    endDate: z.date({
+      required_error: "End date is required",
+    }),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  })
+  .refine(
+    (data) => {
+      const sixMonthsFromStart = new Date(data.startDate);
+      sixMonthsFromStart.setMonth(sixMonthsFromStart.getMonth() + 6);
+      return data.endDate >= sixMonthsFromStart;
+    },
+    {
+      message: "End date must be at least 6 months after start date",
+      path: ["endDate"],
+    }
+  );
+
+export type TenantFormValues = z.infer<typeof TenantSchema>;

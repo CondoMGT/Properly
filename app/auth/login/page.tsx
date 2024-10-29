@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader } from "lucide-react";
+import { Loader, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/schemas";
@@ -22,7 +22,8 @@ import {
 import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
 import { useSession } from "next-auth/react";
-import { ProperlyLogo } from "@/components/logo/logo";
+import { Socials } from "@/components/auth/socials";
+import { Separator } from "@/components/ui/separator";
 
 export default function SignIn() {
   // const searchParams = useSearchParams();
@@ -58,7 +59,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 bg-custom-4">
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
         <div className="absolute inset-0 bg-gray-300 dark:bg-teal-400" />
         <div className="relative z-20 flex items-center justify-center w-[90%] text-lg font-medium">
@@ -99,76 +100,92 @@ export default function SignIn() {
       </div>
 
       <div className="lg:p-8 w-full">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px] px-4 sm:px-0">
-          <div className="flex flex-col space-y-2 text-center">
-            <ProperlyLogo />
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Sign in to your account
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email below to sign in to your account
-            </p>
+        <div className="relative z-20 flex lg:hidden items-center justify-center w-[90%] text-lg font-medium mb-8">
+          <Link
+            href="/"
+            className="text-custom-1 text-3xl font-bold font-kyiv flex items-center"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Properly"
+              width={56}
+              height={56}
+              className="w-14 h-14"
+            />
+            Properly
+          </Link>
+        </div>
+        <div className="border-2 rounded-lg p-8 shadow-md m-4">
+          <div className="w-full flex flex-col justify-center items-center">
+            <div className="text-2xl md:text-3xl text-center font-semibold font-nunito mt-4 md:mt-0">
+              Log Into Your Account
+            </div>
+            <div className="text-lg md:text-xl text-center font-semibold font-nunito">
+              Let&apos;s get you into your account
+            </div>
           </div>
+          <Separator className="my-4 bg-custom-1" />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            disabled={isPending}
-                            {...field}
-                            placeholder="name@example.com"
-                            id="email"
-                            autoCorrect="off"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            disabled={isPending}
-                            {...field}
-                            placeholder="Enter password"
-                            id="password"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button
-                  disabled={isPending}
-                  type="submit"
-                  className="bg-custom-1 hover:bg-custom-1"
-                >
-                  {isPending && (
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        disabled={isPending}
+                        {...field}
+                        placeholder="name@example.com"
+                        id="email"
+                        autoCorrect="off"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        disabled={isPending}
+                        {...field}
+                        placeholder="Enter password"
+                        id="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                className="w-full bg-custom-1 hover:bg-custom-1"
+                type="submit"
+              >
+                {isPending ? (
+                  <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Sign In
-                </Button>
-              </div>
+                    Sign In
+                  </>
+                ) : (
+                  <>
+                    Login
+                    <LogIn className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
             </form>
           </Form>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-4">
             <Link
               href="/auth/reset-password"
               className="text-sm text-primary hover:underline"
@@ -182,24 +199,7 @@ export default function SignIn() {
               Create an account
             </Link>
           </div>
-
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking continue, you agree to our{" "}
-            <Link
-              href="/terms"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
+          <Socials text="logging in" />
         </div>
       </div>
     </div>

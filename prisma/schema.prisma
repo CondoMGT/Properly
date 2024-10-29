@@ -19,20 +19,54 @@ model users {
   email    String @unique
   password String
 
-  phone_number String?
-  image        String?
+  firstTimerLogin DateTime?
+
+  phoneNumber String?
+  image       String?
+
+  verified DateTime?
+
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
 
   role UserRole @default(TENANT)
 
   tenant          Tenant?
   propertyManager PropertyManager?
 
-  sentMessages        Message[]            @relation("SentMessages")
-  receivedMessages    Message[]            @relation("ReceivedMessages")
-  // notifications Notification[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
   maintenanceRequests MaintenanceRequest[]
 
+  // notifications Notification[]
   // accounts Account[]
+}
+
+model VerificationToken {
+  id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId String @db.Uuid
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
 }
 
 // model Account {
@@ -82,7 +116,7 @@ model Tenant {
   userId    String    @unique @db.Uuid
   user      users     @relation(fields: [userId], references: [id])
 
-  propertyId String   @unique @db.Uuid
+  propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
 }
 
@@ -103,10 +137,10 @@ model MaintenanceRequest {
 
   maintenanceDate DateTime?
 
-  userId String @unique @db.Uuid
+  userId String @db.Uuid
   user   users  @relation(fields: [userId], references: [id])
 
-  propertyId String   @unique @db.Uuid
+  propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
 
   attachments       String?     @unique @db.Uuid

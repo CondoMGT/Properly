@@ -229,7 +229,9 @@ export const RealTimeMessage = ({
             <Image
               src={attachment.url}
               alt={attachment.name}
-              className="w-56 h-auto rounded cursor-pointer"
+              width={208}
+              height={240}
+              className="w-52 h-60 rounded cursor-pointer"
               onClick={() => {
                 setSelectedAttachImage(attachment);
                 setIsDialogOpen(true);

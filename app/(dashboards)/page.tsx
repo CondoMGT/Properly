@@ -1,10 +1,15 @@
+"use client";
+
 import { MainNav } from "@/components/navs/main/Navbar";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, LogIn } from "lucide-react";
+import { ChevronLastIcon, ChevronRight, LogIn } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const LandingPage = () => {
+  const session = useSession();
+
   return (
     <div className="max-w-[1452px] w-full mx-auto">
       <MainNav />
@@ -19,25 +24,49 @@ const LandingPage = () => {
             exceptional living experience for your tenants.{" "}
           </div>
           <div className="px-8 flex items-center justify-between pt-12">
-            <Button
-              className="bg-custom-1 hover:bg-custom-1 text-lg p-6"
-              asChild
-            >
-              <Link href="/auth/register">
-                Sign Up
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
+            {session.status !== "authenticated" && (
+              <>
+                <Button
+                  className="bg-custom-1 hover:bg-custom-1 text-lg p-6"
+                  asChild
+                >
+                  <Link href="/auth/register">
+                    Sign Up
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
 
-            <Button
-              className="bg-custom-11 hover:bg-custom-11 text-lg p-6"
-              asChild
-            >
-              <Link href="/auth/login">
-                Log In
-                <LogIn className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
+                <Button
+                  className="bg-custom-11 hover:bg-custom-11 text-lg p-6"
+                  asChild
+                >
+                  <Link href="/auth/login">
+                    Log In
+                    <LogIn className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </>
+            )}
+
+            {session.status === "authenticated" && (
+              <Button
+                className="bg-custom-11 hover:bg-custom-11 text-lg p-6"
+                asChild
+              >
+                <Link
+                  href={
+                    session.data.user.role === "TENANT"
+                      ? "/tenants"
+                      : session.data.user.role === "MANAGER"
+                      ? "/managers"
+                      : "/"
+                  }
+                >
+                  Go to Dashboard
+                  <ChevronLastIcon className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 

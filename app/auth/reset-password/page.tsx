@@ -54,7 +54,7 @@ const ResetPage = () => {
     });
   };
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-custom-3">
       <Card className="w-[350px] shadow-md">
         <CardHeader>
           <ProperlyLogo />

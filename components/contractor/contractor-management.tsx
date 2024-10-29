@@ -78,8 +78,16 @@ import { toast } from "sonner";
 import { ContractorSchema } from "@/schemas";
 import { ScrollArea } from "../ui/scroll-area";
 import { Badge } from "../ui/badge";
+import { addContractor } from "@/actions/contractor";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { getPropertyId } from "@/data/manager";
+import {
+  SkippedTenant,
+  SkippedTenantsModal,
+} from "../tenant/skipped-tenants-modal";
+import { fetchContractors } from "@/data/contractor";
 
-type Contractor = {
+export type Contractor = {
   id: string;
   name: string;
   specialty: string;
@@ -96,6 +104,17 @@ type Contractor = {
   rating: number;
   insurance: boolean;
   ratePerHour: number;
+  addedAt?: Date;
+  updatedAt?: Date;
+};
+
+type ImportResult = {
+  importedContractors: Contractor[];
+  skippedContractors: {
+    name: string;
+    email: string;
+    reason: string;
+  }[];
 };
 
 const specialties = [
@@ -126,10 +145,17 @@ const serviceAreas = [
 ];
 
 export const ContractorManagement = () => {
+  const user = useCurrentUser();
+
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
     []
   );
+  const [propertyId, setPropertyId] = useState<string | null>(null);
+  const [skippedContractors, setSkippedContractors] = useState<SkippedTenant[]>(
+    []
+  );
+
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState<string[]>([]);
   const [serviceAreaFilter, setServiceAreaFilter] = useState<string[]>([]);
@@ -140,6 +166,30 @@ export const ContractorManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    const fetchPropertyInfo = async () => {
+      const info = await getPropertyId(user?.id as string);
+
+      if (info) {
+        setPropertyId(info);
+      }
+    };
+
+    fetchPropertyInfo();
+  }, []);
+
+  useEffect(() => {
+    const fetchPropertyContractors = async () => {
+      const contractors = await fetchContractors(propertyId as string);
+
+      if (contractors) {
+        setContractors(contractors);
+      }
+    };
+
+    fetchPropertyContractors();
+  }, [propertyId]);
 
   useEffect(() => {
     handleFilterChange();
@@ -278,12 +328,12 @@ export const ContractorManagement = () => {
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (!file) {
-        toast.error("No file selected.");
-        return;
-      }
+    if (!file) {
+      toast.error("No file selected.");
+      return;
+    }
 
+    if (file) {
       // Check the file type
       const validFileTypes = [".csv", ".xlsx", ".xls"];
       const fileExtension = file.name.split(".").pop()?.toLowerCase();
@@ -312,12 +362,16 @@ export const ContractorManagement = () => {
           return;
         }
 
+        const importResult: ImportResult = {
+          importedContractors: [],
+          skippedContractors: [],
+        };
+
         const existingEmails = new Set(
           contractors.map((contractor) => contractor.email.toLowerCase())
         );
-        const newContractors: Contractor[] = [];
 
-        lines.slice(1).forEach((line) => {
+        lines.slice(1).forEach(async (line) => {
           const [
             name,
             specialty,
@@ -344,15 +398,17 @@ export const ContractorManagement = () => {
 
           // Check for duplicate email
           if (existingEmails.has(email.toLowerCase())) {
-            toast.error(
-              `Duplicate email found: ${email}. This contractor will be skipped.`
-            );
+            importResult.skippedContractors.push({
+              name,
+              email,
+              reason: "Duplicate email found",
+            });
             return; // Skip adding this contractor
           }
 
           existingEmails.add(email.toLowerCase());
 
-          newContractors.push({
+          importResult.importedContractors.push({
             id: Math.random().toString(36).substr(2, 9),
             name,
             specialty,
@@ -370,10 +426,34 @@ export const ContractorManagement = () => {
             insurance: insurance === "true",
             ratePerHour: parseInt(ratePerHour),
           });
+
+          await addContractor(
+            {
+              id: Math.random().toString(36).substr(2, 9),
+              name,
+              specialty,
+              companyName,
+              phoneNumber,
+              email,
+              licenseNumber,
+              yearsOfExperience: parseInt(yearsOfExperience),
+              serviceArea,
+              availability: availability.split(";"),
+              startHour: parseInt(startHour),
+              endHour: parseInt(endHour),
+              emergency: emergency === "true",
+              rating: parseFloat(rating),
+              insurance: insurance === "true",
+              ratePerHour: parseInt(ratePerHour),
+            },
+            propertyId as string
+          );
         });
-        setContractors([...contractors, ...newContractors]);
+
+        setContractors([...contractors, ...importResult.importedContractors]);
+        setSkippedContractors(importResult.skippedContractors);
         toast.success("Contractors Imported", {
-          description: `${newContractors.length} contractors have been imported.`,
+          description: `${importResult.importedContractors.length} contractors have been imported.`,
         });
       };
 
@@ -439,6 +519,12 @@ export const ContractorManagement = () => {
               />
             </label>
           </Button>
+          {skippedContractors.length > 0 && (
+            <SkippedTenantsModal
+              skippedTenants={skippedContractors}
+              type="Contractors"
+            />
+          )}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">

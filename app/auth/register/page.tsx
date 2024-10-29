@@ -5,8 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Loader } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, Loader } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { RegisterSchema } from "@/schemas";
@@ -22,7 +21,8 @@ import {
 import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ProperlyLogo } from "@/components/logo/logo";
+import { Separator } from "@/components/ui/separator";
+import { Socials } from "@/components/auth/socials";
 
 export default function SignUp() {
   const router = useRouter();
@@ -51,169 +51,140 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <Link
-        href="/auth/login"
-        className="absolute right-4 top-4 md:right-8 md:top-8 hover:underline text-sm text-muted-foreground"
-      >
-        Already have an account? Sign In
-      </Link>
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center bg-custom-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <div className="lg:p-8 w-full">
-        <div className="mx-auto flex flex-col justify-center space-y-6 w-[350px] px-4 sm:px-0">
-          <div className="flex flex-col space-y-2 text-center">
-            <ProperlyLogo />
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create an account
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your details below to create your account
-            </p>
+        <div className="relative z-20 flex lg:hidden items-center justify-center w-[90%] text-lg font-medium mb-8">
+          <Link
+            href="/"
+            className="text-custom-1 text-3xl font-bold font-kyiv flex items-center"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Properly"
+              width={56}
+              height={56}
+              className="w-14 h-14"
+            />
+            Properly
+          </Link>
+        </div>
+        <div className="border-2 rounded-lg p-8 shadow-md m-4">
+          <div className="w-full flex flex-col justify-center items-center">
+            <div className="text-2xl md:text-3xl text-center font-semibold font-nunito mt-4 md:mt-0">
+              Create Your Account
+            </div>
+            <div className="text-lg md:text-xl text-center font-semibold font-nunito">
+              Let&apos; get your account set up
+            </div>
           </div>
+          <Separator className="my-4 bg-custom-1" />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            disabled={isPending}
-                            {...field}
-                            placeholder="John Doe"
-                            id="name"
-                            autoCorrect="off"
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Jane Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="jane.doe@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+1 555 555-5555" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center relative">
+                        <Input
+                          disabled={isPending}
+                          {...field}
+                          placeholder="Enter password"
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                        />
+                        {!showPassword ? (
+                          <Eye
+                            className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
+                            onClick={() => setShowPassword((prev) => !prev)}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            disabled={isPending}
-                            {...field}
-                            placeholder="name@example.com"
-                            id="email"
-                            autoCorrect="off"
+                        ) : (
+                          <EyeOff
+                            className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
+                            onClick={() => setShowPassword((prev) => !prev)}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <div className="flex items-center relative">
-                            <Input
-                              disabled={isPending}
-                              {...field}
-                              placeholder="Enter password"
-                              id="password"
-                              type={showPassword ? "text" : "password"}
-                            />
-                            {!showPassword ? (
-                              <Eye
-                                className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                              />
-                            ) : (
-                              <EyeOff
-                                className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                              />
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <FormField
-                    control={form.control}
-                    name="term"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            I agree to the{" "}
-                            <Link
-                              href="/terms"
-                              className="text-primary underline hover:text-primary/90"
-                            >
-                              terms and conditions
-                            </Link>
-                          </FormLabel>
-                        </div>
-                        {/* <FormMessage /> */}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button
-                  disabled={isPending}
-                  type="submit"
-                  className="bg-custom-1 hover:bg-custom-1"
-                >
-                  {isPending && (
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                className="w-full bg-custom-1 hover:bg-custom-1"
+                type="submit"
+              >
+                {isPending ? (
+                  <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Sign Up
-                </Button>
-              </div>
+                    Getting Started
+                  </>
+                ) : (
+                  <>
+                    Sign Up
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
             </form>
           </Form>
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking continue, you agree to our{" "}
+          <div className="flex items-center justify-center mt-4">
             <Link
-              href="/terms"
-              className="underline underline-offset-4 hover:text-primary"
+              href="/auth/login"
+              className="text-sm text-primary hover:underline"
             >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Privacy Policy
+              Already have an account? Sign In
             </Link>
-            .
-          </p>
-
-          <Link
-            href="/auth/login"
-            className="text-muted-foreground text-center text-sm hover:underline hidden lg:block"
-          >
-            Already have an account? Sign In
-          </Link>
+          </div>
+          <Socials text="signing up" />
         </div>
       </div>
 
