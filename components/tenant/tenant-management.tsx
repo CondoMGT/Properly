@@ -901,7 +901,7 @@ function TenantForm({ onSubmit, initialData }: TenantFormProps) {
                   </PopoverContent>
                 </Popover>
                 <FormDescription>
-                  The date when the tenant's lease begins
+                  The date when the tenant&apos;s lease begins
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -948,7 +948,7 @@ function TenantForm({ onSubmit, initialData }: TenantFormProps) {
                   </PopoverContent>
                 </Popover>
                 <FormDescription>
-                  The date when the tenant's lease ends
+                  The date when the tenant&apos;s lease ends
                 </FormDescription>
                 <FormMessage />
               </FormItem>
