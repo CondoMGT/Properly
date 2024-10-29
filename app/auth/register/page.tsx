@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronRight, Eye, EyeOff, Loader } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -22,9 +21,8 @@ import {
 import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ProperlyLogo } from "@/components/logo/logo";
 import { Separator } from "@/components/ui/separator";
-import { Socials } from "@/components/auth/tenant/auth";
+import { Socials } from "@/components/auth/socials";
 
 export default function SignUp() {
   const router = useRouter();

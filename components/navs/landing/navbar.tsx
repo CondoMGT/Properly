@@ -30,7 +30,7 @@ const Navbar = () => {
         {/* LOGO */}
 
         <Link
-          href="/marketing"
+          href="/"
           className="text-custom-1 text-2xl font-bold font-kyiv flex items-center"
           onClick={() => setCurrentLink(null)}
         >

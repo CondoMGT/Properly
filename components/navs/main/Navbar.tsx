@@ -32,19 +32,19 @@ export const MainNav = () => {
 
       <div className="hidden md:flex items-center justify-between w-1/3">
         <Link
-          href="#"
+          href="/marketing/#about-properly"
           className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
         >
           About
         </Link>
         <Link
-          href="#"
+          href="/"
           className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
         >
           Property
         </Link>
         <Link
-          href="#"
+          href="/marketing/contact-us"
           className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
         >
           Contact

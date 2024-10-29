@@ -22,8 +22,7 @@ import {
 import { toast } from "sonner";
 import { login } from "@/actions/auth/login";
 import { useSession } from "next-auth/react";
-import { ProperlyLogo } from "@/components/logo/logo";
-import { Socials } from "@/components/auth/tenant/auth";
+import { Socials } from "@/components/auth/socials";
 import { Separator } from "@/components/ui/separator";
 
 export default function SignIn() {
