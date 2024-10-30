@@ -18,12 +18,7 @@ import { RealTimeMessage } from "@/components/messages/realtime-message";
 // import { useUserPresence } from "@/contexts/PresenceContext";
 import { useBeams } from "@/hooks/use-Beams";
 import { usePathname } from "next/navigation";
-
-interface NotificationPayload {
-  title: string;
-  body: string;
-  icon?: string; // Optional icon property
-}
+import { handleNotification } from "@/lib/helper";
 
 // Mock data for the tenant
 const tenant = {
@@ -53,18 +48,6 @@ export const TenantMessage = () => {
       Notification.requestPermission();
     }
 
-    const handleNotification = (payload: NotificationPayload) => {
-      const notification = new Notification(payload.title, {
-        body: payload.body,
-        icon: payload.icon,
-      });
-
-      notification.onclick = () => {
-        // Handle notification click
-        console.log("Notification clicked");
-      };
-    };
-
     const subscribeToPusher = () => {
       pusherClient.subscribe("chat-app");
 
@@ -75,6 +58,7 @@ export const TenantMessage = () => {
         handleNotification({
           title: "New Message",
           body: "You have received a new message",
+          icon: "/logo.svg",
         });
       });
     };

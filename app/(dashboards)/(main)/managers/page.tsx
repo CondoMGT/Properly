@@ -163,7 +163,7 @@ const ManagerPage = () => {
   // Mock data
   const stats = [
     {
-      title: "Total Properties",
+      title: "Properties",
       value: "125",
       Icon: Home,
       color: "custom-1",
@@ -175,7 +175,7 @@ const ManagerPage = () => {
       color: "custom-2",
     },
     {
-      title: "Active Tenants",
+      title: "Tenants",
       value: "312",
       Icon: Users,
       color: "custom-7",

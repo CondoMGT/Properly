@@ -23,7 +23,9 @@ const StatCard = ({ title, value, color, Icon }: StatCardProp) => (
       </div>
     </CardHeader>
     <CardContent>
-      <div className="text-4xl font-bold font-nunito">{value}</div>
+      <div className={`text-4xl text-${color} font-bold font-nunito`}>
+        {value}
+      </div>
     </CardContent>
   </Card>
 );
@@ -34,19 +36,19 @@ const MaintenancePage = () => {
       title: "Open Requests",
       value: "8",
       Icon: MessageSquare,
-      color: "custom-2",
+      color: "custom-8",
     },
     {
       title: "In Progress",
       value: "3",
       Icon: Home,
-      color: "custom-1",
+      color: "custom-7",
     },
     {
       title: "Completed",
       value: "12",
       Icon: Users,
-      color: "custom-7",
+      color: "custom-2",
     },
   ];
 

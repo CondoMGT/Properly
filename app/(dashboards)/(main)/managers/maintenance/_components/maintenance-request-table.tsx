@@ -39,6 +39,7 @@ import { RequestDialog } from "./request-dialog";
 import { RequestStatus } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { pusherClient } from "@/lib/pusher";
+import { handleNotification } from "@/lib/helper";
 
 export type ReqInfo = {
   attachments: string | null;
@@ -104,6 +105,10 @@ export default function MaintenanceRequestsTable() {
   const itemsPerPage = 7;
 
   React.useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
     const subscribeToMaintenance = () => {
       pusherClient.subscribe("maintenance");
 
@@ -122,6 +127,12 @@ export default function MaintenanceRequestsTable() {
               return p;
             }
           });
+        });
+
+        handleNotification({
+          title: "Updated Maintenance Request",
+          body: "You have an update on a maintenance request",
+          icon: "/logo.svg",
         });
       });
     };
@@ -251,7 +262,9 @@ export default function MaintenanceRequestsTable() {
                           : "opacity-0"
                       )}
                     />
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                    {option === "Progress"
+                      ? "In Progress"
+                      : option.charAt(0).toUpperCase() + option.slice(1)}
                     <span className="ml-auto text-xs text-muted-foreground">
                       (
                       {
@@ -334,7 +347,7 @@ export default function MaintenanceRequestsTable() {
                 <TableRow key={request.id} className="*:py-5">
                   <TableCell>
                     {propertyName?.slice(0, 3).toUpperCase()}
-                    {request.reqId.slice(0, 3)}
+                    {request.reqId.slice(0, 3).toUpperCase()}
                   </TableCell>
                   <TableCell>Unit {request.user.tenant?.unit}</TableCell>
                   <TableCell>{request.issue}</TableCell>
@@ -367,6 +380,7 @@ export default function MaintenanceRequestsTable() {
                         setSelectedRequest(request);
                         setViewDialog(true);
                       }}
+                      className="border-2 border-custom-2"
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       View

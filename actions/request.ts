@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/client";
 import { pusherServer } from "@/lib/pusher";
 import { RequestPriority, RequestStatus } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import PushNotifications from "@pusher/push-notifications-server";
 
 type RequestProp = {
   category: string;
@@ -11,6 +11,11 @@ type RequestProp = {
   priority: RequestPriority;
   status: RequestStatus;
 };
+
+const beamsClient = new PushNotifications({
+  instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
+  secretKey: process.env.BEAMS_SECRET_KEY!,
+});
 
 export const updateRequest = async (id: string, data: RequestProp) => {
   try {
@@ -31,6 +36,20 @@ export const updateRequest = async (id: string, data: RequestProp) => {
     pusherServer.trigger("maintenance", "update", updatedRequest);
 
     // TODO: SEND NOTIFICATION TO TENANT
+    try {
+      await beamsClient.publishToUsers([updatedRequest.userId], {
+        web: {
+          notification: {
+            title: "Updated Maintenance Request",
+            body: "You have an update on a maintenance request",
+            icon: "https://res.cloudinary.com/doqfvbdxe/image/upload/v1730303244/uploads/k5fozza3te6srxjpvbms.png",
+          },
+        },
+      });
+      console.log("Notification sent successfully");
+    } catch (notificationError) {
+      console.error("Failed to send notification:", notificationError);
+    }
 
     return { success: "Successfully updated the request!" };
   } catch (error) {

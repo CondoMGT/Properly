@@ -22,12 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { useBeams } from "@/hooks/use-Beams";
 import { usePathname } from "next/navigation";
-
-interface NotificationPayload {
-  title: string;
-  body: string;
-  icon?: string; // Optional icon property
-}
+import { handleNotification } from "@/lib/helper";
 
 export const PropertyMessagingSystem = () => {
   const [selectedTenant, setSelectedTenant] = useState<AllUser | null>(null);
@@ -78,17 +73,6 @@ export const PropertyMessagingSystem = () => {
       Notification.requestPermission();
     }
 
-    const handleNotification = (payload: NotificationPayload) => {
-      const notification = new Notification(payload.title, {
-        body: payload.body,
-        icon: payload.icon,
-      });
-
-      notification.onclick = () => {
-        // Handle notification click
-        console.log("Notification clicked");
-      };
-    };
     const fetchTenantsMessages = async () => {
       const d = await getTenantMessagesWithManager(
         selectedTenant?.id as string
@@ -123,6 +107,7 @@ export const PropertyMessagingSystem = () => {
         handleNotification({
           title: "New Message",
           body: "You have received a new message",
+          icon: "/logo.svg",
         });
       });
     };

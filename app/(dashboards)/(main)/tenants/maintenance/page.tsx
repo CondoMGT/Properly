@@ -67,6 +67,9 @@ import { getRequestInfoForTenant } from "@/data/request";
 import { RequestStatus } from "@prisma/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { format } from "date-fns";
+import { pusherClient } from "@/lib/pusher";
+import { ReqInfo } from "../../managers/maintenance/_components/maintenance-request-table";
+import { handleNotification } from "@/lib/helper";
 
 type Message = {
   type: "user" | "bot";
@@ -87,7 +90,7 @@ const MaintenancePage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [escalated, setEscalated] = useState(false);
 
-  const [tenantRequests, setTenantRequests] = useState<ReqType[] | null>(null);
+  const [tenantRequests, setTenantRequests] = useState<ReqType[]>([]);
   const [requestLoading, setRequestLoading] = useState(false);
 
   const [escalateMessage, setEscalateMessage] = useState("");
@@ -109,15 +112,51 @@ const MaintenancePage = () => {
   const lastChildRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
     setRequestLoading(true);
     const fetchRequests = async () => {
       const req = await getRequestInfoForTenant(user?.id as string);
 
-      setTenantRequests(req);
+      setTenantRequests(req as ReqType[]);
       setRequestLoading(false);
     };
 
     fetchRequests();
+
+    const subscribeToMaintenance = () => {
+      pusherClient.subscribe("maintenance");
+
+      pusherClient.bind("update", (data: ReqInfo) => {
+        setTenantRequests((prev) => {
+          return prev?.map((p) => {
+            if (p.id === data.id) {
+              return {
+                status: data.status,
+                issue: data.issue,
+                createdAt: data.createdAt,
+                id: data.id,
+              };
+            }
+            return p;
+          });
+        });
+
+        handleNotification({
+          title: "Updated Maintenance Request",
+          body: "You have an update on a maintenance request",
+          icon: "/logo.svg",
+        });
+      });
+    };
+
+    subscribeToMaintenance();
+
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
   }, []);
 
   useEffect(() => {
@@ -864,6 +903,7 @@ const MaintenancePage = () => {
           )}
 
           {tenantRequests &&
+            tenantRequests.length > 0 &&
             tenantRequests.map((req) => (
               <div
                 key={req.id}
@@ -872,19 +912,19 @@ const MaintenancePage = () => {
                 <div className="space-y-2">
                   <h4 className="font-semibold">{req.issue}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Submitted: {format(req.createdAt, "MM/dd/yyyy")}
+                    Submitted: {format(new Date(req.createdAt), "MM/dd/yyyy")}
                   </p>
                 </div>
                 <Badge
-                  className={`border border-black w-24 inline-flex justify-center ${
-                    ["New", "In_Progress"].includes(req.status)
+                  className={`border border-black w-24 rounded-full font-semibold inline-flex justify-center ${
+                    ["New", "Progress"].includes(req.status)
                       ? "bg-custom-1"
                       : req.status === "Pending"
                       ? "bg-custom-5"
                       : "bg-custom-2"
                   }`}
                 >
-                  {["New", "In_Progress"].includes(req.status)
+                  {["New", "Progress"].includes(req.status)
                     ? "In Progress"
                     : req.status}
                 </Badge>
