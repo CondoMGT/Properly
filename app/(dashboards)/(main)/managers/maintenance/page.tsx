@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, MessageSquare, Users } from "lucide-react";
-import React from "react";
 import MaintenanceRequestsTable from "./_components/maintenance-request-table";
 
 interface StatCardProp {
@@ -50,6 +49,7 @@ const MaintenancePage = () => {
       color: "custom-7",
     },
   ];
+
   return (
     <div className="min-h-screen container mx-auto space-y-6">
       {/* <h1 className="text-3xl font-bold mb-6">Property Management Dashboard</h1> */}

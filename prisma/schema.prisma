@@ -133,7 +133,7 @@ model MaintenanceRequest {
   status RequestStatus @default(New)
 
   category   String?
-  contractor String?
+  contractor String? // Contractor ID
 
   maintenanceDate DateTime?
 
@@ -265,7 +265,7 @@ enum RequestPriority {
 
 enum RequestStatus {
   New
-  In_Progess
+  Progress
   Closed
   Pending
 }

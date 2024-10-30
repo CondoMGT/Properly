@@ -46,9 +46,45 @@ export const getRequestInfoForManager = async (userId: string) => {
 
     const reqInfo = await prisma.maintenanceRequest.findMany({
       where: { propertyId: property?.propertyManager?.properties[0].id },
+      include: {
+        user: {
+          select: {
+            name: true,
+            tenant: {
+              select: {
+                unit: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return reqInfo;
+    return {
+      property: {
+        name: property?.propertyManager?.properties[0].propertyName,
+        address: property?.propertyManager?.properties[0].address,
+      },
+      reqInfo,
+    };
+  } catch (error) {
+    console.log("Error:", error);
+    return null;
+  }
+};
+
+export const getPropertyContractors = async (propertyId: string) => {
+  try {
+    const data = await prisma.propertyContractor.findMany({
+      where: {
+        propertyId,
+      },
+      select: {
+        contractor: true,
+      },
+    });
+
+    return data;
   } catch (error) {
     console.log("Error:", error);
     return null;

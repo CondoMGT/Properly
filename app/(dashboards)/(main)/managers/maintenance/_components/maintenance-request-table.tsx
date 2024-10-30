@@ -36,52 +36,35 @@ import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getRequestInfoForManager } from "@/data/request";
 import { RequestDialog } from "./request-dialog";
+import { RequestStatus } from "@prisma/client";
+import { BeatLoader } from "react-spinners";
+import { pusherClient } from "@/lib/pusher";
 
-export type Request = {
+export type ReqInfo = {
+  attachments: string | null;
+  category: string | null;
+  contractor: string | null;
+  createdAt: Date;
+  description: string;
   id: string;
-  property: string;
   issue: string;
-  status: "In Progress" | "Pending" | "Closed" | "New";
+  maintenanceDate: Date | null;
   priority: "Low" | "Medium" | "High";
+  propertyId: string;
+  reqId: string;
+  status: RequestStatus;
+  summary: string;
+  updatedAt: Date;
+  user: {
+    name: string;
+    tenant: {
+      unit: string;
+    } | null;
+  };
+  userId: string;
 };
 
-const requests: Request[] = [
-  {
-    id: "REQ001",
-    property: "Apt 101",
-    issue: "Leaky faucet",
-    status: "New",
-    priority: "Low",
-  },
-  {
-    id: "REQ002",
-    property: "Apt 202",
-    issue: "Broken AC",
-    status: "In Progress",
-    priority: "High",
-  },
-  {
-    id: "REQ003",
-    property: "Apt 305",
-    issue: "Pest control",
-    status: "Pending",
-    priority: "Medium",
-  },
-  {
-    id: "REQ004",
-    property: "Apt 404",
-    issue: "Paint touch-up",
-    status: "Closed",
-    priority: "Low",
-  },
-  {
-    id: "REQ005",
-    property: "Apt 501",
-    issue: "Clogged drain",
-    status: "New",
-    priority: "Medium",
-  },
-];
+type UpdatedReq = Omit<ReqInfo, "user">;
 
 type FilterValue = {
   searchType: "id" | "property" | "issue"; // Assuming these are the only search types
@@ -90,23 +73,27 @@ type FilterValue = {
   priority: string[]; // Array of selected priority strings
 };
 
-const statusOptions = ["New", "In Progress", "Pending", "Closed"];
+const statusOptions = ["New", "Progress", "Pending", "Closed"];
 const priorityOptions = ["Low", "Medium", "High"];
 
 export default function MaintenanceRequestsTable() {
   const user = useCurrentUser();
 
   const [viewDialog, setViewDialog] = React.useState(false);
-  const [selectedRequest, setSelectedRequest] = React.useState<Request | null>(
+  const [loading, setLoading] = React.useState(false);
+
+  const [propertyName, setPropertyName] = React.useState<string | null>(null);
+  const [selectedRequest, setSelectedRequest] = React.useState<ReqInfo | null>(
     null
   );
 
   const handleCloseViewDialog = () => {
     setSelectedRequest(null);
-    setViewDialog(false);
+    setViewDialog((prev) => !prev);
   };
 
-  const [filteredRequests, setFilteredRequests] = React.useState(requests);
+  const [requests, setRequests] = React.useState<ReqInfo[]>([]);
+  const [filteredRequests, setFilteredRequests] = React.useState<ReqInfo[]>([]);
   const [filters, setFilters] = React.useState({
     searchType: "id",
     searchValue: "",
@@ -117,8 +104,48 @@ export default function MaintenanceRequestsTable() {
   const itemsPerPage = 7;
 
   React.useEffect(() => {
+    const subscribeToMaintenance = () => {
+      pusherClient.subscribe("maintenance");
+
+      pusherClient.bind("update", (data: UpdatedReq) => {
+        setFilteredRequests((prev) => {
+          return prev.map((p) => {
+            if (p.id === data.id) {
+              return {
+                ...p,
+                status: data.status,
+                priority: data.priority,
+                contractor: data.contractor,
+                category: data.category,
+              };
+            } else {
+              return p;
+            }
+          });
+        });
+      });
+    };
+
+    subscribeToMaintenance();
+
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
+  }, []);
+
+  React.useEffect(() => {
+    setLoading(true);
     const getInfo = async () => {
-      console.log(await getRequestInfoForManager(user?.id as string));
+      const data = await getRequestInfoForManager(user?.id as string);
+
+      if (data && data.property) {
+        setPropertyName(data.property.name as string);
+
+        setRequests(data.reqInfo);
+        setFilteredRequests(data.reqInfo);
+      }
+
+      setLoading(false);
     };
 
     getInfo();
@@ -131,24 +158,32 @@ export default function MaintenanceRequestsTable() {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
 
-    const filtered = requests.filter(
-      (request) =>
-        (newFilters.searchValue === "" ||
-          request[newFilters.searchType as keyof Request]
-            .toString()
-            .toLowerCase()
-            .includes(newFilters.searchValue.toLowerCase())) &&
-        (newFilters.status.length === 0 ||
-          newFilters.status.includes(request.status)) &&
-        (newFilters.priority.length === 0 ||
-          newFilters.priority.includes(request.priority))
-    );
+    const filtered = requests.filter((request) => {
+      const searchValue = newFilters.searchValue.toLowerCase();
+      const searchField = request[newFilters.searchType as keyof ReqInfo];
+
+      // Check if searchField is defined and filter accordingly
+      const matchesSearch =
+        searchValue === "" ||
+        (searchField !== null &&
+          searchField.toString().toLowerCase().includes(searchValue));
+
+      const matchesStatus =
+        newFilters.status.length === 0 ||
+        newFilters.status.includes(request.status);
+
+      const matchesPriority =
+        newFilters.priority.length === 0 ||
+        newFilters.priority.includes(request.priority);
+
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
     setFilteredRequests(filtered);
     setCurrentPage(1);
   };
 
   const statusColors = {
-    "In Progress": "bg-custom-1",
+    Progress: "bg-custom-1",
     Pending: "bg-[#374151]",
     Closed: "bg-custom-2",
     New: "bg-background",
@@ -222,7 +257,7 @@ export default function MaintenanceRequestsTable() {
                       {
                         requests.filter(
                           (r) =>
-                            r[placeholder.toLowerCase() as keyof Request] ===
+                            r[placeholder.toLowerCase() as keyof ReqInfo] ===
                             option
                         ).length
                       }
@@ -297,8 +332,11 @@ export default function MaintenanceRequestsTable() {
             <TableBody>
               {paginatedRequests.map((request) => (
                 <TableRow key={request.id} className="*:py-5">
-                  <TableCell>{request.id}</TableCell>
-                  <TableCell>{request.property}</TableCell>
+                  <TableCell>
+                    {propertyName?.slice(0, 3).toUpperCase()}
+                    {request.reqId.slice(0, 3)}
+                  </TableCell>
+                  <TableCell>Unit {request.user.tenant?.unit}</TableCell>
                   <TableCell>{request.issue}</TableCell>
                   <TableCell>
                     <Badge
@@ -307,7 +345,9 @@ export default function MaintenanceRequestsTable() {
                         statusColors[request.status]
                       } flex justify-center items-center rounded-xl py-1`}
                     >
-                      {request.status}
+                      {request.status === "Progress"
+                        ? "In Progress"
+                        : request.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -324,7 +364,6 @@ export default function MaintenanceRequestsTable() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        console.log(`View request ${request.id}`);
                         setSelectedRequest(request);
                         setViewDialog(true);
                       }}
@@ -338,7 +377,12 @@ export default function MaintenanceRequestsTable() {
             </TableBody>
           )}
         </Table>
-        {filteredRequests.length === 0 && (
+        {loading && (
+          <div className="w-full mt-2 text-center text-gray-400">
+            <BeatLoader color="#003366" />
+          </div>
+        )}
+        {!loading && filteredRequests.length === 0 && (
           <div className="w-full mt-2 text-center text-gray-400">
             No item found.
           </div>
@@ -382,6 +426,7 @@ export default function MaintenanceRequestsTable() {
           viewDialog={viewDialog}
           setViewDialog={handleCloseViewDialog}
           request={selectedRequest}
+          address={propertyName as string}
         />
       )}
     </>

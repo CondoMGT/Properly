@@ -4,12 +4,14 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { CheckCheck, ImageIcon } from "lucide-react";
+import { format } from "date-fns";
 
 interface AITroubleshootingProps {
   title: string;
@@ -18,7 +20,7 @@ interface AITroubleshootingProps {
     avatar: string;
     name: string;
     message: string;
-    time: string;
+    time: Date;
   };
 }
 
@@ -46,7 +48,9 @@ export default function AITroubleshootingPreview({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
+            <DialogDescription className="text-sm text-muted-foreground">
+              {subtitle}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="flex flex-col items-start space-y-2">
@@ -64,7 +68,9 @@ export default function AITroubleshootingPreview({
                   {suggestion.message}
                 </p>
                 <div className="flex items-center justify-end text-custom-2 space-x-1">
-                  <p className="text-xs">{suggestion.time}</p>
+                  <p className="text-xs">
+                    {format(suggestion.time, "MMM dd, yyyy, HH:mm")}
+                  </p>
                   <CheckCheck className="w-4 h-4 ml-2" />
                 </div>
               </div>

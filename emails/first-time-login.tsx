@@ -1,12 +1,13 @@
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
   Html,
   Img,
-  Link,
   Preview,
+  Row,
   Section,
   Text,
 } from "@react-email/components";
@@ -33,9 +34,18 @@ export const ProperlyFirstTimeLoginEmail = ({
       <Preview>Properly: Reset your password</Preview>
       <Body style={main}>
         <Container style={container}>
-          <h1 className="text-2xl text-center font-semibold">
-            Properly Solutions Inc.
-          </h1>
+          <Section className="flex flex-row items-center justify-center">
+            <Row>
+              <Column>
+                <Img src="/static/512.png" alt="Logo" width={50} height={50} />
+              </Column>
+              <Column>
+                <h1 className="text-2xl text-center font-semibold">
+                  Properly Solutions Inc.
+                </h1>
+              </Column>
+            </Row>
+          </Section>
           <Section>
             {userFirstname && <Text style={text}>Hi {userFirstname},</Text>}
             <Text style={text}>
