@@ -1,6 +1,14 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, MessageSquare, Users } from "lucide-react";
-import MaintenanceRequestsTable from "./_components/maintenance-request-table";
+import {
+  MaintenanceRequestsTable,
+  ReqInfo,
+} from "./_components/maintenance-request-table";
+import { useEffect, useState } from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { getRequestInfoForManager } from "@/data/request";
 
 interface StatCardProp {
   title: string;
@@ -31,22 +39,45 @@ const StatCard = ({ title, value, color, Icon }: StatCardProp) => (
 );
 
 const MaintenancePage = () => {
+  const user = useCurrentUser();
+
+  const [requests, setRequests] = useState<ReqInfo[]>([]);
+  const [propertyName, setPropertyName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getInfo = async () => {
+      const data = await getRequestInfoForManager(user?.id as string);
+
+      if (data && data.property) {
+        setPropertyName(data.property.name as string);
+
+        setRequests(data.reqInfo);
+      }
+    };
+
+    getInfo();
+  }, [user?.id]);
+
+  const open = requests.filter((r) => r.status !== "Closed");
+  const progress = requests.filter((r) => r.status === "Progress");
+  const closed = requests.filter((r) => r.status === "Closed");
+
   const stats = [
     {
       title: "Open Requests",
-      value: "8",
+      value: `${open.length}`,
       Icon: MessageSquare,
       color: "custom-8",
     },
     {
       title: "In Progress",
-      value: "3",
+      value: `${progress.length}`,
       Icon: Home,
       color: "custom-7",
     },
     {
       title: "Completed",
-      value: "12",
+      value: `${closed.length}`,
       Icon: Users,
       color: "custom-2",
     },
@@ -70,7 +101,10 @@ const MaintenancePage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <MaintenanceRequestsTable />
+          <MaintenanceRequestsTable
+            requests={requests}
+            propertyName={propertyName}
+          />
         </CardContent>
       </Card>
     </div>

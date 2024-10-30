@@ -65,10 +65,15 @@ export type ReqInfo = {
   userId: string;
 };
 
+type MaintenanceTableProps = {
+  requests: ReqInfo[];
+  propertyName: string | null;
+};
+
 type UpdatedReq = Omit<ReqInfo, "user">;
 
 type FilterValue = {
-  searchType: "id" | "property" | "issue"; // Assuming these are the only search types
+  searchType: "id" | "user" | "issue"; // Assuming these are the only search types
   searchValue: string;
   status: string[]; // Array of selected status strings
   priority: string[]; // Array of selected priority strings
@@ -77,13 +82,16 @@ type FilterValue = {
 const statusOptions = ["New", "Progress", "Pending", "Closed"];
 const priorityOptions = ["Low", "Medium", "High"];
 
-export default function MaintenanceRequestsTable() {
+export const MaintenanceRequestsTable = ({
+  requests,
+  propertyName,
+}: MaintenanceTableProps) => {
   const user = useCurrentUser();
 
   const [viewDialog, setViewDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const [propertyName, setPropertyName] = React.useState<string | null>(null);
+  // const [propertyName, setPropertyName] = React.useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = React.useState<ReqInfo | null>(
     null
   );
@@ -93,7 +101,7 @@ export default function MaintenanceRequestsTable() {
     setViewDialog((prev) => !prev);
   };
 
-  const [requests, setRequests] = React.useState<ReqInfo[]>([]);
+  // const [requests, setRequests] = React.useState<ReqInfo[]>([]);
   const [filteredRequests, setFilteredRequests] = React.useState<ReqInfo[]>([]);
   const [filters, setFilters] = React.useState({
     searchType: "id",
@@ -147,20 +155,15 @@ export default function MaintenanceRequestsTable() {
   React.useEffect(() => {
     setLoading(true);
     const getInfo = async () => {
-      const data = await getRequestInfoForManager(user?.id as string);
-
-      if (data && data.property) {
-        setPropertyName(data.property.name as string);
-
-        setRequests(data.reqInfo);
-        setFilteredRequests(data.reqInfo);
+      if (requests) {
+        setFilteredRequests(requests);
       }
 
       setLoading(false);
     };
 
     getInfo();
-  }, [user?.id]);
+  }, [requests]);
 
   const handleFilterChange = (
     key: string,
@@ -171,7 +174,11 @@ export default function MaintenanceRequestsTable() {
 
     const filtered = requests.filter((request) => {
       const searchValue = newFilters.searchValue.toLowerCase();
-      const searchField = request[newFilters.searchType as keyof ReqInfo];
+
+      const searchField =
+        newFilters.searchType === "user"
+          ? request[newFilters.searchType]?.tenant?.unit ?? ""
+          : request[newFilters.searchType as keyof ReqInfo];
 
       // Check if searchField is defined and filter accordingly
       const matchesSearch =
@@ -250,7 +257,7 @@ export default function MaintenanceRequestsTable() {
                         selectedValue && selectedValue.includes(option)
                           ? selectedValue.filter((item) => item !== option)
                           : [...selectedValue, option];
-                      console.log(newValue);
+
                       onChange(newValue);
                     }}
                   >
@@ -305,7 +312,7 @@ export default function MaintenanceRequestsTable() {
               }
             >
               <option value="id">ID</option>
-              <option value="property">Property</option>
+              <option value="user">Property</option>
               <option value="issue">Issue</option>
             </select>
             <Input
@@ -347,7 +354,7 @@ export default function MaintenanceRequestsTable() {
                 <TableRow key={request.id} className="*:py-5">
                   <TableCell>
                     {propertyName?.slice(0, 3).toUpperCase()}
-                    {request.reqId.slice(0, 3).toUpperCase()}
+                    {request.id.slice(0, 3).toUpperCase()}
                   </TableCell>
                   <TableCell>Unit {request.user.tenant?.unit}</TableCell>
                   <TableCell>{request.issue}</TableCell>
@@ -445,4 +452,4 @@ export default function MaintenanceRequestsTable() {
       )}
     </>
   );
-}
+};
