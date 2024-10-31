@@ -71,7 +71,13 @@ const LandingPage = () => {
         </div>
 
         <div className="w-1/2 h-[536px] relative hidden md:block">
-          <Image src="/main.png" alt="Main" fill className="object-cover" />
+          <Image
+            src="/main.png"
+            alt="Main"
+            fill
+            priority
+            className="object-cover"
+          />
         </div>
       </div>
     </div>
