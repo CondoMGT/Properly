@@ -1,14 +1,16 @@
 import {
   Body,
+  Column,
   Container,
   Head,
   Heading,
   Hr,
   Html,
   Img,
-  Link,
   Preview,
+  Row,
   Section,
+  Tailwind,
   Text,
 } from "@react-email/components";
 import * as React from "react";
@@ -28,39 +30,53 @@ export default function ProperlyVerifyEmail({
     <Html>
       <Head />
       <Preview>Properly Solutiins Email Verification</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={coverSection}>
-            <Section>
-              <h1 className="text-white text-2xl text-center font-semibold">
-                Properly Solutions Inc.
-              </h1>
-            </Section>
-            <Section style={upperSection}>
-              <Heading style={h1}>Verify your email address</Heading>
-              <Text style={mainText}>
-                Your Two-factor Authenctication code is below - enter your code
-                to complete your login.
-              </Text>
-            </Section>
-            <Section>
-              <Text style={verifyText}>2FA Code</Text>
+      <Tailwind>
+        <Body style={main}>
+          <Container style={container}>
+            <Section style={coverSection}>
+              <Section className="flex flex-row items-center justify-center">
+                <Row>
+                  <Column>
+                    <Img
+                      src="/static/512.png"
+                      alt="Logo"
+                      width={50}
+                      height={50}
+                    />
+                  </Column>
+                  <Column>
+                    <h1 className="text-2xl text-center font-semibold">
+                      Properly Solutions Inc.
+                    </h1>
+                  </Column>
+                </Row>
+              </Section>
+              <Section style={upperSection}>
+                <Heading style={h1}>Verify your email address</Heading>
+                <Text style={mainText}>
+                  Your Two-factor Authenctication code is below - enter your
+                  code to complete your login.
+                </Text>
+              </Section>
+              <Section>
+                <Text style={verifyText}>2FA Code</Text>
 
-              <Text style={codeText}>{verificationCode}</Text>
-              <Text style={validityText}>
-                (This code is valid for 15 minutes)
-              </Text>
+                <Text style={codeText}>{verificationCode}</Text>
+                <Text style={validityText}>
+                  (This code is valid for 15 minutes)
+                </Text>
+              </Section>
+              <Hr />
+              <Section style={lowerSection}>
+                <Text style={cautionText}>
+                  Properly Solutions Inc. will never email you and ask you to
+                  disclose or verify your password, or personal information.
+                </Text>
+              </Section>
             </Section>
-            <Hr />
-            <Section style={lowerSection}>
-              <Text style={cautionText}>
-                Properly Solutions Inc. will never email you and ask you to
-                disclose or verify your password, or personal information.
-              </Text>
-            </Section>
-          </Section>
-        </Container>
-      </Body>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 }

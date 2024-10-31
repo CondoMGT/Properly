@@ -1,7 +1,15 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { Calendar, Clock1, Home, MessageSquare, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ReqInfo } from "./maintenance/_components/maintenance-request-table";
+import { getRequestInfoForManager } from "@/data/request";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { BeatLoader } from "react-spinners";
+import { RequestDialog } from "./maintenance/_components/request-dialog";
 
 interface StatCardProp {
   title: string;
@@ -41,43 +49,70 @@ const StatCard = ({ title, value, color, Icon }: StatCardProp) => (
 );
 
 // Maintenance Request Component
-const MaintenanceRequest = ({ title, status }: MaintenanceRequest) => {
+const MaintenanceRequest = ({
+  req,
+  propertyName,
+}: {
+  req: ReqInfo;
+  propertyName: string;
+}) => {
   const statusColors = {
-    scheduled: "bg-custom-0",
-    pending: "bg-custom-7",
-    in_progress: "bg-custom-8",
-    closed: "bg-custom-9",
+    New: "bg-custom-0",
+    Pending: "bg-custom-7",
+    Progress: "bg-custom-8",
+    Closed: "bg-custom-9",
+  };
+
+  const [viewDialog, setViewDialog] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ReqInfo | null>(null);
+
+  const handleCloseViewDialog = () => {
+    setSelectedRequest(null);
+    setViewDialog((prev) => !prev);
   };
 
   // Normalize the status to lowercase
-  const normalizedStatus = status
-    .toLowerCase()
-    .replace(" ", "_") as keyof typeof statusColors;
+  const normalizedStatus = req.status as keyof typeof statusColors;
 
   // Use the normalized status to index into statusColors
   const reqColor = statusColors[normalizedStatus];
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-xl">
-      <div className="flex items-center space-x-4">
-        <div className={`${reqColor} rounded-full w-6 h-6`} />
-        <div className="flex flex-col space-y-2 items-start">
-          <span className="text-base tracking-tight leading-normal">
-            {title}
-          </span>
-          <span className="text-sm font-semibold text-gray-600">
-            Status: {status}
-          </span>
+    <>
+      <div className="flex items-center justify-between p-4 border rounded-xl">
+        <div className="flex items-center space-x-4">
+          <div className={`${reqColor} rounded-full w-6 h-6`} />
+          <div className="flex flex-col space-y-2 items-start">
+            <span className="text-base tracking-tight leading-normal">
+              {req.issue} in Unit {req.user.tenant?.unit}, {propertyName}
+            </span>
+            <span className="text-sm font-semibold text-gray-600">
+              Status: {req.status === "Progress" ? "In Progress" : req.status}
+            </span>
+          </div>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setSelectedRequest(req);
+            setViewDialog(true);
+          }}
+        >
+          View
+        </Button>
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        // onClick={onView}
-      >
-        View
-      </Button>
-    </div>
+
+      {selectedRequest && (
+        <RequestDialog
+          viewDialog={viewDialog}
+          setViewDialog={handleCloseViewDialog}
+          request={selectedRequest}
+          address={propertyName as string}
+          canSubmit={false}
+        />
+      )}
+    </>
   );
 };
 
@@ -95,10 +130,40 @@ const ScheduleItem = ({ time, title }: ScheduleItemProp) => (
 );
 
 const ManagerPage = () => {
+  const user = useCurrentUser();
+
+  const [requests, setRequests] = useState<ReqInfo[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [propertyName, setPropertyName] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    const getInfo = async () => {
+      const data = await getRequestInfoForManager(user?.id as string);
+
+      if (data && data.property) {
+        setPropertyName(data.property.name as string);
+
+        const sortedReqInfo = data.reqInfo.sort((a, b) => {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        });
+
+        setRequests(sortedReqInfo);
+      }
+
+      setLoading(false);
+    };
+
+    getInfo();
+  }, [user?.id]);
+
   // Mock data
   const stats = [
     {
-      title: "Total Properties",
+      title: "Properties",
       value: "125",
       Icon: Home,
       color: "custom-1",
@@ -110,24 +175,11 @@ const ManagerPage = () => {
       color: "custom-2",
     },
     {
-      title: "Active Tenants",
+      title: "Tenants",
       value: "312",
       Icon: Users,
       color: "custom-7",
     },
-  ];
-
-  const maintenanceRequests: MaintenanceRequest[] = [
-    { id: 1, title: "Leaky Faucet - Apt 301", status: "Scheduled" },
-    { id: 2, title: "Water Leak in Unit 201 Building B", status: "Scheduled" },
-    { id: 3, title: "Broken AC in Unit 422 Building B", status: "In Progress" },
-    {
-      id: 4,
-      title: "Broken Kitchen Vent in Unit 854 Building D",
-      status: "In Progress",
-    },
-    { id: 5, title: "Lobby Light Replacement Building A", status: "Pending" },
-    { id: 6, title: "Kitchen Faucet in Unit 601 Building C", status: "Closed" },
   ];
 
   const scheduleItems = [
@@ -155,13 +207,23 @@ const ManagerPage = () => {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow overflow-y-auto space-y-4">
-            {maintenanceRequests.map((request) => (
-              <MaintenanceRequest
-                key={request.id}
-                {...request}
-                // onView={() => console.log(`View request ${request.id}`)}
-              />
-            ))}
+            {loading && (
+              <div className="w-full h-full flex items-center justify-center">
+                <BeatLoader color="#003366" />
+              </div>
+            )}
+            {!loading && requests.length === 0 && (
+              <p>No recent maintenance requests.</p>
+            )}
+            {!loading &&
+              requests.length > 0 &&
+              requests.map((request) => (
+                <MaintenanceRequest
+                  key={request.id}
+                  req={request}
+                  propertyName={propertyName as string}
+                />
+              ))}
           </CardContent>
         </Card>
 

@@ -86,6 +86,7 @@ import {
   SkippedTenantsModal,
 } from "../tenant/skipped-tenants-modal";
 import { fetchContractors } from "@/data/contractor";
+import { BeatLoader } from "react-spinners";
 
 export type Contractor = {
   id: string;
@@ -147,6 +148,8 @@ const serviceAreas = [
 export const ContractorManagement = () => {
   const user = useCurrentUser();
 
+  const [loading, setLoading] = useState(false);
+
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
     []
@@ -180,12 +183,15 @@ export const ContractorManagement = () => {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     const fetchPropertyContractors = async () => {
       const contractors = await fetchContractors(propertyId as string);
 
       if (contractors) {
         setContractors(contractors);
       }
+
+      setLoading(false);
     };
 
     fetchPropertyContractors();
@@ -599,13 +605,24 @@ export const ContractorManagement = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedContractors.length === 0 ? (
+            {loading && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
+                <TableCell colSpan={8}>
+                  <div className="flex w-full justify-center items-center">
+                    <BeatLoader color="#003366" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+            {!loading && paginatedContractors.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center">
                   No contractors available
                 </TableCell>
               </TableRow>
             ) : (
+              !loading &&
+              paginatedContractors.length > 0 &&
               paginatedContractors.map((contractor) => (
                 <TableRow key={contractor.id}>
                   <TableCell>{contractor.name}</TableCell>

@@ -15,13 +15,7 @@ export const getTenantMessagesWithManager = async (userId: string) => {
               senderId: userId,
             },
             {
-              senderId: managerId as string,
-            },
-            {
               receiverId: userId,
-            },
-            {
-              receiverId: managerId as string,
             },
           ],
         },

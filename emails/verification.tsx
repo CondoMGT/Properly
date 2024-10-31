@@ -12,6 +12,9 @@ import {
   Section,
   Text,
   Tailwind,
+  Row,
+  Column,
+  Img,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -39,10 +42,22 @@ export const ProperlyUserEmail = ({
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
-            <Section className="mt-[32px]">
-              <h1 className={cn("text-2xl text-center font-semibold")}>
-                Properly Solutions Inc.
-              </h1>
+            <Section className="flex flex-row items-center justify-center">
+              <Row>
+                <Column>
+                  <Img
+                    src="/static/512.png"
+                    alt="Logo"
+                    width={50}
+                    height={50}
+                  />
+                </Column>
+                <Column>
+                  <h1 className="text-2xl text-center font-semibold">
+                    Properly Solutions Inc.
+                  </h1>
+                </Column>
+              </Row>
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
               Join <strong>Properly Solutions Inc.</strong> on the{" "}

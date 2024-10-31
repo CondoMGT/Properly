@@ -110,6 +110,7 @@ export const sendMessage = async (values: MessageServer) => {
           notification: {
             title: "New Message",
             body: "You have received a new message",
+            icon: "https://res.cloudinary.com/doqfvbdxe/image/upload/v1730303244/uploads/k5fozza3te6srxjpvbms.png",
           },
         },
       });

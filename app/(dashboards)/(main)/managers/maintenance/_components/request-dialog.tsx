@@ -24,18 +24,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Request } from "./maintenance-request-table";
+import { ReqInfo } from "./maintenance-request-table";
 import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "lucide-react";
+import { Loader, Save } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AITroubleshootingPreview from "@/components/ai-preview/ai-troubleshooting";
+import { useEffect, useState, useTransition } from "react";
+import { getPropertyContractors } from "@/data/request";
+import { updateRequest } from "@/actions/request";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface RequestDialogProp {
   viewDialog: boolean;
-  request: Request;
+  request: ReqInfo;
+  address: string;
+  canSubmit?: boolean;
   setViewDialog: () => void;
 }
 
@@ -43,7 +50,7 @@ const FormSchema = z.object({
   priority: z.enum(["Low", "Medium", "High"], {
     required_error: "Please select an priority.",
   }),
-  status: z.enum(["In Progress", "Pending", "Closed", "New"], {
+  status: z.enum(["Progress", "Closed", "New", "Pending"], {
     required_error: "Please select an status.",
   }),
   category: z.string({
@@ -54,24 +61,108 @@ const FormSchema = z.object({
   }),
 });
 
+type ContractorProp = {
+  id: string;
+  name: string;
+  category: string;
+};
+
 export const RequestDialog = ({
   viewDialog,
   request,
+  address,
+  canSubmit = true,
   setViewDialog,
 }: RequestDialogProp) => {
+  const router = useRouter();
+
+  const [category, setCategory] = useState<string[]>([]);
+  const [contractor, setContractor] = useState<ContractorProp[]>([]);
+  const [availableContractors, setAvailableContractors] = useState<
+    ContractorProp[]
+  >([]);
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    request?.category
+  );
+
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      priority: request.priority || "",
-      category: "",
-      status: request.status || "",
-      contractor: "",
+      priority: request?.priority || "",
+      category: request?.category || "",
+      status: request?.status || "",
+      contractor: request?.contractor || "",
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      priority: request?.priority || "",
+      category: request?.category || "",
+      status: request?.status || "",
+      contractor: request?.contractor || "",
+    });
+  }, [request, form]);
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
+    startTransition(async () => {
+      const req = await updateRequest(request?.id, data);
+      try {
+        if (req.error) {
+          toast.error(req.error || "Something went wrong!");
+        }
+
+        if (req.success) {
+          toast.success(req.success);
+          setTimeout(() => {
+            setViewDialog();
+          }, 300);
+        }
+      } catch {
+        toast.error("Something went wrong!");
+      }
+    });
+
+    router.push("/managers/maintenance");
   };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = contractor.filter(
+        (c) => c.category === selectedCategory
+      );
+
+      setAvailableContractors(filtered);
+    } else {
+      setAvailableContractors(contractor);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const fetchContractInfo = async () => {
+      const data = await getPropertyContractors(request?.propertyId);
+
+      const dataCategory = Array.from(
+        new Set(data?.map((d) => d.contractor.specialty))
+      );
+      const dataContractor = data?.map((d) => {
+        return {
+          name: d.contractor.name,
+          id: d.contractor.id,
+          category: d.contractor.specialty,
+        };
+      });
+
+      setCategory(dataCategory);
+      setContractor(dataContractor as ContractorProp[]);
+      setAvailableContractors(dataContractor as ContractorProp[]);
+    };
+
+    fetchContractInfo();
+  }, [request?.propertyId]);
 
   return (
     <Dialog open={viewDialog} onOpenChange={setViewDialog}>
@@ -93,7 +184,7 @@ export const RequestDialog = ({
                   Request ID
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.id}
+                  {request?.id.slice(0, 3).toUpperCase()}
                 </span>
               </div>
               <div className="col-span-3 flex flex-col">
@@ -101,7 +192,7 @@ export const RequestDialog = ({
                   Issue
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.issue}
+                  {request?.issue}
                 </span>
               </div>
             </div>
@@ -111,7 +202,7 @@ export const RequestDialog = ({
                   Tenant Name
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  Sarah S.
+                  {request?.user?.name}
                 </span>
               </div>
               <div className="col-span-3 flex flex-col">
@@ -119,7 +210,7 @@ export const RequestDialog = ({
                   Property
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.property}
+                  {address}, Unit {request?.user?.tenant?.unit}
                 </span>
               </div>
             </div>
@@ -130,7 +221,7 @@ export const RequestDialog = ({
               Description
             </span>
             <span className="text-sm font-normal leading-7 tracking-tight">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              {request?.description}
             </span>
           </div>
 
@@ -141,13 +232,12 @@ export const RequestDialog = ({
             <div className="">
               <AITroubleshootingPreview
                 title="AI Troubleshooting Attempt"
-                subtitle="The tenant used AI to attempt to resolve the issue before submitting this request."
+                subtitle="The tenant used AI to attempt to resolve the issue before submitting this ?"
                 suggestion={{
                   avatar: "/ellipse.svg",
                   name: "Bri's Summary",
-                  message:
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis eius sit possimus laboriosam id tempora corporis labore, cupiditate quae facere fugiat delectus non earum, dignissimos a. Velit tempora possimus sunt.",
-                  time: "11:25",
+                  message: request?.summary,
+                  time: request?.createdAt,
                 }}
               />
             </div>
@@ -158,7 +248,6 @@ export const RequestDialog = ({
           Manage Ticket
         </span>
         <DialogFooter>
-          {/* <ScrollArea className="h-[300px]"> */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -174,6 +263,7 @@ export const RequestDialog = ({
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isPending}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -198,8 +288,12 @@ export const RequestDialog = ({
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSelectedCategory(value);
+                        }}
                         defaultValue={field.value}
+                        disabled={isPending}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -207,15 +301,12 @@ export const RequestDialog = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="m@example.com">
-                            m@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
+                          {category &&
+                            category.map((c, index) => (
+                              <SelectItem key={index} value={c}>
+                                {c}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -232,6 +323,7 @@ export const RequestDialog = ({
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isPending}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -239,10 +331,8 @@ export const RequestDialog = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="In Progress">
-                            In Progress
-                          </SelectItem>
                           <SelectItem value="New">New</SelectItem>
+                          <SelectItem value="Progress">In Progress</SelectItem>
                           <SelectItem value="Pending">Pending</SelectItem>
                           <SelectItem value="Closed">Closed</SelectItem>
                         </SelectContent>
@@ -255,56 +345,72 @@ export const RequestDialog = ({
                 <FormField
                   control={form.control}
                   name="contractor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contractor</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Contractor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="m@example.com">
-                            m@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Contractor</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          disabled={isPending}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Contractor" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {availableContractors &&
+                              availableContractors.length > 0 &&
+                              availableContractors.map((c) => (
+                                <SelectItem
+                                  key={`contractor-${c.id}`}
+                                  value={c.id}
+                                >
+                                  {c.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
-              <Separator />
+              {canSubmit && (
+                <>
+                  <Separator />
 
-              <div className="flex items-center justify-between">
-                <Button
-                  className="bg-transparent hover:bg-transparent text-primary border border-custom-2"
-                  type="button"
-                  onClick={setViewDialog}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="w-36 bg-custom-1 hover:bg-custom-1"
-                  type="submit"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Update Ticket
-                </Button>
-              </div>
+                  <div className="flex items-center justify-between">
+                    <Button
+                      className="bg-transparent hover:bg-transparent text-primary border border-custom-2"
+                      type="button"
+                      onClick={setViewDialog}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="w-40 bg-custom-1 hover:bg-custom-1"
+                      type="submit"
+                    >
+                      {isPending ? (
+                        <>
+                          <Loader className="animate-spin w-4 h-4 mr-2" />
+                          Updating Ticket
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Update Ticket
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </>
+              )}
             </form>
           </Form>
-          {/* </ScrollArea> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

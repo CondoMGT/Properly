@@ -26,7 +26,7 @@ const Managerslayout = ({ children }: { children: React.ReactNode }) => {
     <div className="w-full h-screen max-w-[1312px] mx-auto pt-[56px] px-4 flex flex-col gap-8">
       {session.status === "loading" ? (
         <div className="h-full flex justify-center items-center">
-          <Loader className="animate-spin w-24 h-24" />
+          <Loader className="animate-spin w-24 h-24 text-custom-1" />
         </div>
       ) : session.status === "authenticated" ? (
         <RoleGate allowedRole={[UserRole.MANAGER]}>

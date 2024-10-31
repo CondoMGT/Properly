@@ -133,9 +133,10 @@ model MaintenanceRequest {
   status RequestStatus @default(New)
 
   category   String?
-  contractor String?
+  contractor String? // Contractor ID
 
-  maintenanceDate DateTime?
+  maintenanceDate          DateTime?
+  maintenanceCompletedDate DateTime?
 
   userId String @db.Uuid
   user   users  @relation(fields: [userId], references: [id])
@@ -265,7 +266,7 @@ enum RequestPriority {
 
 enum RequestStatus {
   New
-  In_Progess
+  Progress
   Closed
   Pending
 }
