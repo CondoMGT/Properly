@@ -83,7 +83,7 @@ export const RequestDialog = ({
   >([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    request.category
+    request?.category
   );
 
   const [isPending, startTransition] = useTransition();
@@ -91,25 +91,25 @@ export const RequestDialog = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      priority: request.priority || "",
-      category: request.category || "",
-      status: request.status || "",
-      contractor: request.contractor || "",
+      priority: request?.priority || "",
+      category: request?.category || "",
+      status: request?.status || "",
+      contractor: request?.contractor || "",
     },
   });
 
   useEffect(() => {
     form.reset({
-      priority: request.priority || "",
-      category: request.category || "",
-      status: request.status,
-      contractor: request.contractor || "",
+      priority: request?.priority || "",
+      category: request?.category || "",
+      status: request?.status || "",
+      contractor: request?.contractor || "",
     });
-  }, [request]);
+  }, [request, form]);
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     startTransition(async () => {
-      const req = await updateRequest(request.id, data);
+      const req = await updateRequest(request?.id, data);
       try {
         if (req.error) {
           toast.error(req.error || "Something went wrong!");
@@ -130,8 +130,6 @@ export const RequestDialog = ({
   };
 
   useEffect(() => {
-    form.setValue("contractor", "");
-
     if (selectedCategory) {
       const filtered = contractor.filter(
         (c) => c.category === selectedCategory
@@ -145,7 +143,7 @@ export const RequestDialog = ({
 
   useEffect(() => {
     const fetchContractInfo = async () => {
-      const data = await getPropertyContractors(request.propertyId);
+      const data = await getPropertyContractors(request?.propertyId);
 
       const dataCategory = Array.from(
         new Set(data?.map((d) => d.contractor.specialty))
@@ -164,7 +162,7 @@ export const RequestDialog = ({
     };
 
     fetchContractInfo();
-  }, [request.propertyId]);
+  }, [request?.propertyId]);
 
   return (
     <Dialog open={viewDialog} onOpenChange={setViewDialog}>
@@ -186,7 +184,7 @@ export const RequestDialog = ({
                   Request ID
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.id.slice(0, 3).toUpperCase()}
+                  {request?.id.slice(0, 3).toUpperCase()}
                 </span>
               </div>
               <div className="col-span-3 flex flex-col">
@@ -194,7 +192,7 @@ export const RequestDialog = ({
                   Issue
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.issue}
+                  {request?.issue}
                 </span>
               </div>
             </div>
@@ -204,7 +202,7 @@ export const RequestDialog = ({
                   Tenant Name
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request.user.name}
+                  {request?.user?.name}
                 </span>
               </div>
               <div className="col-span-3 flex flex-col">
@@ -212,7 +210,7 @@ export const RequestDialog = ({
                   Property
                 </span>
                 <span className="text-sm font-normal leading-7 tracking-tight">
-                  {address}, Unit {request.user.tenant?.unit}
+                  {address}, Unit {request?.user?.tenant?.unit}
                 </span>
               </div>
             </div>
@@ -223,7 +221,7 @@ export const RequestDialog = ({
               Description
             </span>
             <span className="text-sm font-normal leading-7 tracking-tight">
-              {request.description}
+              {request?.description}
             </span>
           </div>
 
@@ -234,12 +232,12 @@ export const RequestDialog = ({
             <div className="">
               <AITroubleshootingPreview
                 title="AI Troubleshooting Attempt"
-                subtitle="The tenant used AI to attempt to resolve the issue before submitting this request."
+                subtitle="The tenant used AI to attempt to resolve the issue before submitting this ?"
                 suggestion={{
                   avatar: "/ellipse.svg",
                   name: "Bri's Summary",
-                  message: request.summary,
-                  time: request.createdAt,
+                  message: request?.summary,
+                  time: request?.createdAt,
                 }}
               />
             </div>
@@ -355,7 +353,7 @@ export const RequestDialog = ({
                         <FormLabel>Contractor</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={request.contractor || field.value}
+                          value={field.value}
                           disabled={isPending}
                         >
                           <FormControl>

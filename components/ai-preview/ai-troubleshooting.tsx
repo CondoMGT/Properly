@@ -33,12 +33,15 @@ export default function AITroubleshootingPreview({
 
   return (
     <>
-      <Card className="cursor-pointer" onClick={() => setIsOpen(true)}>
+      <Card
+        className="cursor-pointer h-[150px]"
+        onClick={() => setIsOpen(true)}
+      >
         <CardHeader className="opacity-50">
           <CardTitle>{title}</CardTitle>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center">
+        <CardContent className="flex flex-col items-center justify-center -mt-6">
           <ImageIcon className="h-8 w-8 text-custom-2 mb-2" />
           <p className="text-xs font-semibold">Click to preview</p>
         </CardContent>
@@ -69,7 +72,7 @@ export default function AITroubleshootingPreview({
                 </p>
                 <div className="flex items-center justify-end text-custom-2 space-x-1">
                   <p className="text-xs">
-                    {format(suggestion.time, "MMM dd, yyyy, HH:mm")}
+                    {format(new Date(suggestion.time), "MMM dd, yyyy, HH:mm")}
                   </p>
                   <CheckCheck className="w-4 h-4 ml-2" />
                 </div>

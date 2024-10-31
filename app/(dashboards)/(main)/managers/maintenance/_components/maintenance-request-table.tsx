@@ -33,8 +33,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { getRequestInfoForManager } from "@/data/request";
 import { RequestDialog } from "./request-dialog";
 import { RequestStatus } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
@@ -86,8 +84,6 @@ export const MaintenanceRequestsTable = ({
   requests,
   propertyName,
 }: MaintenanceTableProps) => {
-  const user = useCurrentUser();
-
   const [viewDialog, setViewDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
@@ -356,7 +352,7 @@ export const MaintenanceRequestsTable = ({
                     {propertyName?.slice(0, 3).toUpperCase()}
                     {request.id.slice(0, 3).toUpperCase()}
                   </TableCell>
-                  <TableCell>Unit {request.user.tenant?.unit}</TableCell>
+                  <TableCell>Unit {request?.user?.tenant?.unit}</TableCell>
                   <TableCell>{request.issue}</TableCell>
                   <TableCell>
                     <Badge

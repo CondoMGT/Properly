@@ -22,6 +22,31 @@ export const getRequestInfoForTenant = async (userId: string) => {
   }
 };
 
+export const getAllRequestInfoForTenant = async (userId: string) => {
+  try {
+    const reqInfo = await prisma.maintenanceRequest.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            tenant: {
+              select: {
+                unit: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return reqInfo;
+  } catch (error) {
+    console.log("Error:", error);
+    return null;
+  }
+};
+
 export const getRequestInfoForManager = async (userId: string) => {
   try {
     // FIND THE PROPERTY
