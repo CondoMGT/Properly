@@ -248,7 +248,6 @@ export const RequestDialog = ({
           Manage Ticket
         </span>
         <DialogFooter>
-          {/* <ScrollArea className="h-[300px]"> */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -333,7 +332,6 @@ export const RequestDialog = ({
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="New">New</SelectItem>
-                          {/* <SelectItem value="Progress">In Progress</SelectItem> */}
                           <SelectItem value="Progress">In Progress</SelectItem>
                           <SelectItem value="Pending">Pending</SelectItem>
                           <SelectItem value="Closed">Closed</SelectItem>
@@ -393,7 +391,7 @@ export const RequestDialog = ({
                       Cancel
                     </Button>
                     <Button
-                      className="w-36 bg-custom-1 hover:bg-custom-1"
+                      className="w-40 bg-custom-1 hover:bg-custom-1"
                       type="submit"
                     >
                       {isPending ? (
@@ -413,7 +411,6 @@ export const RequestDialog = ({
               )}
             </form>
           </Form>
-          {/* </ScrollArea> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -115,3 +115,34 @@ export const getPropertyContractors = async (propertyId: string) => {
     return null;
   }
 };
+
+export const getContractorInfo = async (id: string) => {
+  try {
+    const data = await prisma.contractor.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        availability: true,
+        startHour: true,
+        endHour: true,
+      },
+    });
+
+    const refinedAvailability = data?.availability.map((d) => {
+      if (d === "Monday") return 1;
+      if (d === "Tuesday") return 2;
+      if (d === "Wednesday") return 3;
+      if (d === "Thursday") return 4;
+      if (d === "Friday") return 5;
+      if (d === "Saturday") return 6;
+      if (d === "Sunday") return 7;
+    });
+
+    return { ...data, availability: refinedAvailability };
+  } catch (error) {
+    console.log("Error:", error);
+    return null;
+  }
+};

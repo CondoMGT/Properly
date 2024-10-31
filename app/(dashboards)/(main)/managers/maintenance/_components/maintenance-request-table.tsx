@@ -48,6 +48,7 @@ export type ReqInfo = {
   id: string;
   issue: string;
   maintenanceDate: Date | null;
+  maintenanceCompletedDate: Date | null;
   priority: "Low" | "Medium" | "High";
   propertyId: string;
   reqId: string;
@@ -84,10 +85,9 @@ export const MaintenanceRequestsTable = ({
   requests,
   propertyName,
 }: MaintenanceTableProps) => {
-  const [viewDialog, setViewDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [viewDialog, setViewDialog] = React.useState(false);
 
-  // const [propertyName, setPropertyName] = React.useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = React.useState<ReqInfo | null>(
     null
   );
@@ -97,7 +97,6 @@ export const MaintenanceRequestsTable = ({
     setViewDialog((prev) => !prev);
   };
 
-  // const [requests, setRequests] = React.useState<ReqInfo[]>([]);
   const [filteredRequests, setFilteredRequests] = React.useState<ReqInfo[]>([]);
   const [filters, setFilters] = React.useState({
     searchType: "id",

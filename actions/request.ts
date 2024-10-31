@@ -59,3 +59,45 @@ export const updateRequest = async (id: string, data: RequestProp) => {
     };
   }
 };
+
+export const updateTenantRequest = async (id: string, data: Date) => {
+  try {
+    const updatedRequest = await prisma.maintenanceRequest.update({
+      where: { id },
+      data: {
+        maintenanceDate: data,
+      },
+    });
+
+    if (!updatedRequest) {
+      return {
+        error: "Error updating the maintenance request.",
+      };
+    }
+
+    pusherServer.trigger("maintenance", "update", updatedRequest);
+
+    // TODO: SEND NOTIFICATION TO TENANT
+    try {
+      await beamsClient.publishToUsers([updatedRequest.userId], {
+        web: {
+          notification: {
+            title: "Updated Maintenance Request",
+            body: "Tenant updated the maintenance request",
+            icon: "https://res.cloudinary.com/doqfvbdxe/image/upload/v1730303244/uploads/k5fozza3te6srxjpvbms.png",
+          },
+        },
+      });
+      console.log("Notification sent successfully");
+    } catch (notificationError) {
+      console.error("Failed to send notification:", notificationError);
+    }
+
+    return { success: "Successfully confirmed your appointment!" };
+  } catch (error) {
+    console.error("Error updating request:", error);
+    return {
+      error: "An error occurred while confirming your appointment.",
+    };
+  }
+};

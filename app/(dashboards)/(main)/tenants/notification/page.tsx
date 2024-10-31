@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { handleNotification } from "@/lib/helper";
 import { pusherClient } from "@/lib/pusher";
+import { NotificationDrawer } from "./_components/notification-drawer";
 
 const NotificationPage = () => {
   const user = useCurrentUser();
@@ -95,48 +96,70 @@ const NotificationPage = () => {
 export default NotificationPage;
 
 const MaintenanceCard = ({ req }: { req: ReqInfo }) => {
-  return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <div className="flex justify-between">
-          <div>
-            <CardTitle className="flex justify-between items-center font-nunito text-xl">
-              Maintenance{" "}
-              {req.status === "Closed"
-                ? "Complete"
-                : !req.category && !req.contractor
-                ? "Ticket Created"
-                : req.category && req.contractor
-                ? "Request Scheduling"
-                : "Request Update"}
-            </CardTitle>
-            <CardDescription className="space-y-2">
-              <div>
-                {req.issue}:{" "}
-                {req.status === "Closed"
-                  ? "The repair in your unit has been completed. Please review."
-                  : !req.category && !req.contractor
-                  ? "Your request has been submitted"
-                  : req.category && req.contractor && !req.maintenanceDate
-                  ? "Confirm date for maintenance request"
-                  : req.category && req.contractor && req.maintenanceDate
-                  ? "Request Scheduled"
-                  : "View request Update"}
-              </div>
+  const [viewDrawer, setViewDrawer] = useState(false);
 
-              <div className="text-sm font-nunito font-semibold">
-                {format(new Date(req.createdAt), "yyyy-MM-dd")}
-              </div>
-            </CardDescription>
+  const [selectedRequest, setSelectedRequest] = useState<ReqInfo | null>(null);
+
+  const handleCloseViewDrawer = () => {
+    setSelectedRequest(null);
+    setViewDrawer((prev) => !prev);
+  };
+  return (
+    <>
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardHeader>
+          <div className="flex justify-between">
+            <div>
+              <CardTitle className="flex justify-between items-center font-nunito text-xl">
+                Maintenance{" "}
+                {req.status === "Closed"
+                  ? "Complete"
+                  : !req.category && !req.contractor
+                  ? "Ticket Created"
+                  : req.category && req.contractor
+                  ? "Request Scheduling"
+                  : "Request Update"}
+              </CardTitle>
+              <CardDescription className="space-y-2">
+                <div>
+                  {req.issue}:{" "}
+                  {req.status === "Closed"
+                    ? "The repair in your unit has been completed. Please review."
+                    : !req.category && !req.contractor
+                    ? "Your request has been submitted"
+                    : req.category && req.contractor && !req.maintenanceDate
+                    ? "Confirm date for maintenance request"
+                    : req.category && req.contractor && req.maintenanceDate
+                    ? "Request Scheduled"
+                    : "View request Update"}
+                </div>
+
+                <div className="text-sm font-nunito font-semibold">
+                  {format(new Date(req.createdAt), "yyyy-MM-dd")}
+                </div>
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              className="border-2 border-custom-2 bg-transparent hover:bg-transparent"
+              onClick={() => {
+                setSelectedRequest(req);
+                setViewDrawer(true);
+              }}
+            >
+              View
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            className="border-2 border-custom-2 bg-transparent hover:bg-transparent"
-          >
-            View
-          </Button>
-        </div>
-      </CardHeader>
-    </Card>
+        </CardHeader>
+      </Card>
+
+      {selectedRequest && (
+        <NotificationDrawer
+          viewDrawer={viewDrawer}
+          setViewDrawer={handleCloseViewDrawer}
+          request={selectedRequest}
+        />
+      )}
+    </>
   );
 };
