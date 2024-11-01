@@ -48,6 +48,11 @@ export const PropertyMessagingSystem = () => {
     setFilter(value);
   }, 300);
 
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const handleResize = () => {
@@ -69,7 +74,11 @@ export const PropertyMessagingSystem = () => {
 
   useEffect(() => {
     // Request notification permission
-    if (Notification.permission !== "granted") {
+    if (
+      !isMobile &&
+      ("Notification" in window || navigator.serviceWorker) &&
+      Notification.permission !== "granted"
+    ) {
       Notification.requestPermission();
     }
 
