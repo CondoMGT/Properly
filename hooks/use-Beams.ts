@@ -55,15 +55,21 @@ export const useBeams = (userId: string | undefined) => {
   const start = useCallback(() => {
     if (!userId || typeof window === "undefined") return;
 
-    // const isMobile =
-    //   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    //     navigator.userAgent
-    //   );
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
 
-    // if (isMobile) {
-    //   console.log("Pusher Beams not initialized on mobile device");
-    //   return;
-    // }
+    // Feature detection for Notification and Service Worker support
+    if (isMobile && (!("Notification" in window) || !navigator.serviceWorker)) {
+      console.log("Push notifications are not supported on this mobile device");
+      return; // Skip initialization
+    }
+
+    if (isMobile) {
+      console.log("Pusher Beams not initialized on mobile device");
+      return;
+    }
 
     const beamsClient = new PusherPushNotifications.Client({
       instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,

@@ -324,64 +324,66 @@ export const LeftNavbar = () => {
           {session.status === "loading" && <UserInfoLoading />}
         </div>
       ) : (
-        <Sheet
-          open={isMobileNavOpen}
-          // onOpenChange={setIsMobileNavOpen}
-          onOpenChange={(open) => {
-            try {
-              setIsMobileNavOpen(open);
-            } catch (error) {
-              setSheetError(
-                error instanceof Error
-                  ? error
-                  : new Error("Unknown error occurred")
-              );
-            }
-          }}
-        >
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="fixed left-4 top-4 z-40 bg-custom-1 hover:bg-custom-2 text-white lg:hidden"
-            >
-              <ChevronRight className="h-6 w-6" />
-              <span className="sr-only">Open navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-56 p-0 pt-10 pb-32 bg-custom-3"
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+          <Sheet
+            open={isMobileNavOpen}
+            // onOpenChange={setIsMobileNavOpen}
+            onOpenChange={(open) => {
+              try {
+                setIsMobileNavOpen(open);
+              } catch (error) {
+                setSheetError(
+                  error instanceof Error
+                    ? error
+                    : new Error("Unknown error occurred")
+                );
+              }
+            }}
           >
-            <SheetHeader>
-              <SheetTitle className="sr-only">Nav Bar</SheetTitle>
-              <SheetDescription className="sr-only">
-                Mobile Navigation Bar
-              </SheetDescription>
-            </SheetHeader>
-            <div
-              className="flex items-center px-4"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <Link
-                href="/"
-                className="text-custom-1 text-3xl font-semibold font-kyiv flex items-center"
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="fixed left-4 top-4 z-40 bg-custom-1 hover:bg-custom-2 text-white lg:hidden"
               >
-                <Image
-                  src="/logo.svg"
-                  alt="Properly"
-                  width={36}
-                  height={36}
-                  className="w-9 h-9"
-                />
-                Properly
-              </Link>
-            </div>
-            <NavContent />
-            {session.status === "authenticated" && <UserInfo />}
-            {session.status === "loading" && <UserInfoLoading />}
-          </SheetContent>
-        </Sheet>
+                <ChevronRight className="h-6 w-6" />
+                <span className="sr-only">Open navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-56 p-0 pt-10 pb-32 bg-custom-3"
+            >
+              <SheetHeader>
+                <SheetTitle className="sr-only">Nav Bar</SheetTitle>
+                <SheetDescription className="sr-only">
+                  Mobile Navigation Bar
+                </SheetDescription>
+              </SheetHeader>
+              <div
+                className="flex items-center px-4"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <Link
+                  href="/"
+                  className="text-custom-1 text-3xl font-semibold font-kyiv flex items-center"
+                >
+                  <Image
+                    src="/logo.svg"
+                    alt="Properly"
+                    width={36}
+                    height={36}
+                    className="w-9 h-9"
+                  />
+                  Properly
+                </Link>
+              </div>
+              <NavContent />
+              {session.status === "authenticated" && <UserInfo />}
+              {session.status === "loading" && <UserInfoLoading />}
+            </SheetContent>
+          </Sheet>
+        </ErrorBoundary>
       )}
     </ErrorBoundary>
   );
