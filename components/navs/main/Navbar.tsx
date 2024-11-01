@@ -9,9 +9,10 @@ import {
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 export const MainNav = () => {
+  const [openSheet, setOpenSheet] = useState(false);
   return (
     <div className="w-full h-24 bg-custom-3 px-4 md:px-8 py-10 flex items-center justify-between">
       <div className="flex justify-start items-center w-2/3">
@@ -51,7 +52,7 @@ export const MainNav = () => {
         </Link>
       </div>
 
-      <Sheet>
+      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetTrigger asChild>
           <Menu className="w-8 h-8 text-custom-1 md:hidden" />
         </SheetTrigger>
@@ -64,19 +65,22 @@ export const MainNav = () => {
           </SheetHeader>
           <div className="flex flex-col items-center justify-evenly h-64">
             <Link
-              href="#"
+              href="/marketing/#about-properly"
+              onClick={() => setOpenSheet(false)}
               className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
             >
               About
             </Link>
             <Link
-              href="#"
+              href="/"
+              onClick={() => setOpenSheet(false)}
               className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
             >
               Property
             </Link>
             <Link
-              href="#"
+              href="/marketing/contact-us"
+              onClick={() => setOpenSheet(false)}
               className="text-[22px] font-semibold font-nunito leading-[34px] hover:border-b-2 hover:border-b-gray-600 hover:text-gray-600 hover:pb-1"
             >
               Contact

@@ -81,7 +81,9 @@ const MaintenanceRequest = ({
     <>
       <div className="flex items-center justify-between p-4 border rounded-xl">
         <div className="flex items-center space-x-4">
-          <div className={`${reqColor} rounded-full w-6 h-6`} />
+          <div
+            className={`${reqColor} rounded-full w-6 h-6 flex-shrink-0 aspect-square`}
+          />
           <div className="flex flex-col space-y-2 items-start">
             <span className="text-base tracking-tight leading-normal">
               {req.issue} in Unit {req.user.tenant?.unit}, {propertyName}

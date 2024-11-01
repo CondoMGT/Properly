@@ -15,7 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -33,6 +33,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+// import { useBeams } from "@/hooks/use-Beams";
 
 const navItems = [
   {
@@ -79,11 +81,31 @@ const managerNavItems = [
   },
 ];
 
+const logError = (error: Error, errorInfo: React.ErrorInfo) => {
+  // In a real application, you would send this to your error tracking service
+  console.error("Caught an error:", error, errorInfo);
+};
+
+const ErrorFallback: React.FC<FallbackProps> = ({ error }) => (
+  <div role="alert" className="p-4 bg-red-100 text-red-700">
+    <p>Something went wrong:</p>
+    <pre className="mt-2 text-sm">{error.message}</pre>
+  </div>
+);
+
 export const LeftNavbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  const [sheetError, setSheetError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (sheetError) {
+      logError(sheetError, { componentStack: "MobileNav" } as React.ErrorInfo);
+    }
+  }, [sheetError]);
 
   const session = useSession();
   const pathName = usePathname();
@@ -93,18 +115,17 @@ export const LeftNavbar = () => {
     session.update();
   }, []);
 
+  const handleResize = useCallback(() => {
+    setIsLargeScreen(window.innerWidth >= 1024);
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const handleResize = () => {
-        setIsLargeScreen(window.innerWidth >= 1024);
-      };
-
-      window.addEventListener("resize", handleResize);
       handleResize();
-
+      window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
     }
-  }, []);
+  }, [handleResize]);
 
   const NavContent = () => (
     <ScrollArea className="h-full py-6">
@@ -142,7 +163,7 @@ export const LeftNavbar = () => {
                 if (itemMenu.name === "Log Out") {
                   return (
                     <LogoutButton key={itemMenu.name}>
-                      <Link href={itemMenu.href}>{button}</Link>
+                      <div>{button}</div>
                     </LogoutButton>
                   );
                 }
@@ -163,8 +184,43 @@ export const LeftNavbar = () => {
     </ScrollArea>
   );
 
+  const UserInfo = () => (
+    <div className="font-semibold flex gap-2 px-4 w-full">
+      <Avatar className="relative flex-shrink-0">
+        <AvatarImage
+          src={session?.data?.user?.image || ""}
+          alt="avatar"
+          className="object-cover rounded-full"
+        />
+        <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
+          <CircleUserRound className="text-white" />
+        </AvatarFallback>
+      </Avatar>
+      {(!isLargeScreen || !isCollapsed) && (
+        <div className="flex flex-col gap-1 items-start overflow-hidden">
+          <span className="text-gray-700 text-sm truncate w-full">
+            {session?.data?.user?.name}
+          </span>
+          <span className="text-gray-500 text-xs truncate w-full">
+            {session?.data?.user?.email}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
+  const UserInfoLoading = () => (
+    <div className="flex items-center space-x-4 px-4">
+      <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
+      <div className="space-y-2">
+        <Skeleton className="w-24 h-4 bg-custom-2" />
+        <Skeleton className="w-32 h-4 bg-custom-2" />
+      </div>
+    </div>
+  );
+
   return (
-    <>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
       {isLargeScreen ? (
         <div
           className={`relative hidden h-screen flex-col border-r bg-custom-3 py-10 lg:flex ${
@@ -204,116 +260,74 @@ export const LeftNavbar = () => {
             </span>
           </Button>
           {session.status === "authenticated" && (
-            <div className="font-semibold flex gap-2 px-4">
-              <Avatar className="relative">
-                <AvatarImage
-                  src={session.data.user.image || ""}
-                  alt="avatar"
-                  className="object-cover rounded-full"
-                />
-                <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-                  <CircleUserRound className="text-white" />
-                </AvatarFallback>
-              </Avatar>
-              {!isCollapsed && (
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="text-gray-700 text-sm">
-                    {session.data.user?.name}
-                  </span>
-                  <span className="text-gray-500 text-xs truncate">
-                    {session.data.user?.email}
-                  </span>
-                </div>
-              )}
-            </div>
+            <>
+              <UserInfo />
+            </>
           )}
-          {session.status === "loading" && (
-            <div className="flex items-center space-x-4 px-4">
-              <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
-              <div className="space-y-2">
-                <Skeleton className="w-24 h-4 bg-custom-2" />
-                <Skeleton className="w-32 h-4 bg-custom-2" />
-              </div>
-            </div>
-          )}
+          {session.status === "loading" && <UserInfoLoading />}
         </div>
       ) : (
-        <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="fixed left-4 top-4 z-40 bg-custom-1 hover:bg-custom-2 text-white lg:hidden"
-            >
-              <ChevronRight className="h-6 w-6" />
-              <span className="sr-only">Open navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-56 p-0 pt-10 pb-32 bg-custom-3"
+        <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+          <Sheet
+            open={isMobileNavOpen}
+            onOpenChange={(open) => {
+              try {
+                setIsMobileNavOpen(open);
+              } catch (error) {
+                setSheetError(
+                  error instanceof Error
+                    ? error
+                    : new Error("Unknown error occurred")
+                );
+              }
+            }}
           >
-            <SheetHeader>
-              <SheetTitle className="sr-only">Nav Bar</SheetTitle>
-              <SheetDescription className="sr-only">
-                Mobile Navigation Bar
-              </SheetDescription>
-            </SheetHeader>
-            <div
-              className="flex items-center px-4"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <Link
-                href="/"
-                className="text-custom-1 text-3xl font-semibold font-kyiv flex items-center"
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="fixed left-4 top-4 z-40 bg-custom-1 hover:bg-custom-2 text-white lg:hidden"
               >
-                <Image
-                  src="/logo.svg"
-                  alt="Properly"
-                  width={36}
-                  height={36}
-                  className="w-9 h-9"
-                />
-                Properly
-              </Link>
-            </div>
-            <NavContent />
-            {session.status === "authenticated" && (
-              <div className="font-semibold flex gap-2 px-4">
-                <Avatar className="relative">
-                  <AvatarImage
-                    src={session.data.user.image || ""}
-                    alt="avatar"
-                    className="object-cover rounded-full"
+                <ChevronRight className="h-6 w-6" />
+                <span className="sr-only">Open navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-56 p-0 pt-10 pb-32 bg-custom-3"
+            >
+              <SheetHeader>
+                <SheetTitle className="sr-only">Nav Bar</SheetTitle>
+                <SheetDescription className="sr-only">
+                  Mobile Navigation Bar
+                </SheetDescription>
+              </SheetHeader>
+              <div
+                className="flex items-center px-4"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <Link
+                  href="/"
+                  className="text-custom-1 text-3xl font-semibold font-kyiv flex items-center"
+                >
+                  <Image
+                    src="/logo.svg"
+                    alt="Properly"
+                    width={36}
+                    height={36}
+                    className="w-9 h-9"
                   />
-                  <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-                    <CircleUserRound className="text-white" />
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="text-gray-700 text-sm">
-                    {session.data.user?.name}
-                  </span>
-                  <span className="text-gray-500 text-xs truncate">
-                    {session.data.user?.email}
-                  </span>
-                </div>
+                  Properly
+                </Link>
               </div>
-            )}
-            {session.status === "loading" && (
-              <div className="flex items-center space-x-4 px-4">
-                <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
-                <div className="space-y-2">
-                  <Skeleton className="w-24 h-4 bg-custom-2" />
-                  <Skeleton className="w-32 h-4 bg-custom-2" />
-                </div>
-              </div>
-            )}
-          </SheetContent>
-        </Sheet>
+              <NavContent />
+              {session.status === "authenticated" && <UserInfo />}
+              {session.status === "loading" && <UserInfoLoading />}
+            </SheetContent>
+          </Sheet>
+        </ErrorBoundary>
       )}
-    </>
+    </ErrorBoundary>
   );
 };
 

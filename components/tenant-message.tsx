@@ -107,7 +107,7 @@ export const TenantMessage = () => {
       <CardContent>
         <Tabs defaultValue="overview">
           <div className=" flex justify-between">
-            <TabsList className="mb-4">
+            <TabsList className="mb-4 bg-custom-1 text-secondary">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="messages">Messages</TabsTrigger>
             </TabsList>
@@ -146,7 +146,9 @@ export const TenantMessage = () => {
                     </div>
                     <span className="font-bold">${tenant.rentAmount}</span>
                   </div>
-                  <Button className="mt-4">Pay Rent</Button>
+                  <Button className="mt-4 bg-custom-1 hover:bg-custom-1 font-semibold">
+                    Pay Rent
+                  </Button>
                 </CardContent>
               </Card>
             </div>
