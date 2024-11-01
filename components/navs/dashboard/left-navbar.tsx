@@ -34,6 +34,7 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { useBeams } from "@/hooks/use-Beams";
 
 const navItems = [
   {
@@ -108,6 +109,15 @@ export const LeftNavbar = () => {
 
   const session = useSession();
   const pathName = usePathname();
+
+  const isMobile =
+    typeof window !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+  // Only initialize Beams on non-mobile devices
+  const isBeamsStarted = !isMobile ? useBeams(session?.data?.user?.id) : false;
 
   useEffect(() => {
     // You can add any additional logic here if needed

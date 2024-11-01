@@ -55,6 +55,16 @@ export const useBeams = (userId: string | undefined) => {
   useEffect(() => {
     if (!userId || typeof window === "undefined") return;
 
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+    if (isMobile) {
+      console.log("Pusher Beams not initialized on mobile device");
+      return;
+    }
+
     const beamsClient = new PusherPushNotifications.Client({
       instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
     });
