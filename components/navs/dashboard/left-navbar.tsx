@@ -15,7 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -33,6 +33,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
 const navItems = [
   {
@@ -79,11 +80,31 @@ const managerNavItems = [
   },
 ];
 
+const logError = (error: Error, errorInfo: React.ErrorInfo) => {
+  // In a real application, you would send this to your error tracking service
+  console.error("Caught an error:", error, errorInfo);
+};
+
+const ErrorFallback: React.FC<FallbackProps> = ({ error }) => (
+  <div role="alert" className="p-4 bg-red-100 text-red-700">
+    <p>Something went wrong:</p>
+    <pre className="mt-2 text-sm">{error.message}</pre>
+  </div>
+);
+
 export const LeftNavbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  const [sheetError, setSheetError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (sheetError) {
+      logError(sheetError, { componentStack: "MobileNav" } as React.ErrorInfo);
+    }
+  }, [sheetError]);
 
   const session = useSession();
   const pathName = usePathname();
@@ -93,17 +114,29 @@ export const LeftNavbar = () => {
     session.update();
   }, []);
 
+  const handleResize = useCallback(() => {
+    setIsLargeScreen(window.innerWidth >= 1024);
+  }, []);
+
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsLargeScreen(window.innerWidth >= 1024);
+  //   };
+  //   if (typeof window !== "undefined") {
+  //     handleResize();
+  //     window.addEventListener("resize", handleResize);
+
+  //     return () => window.removeEventListener("resize", handleResize);
+  //   }
+  // }, []);
+
   useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= 1024);
-    };
     if (typeof window !== "undefined") {
       handleResize();
       window.addEventListener("resize", handleResize);
-
       return () => window.removeEventListener("resize", handleResize);
     }
-  }, []);
+  }, [handleResize]);
 
   const NavContent = () => (
     <ScrollArea className="h-full py-6">
@@ -198,7 +231,7 @@ export const LeftNavbar = () => {
   );
 
   return (
-    <>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
       {isLargeScreen ? (
         <div
           className={`relative hidden h-screen flex-col border-r bg-custom-3 py-10 lg:flex ${
@@ -241,7 +274,21 @@ export const LeftNavbar = () => {
           {session.status === "loading" && <UserInfoLoading />}
         </div>
       ) : (
-        <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+        <Sheet
+          open={isMobileNavOpen}
+          // onOpenChange={setIsMobileNavOpen}
+          onOpenChange={(open) => {
+            try {
+              setIsMobileNavOpen(open);
+            } catch (error) {
+              setSheetError(
+                error instanceof Error
+                  ? error
+                  : new Error("Unknown error occurred")
+              );
+            }
+          }}
+        >
           <SheetTrigger asChild>
             <Button
               variant="ghost"
@@ -286,7 +333,7 @@ export const LeftNavbar = () => {
           </SheetContent>
         </Sheet>
       )}
-    </>
+    </ErrorBoundary>
   );
 };
 
