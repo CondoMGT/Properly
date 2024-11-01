@@ -107,8 +107,17 @@ export const MaintenanceRequestsTable = ({
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 7;
 
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
   React.useEffect(() => {
-    if (Notification.permission !== "granted") {
+    if (
+      !isMobile &&
+      ("Notification" in window || navigator.serviceWorker) &&
+      Notification.permission !== "granted"
+    ) {
       Notification.requestPermission();
     }
 
