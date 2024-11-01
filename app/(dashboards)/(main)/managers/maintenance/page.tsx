@@ -133,7 +133,7 @@ const MaintenancePage = () => {
   ];
 
   return (
-    <div className="min-h-screen container mx-auto space-y-6">
+    <div className="min-h-screen container mx-auto space-y-6 pb-4">
       {/* <h1 className="text-3xl font-bold mb-6">Property Management Dashboard</h1> */}
 
       {/* Stats Section */}

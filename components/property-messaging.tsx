@@ -218,9 +218,9 @@ export const PropertyMessagingSystem = () => {
           </div>
         )}
         {selectedTenant && (
-          <div className="flex-1 pl-4 flex flex-col">
+          <div className="flex-1 pl-4 flex flex-col overflow-hidden">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-sm md:text-lg font-semibold truncate">
                 Chat with {selectedTenant?.name}
               </h3>
               <Button

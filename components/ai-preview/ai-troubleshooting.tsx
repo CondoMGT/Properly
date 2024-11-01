@@ -48,7 +48,7 @@ export default function AITroubleshootingPreview({
       </Card>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[90%] md:max-w-[525px] rounded-lg">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
