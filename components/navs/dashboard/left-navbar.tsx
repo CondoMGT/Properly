@@ -141,7 +141,7 @@ export const LeftNavbar = () => {
                 if (itemMenu.name === "Log Out") {
                   return (
                     <LogoutButton key={itemMenu.name}>
-                      <Link href={itemMenu.href}>{button}</Link>
+                      <div>{button}</div>
                     </LogoutButton>
                   );
                 }
@@ -187,6 +187,16 @@ export const LeftNavbar = () => {
     </div>
   );
 
+  const UserInfoLoading = () => (
+    <div className="flex items-center space-x-4 px-4">
+      <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
+      <div className="space-y-2">
+        <Skeleton className="w-24 h-4 bg-custom-2" />
+        <Skeleton className="w-32 h-4 bg-custom-2" />
+      </div>
+    </div>
+  );
+
   return (
     <>
       {isLargeScreen ? (
@@ -227,40 +237,8 @@ export const LeftNavbar = () => {
               {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             </span>
           </Button>
-          {session.status === "authenticated" && (
-            <UserInfo />
-            // <div className="font-semibold flex gap-2 px-4">
-            //   <Avatar className="relative">
-            //     <AvatarImage
-            //       src={session.data.user.image || ""}
-            //       alt="avatar"
-            //       className="object-cover rounded-full"
-            //     />
-            //     <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-            //       <CircleUserRound className="text-white" />
-            //     </AvatarFallback>
-            //   </Avatar>
-            //   {!isCollapsed && (
-            //     <div className="flex flex-col gap-1 items-start">
-            //       <span className="text-gray-700 text-sm">
-            //         {session.data.user?.name}
-            //       </span>
-            //       <span className="text-gray-500 text-xs truncate">
-            //         {session.data.user?.email}
-            //       </span>
-            //     </div>
-            //   )}
-            // </div>
-          )}
-          {session.status === "loading" && (
-            <div className="flex items-center space-x-4 px-4">
-              <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
-              <div className="space-y-2">
-                <Skeleton className="w-24 h-4 bg-custom-2" />
-                <Skeleton className="w-32 h-4 bg-custom-2" />
-              </div>
-            </div>
-          )}
+          {session.status === "authenticated" && <UserInfo />}
+          {session.status === "loading" && <UserInfoLoading />}
         </div>
       ) : (
         <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
@@ -303,39 +281,8 @@ export const LeftNavbar = () => {
               </Link>
             </div>
             <NavContent />
-            {session.status === "authenticated" && (
-              // <div className="font-semibold flex gap-2 px-4">
-              //   <Avatar className="relative">
-              //     <AvatarImage
-              //       src={session.data.user.image || ""}
-              //       alt="avatar"
-              //       className="object-cover rounded-full"
-              //     />
-              //     <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-              //       <CircleUserRound className="text-white" />
-              //     </AvatarFallback>
-              //   </Avatar>
-
-              //   <div className="flex flex-col gap-1 items-start">
-              //     <span className="text-gray-700 text-sm">
-              //       {session.data.user?.name}
-              //     </span>
-              //     <span className="text-gray-500 text-xs truncate">
-              //       {session.data.user?.email}
-              //     </span>
-              //   </div>
-              // </div>
-              <UserInfo />
-            )}
-            {session.status === "loading" && (
-              <div className="flex items-center space-x-4 px-4">
-                <Skeleton className="w-12 h-12 rounded-full bg-custom-2" />
-                <div className="space-y-2">
-                  <Skeleton className="w-24 h-4 bg-custom-2" />
-                  <Skeleton className="w-32 h-4 bg-custom-2" />
-                </div>
-              </div>
-            )}
+            {session.status === "authenticated" && <UserInfo />}
+            {session.status === "loading" && <UserInfoLoading />}
           </SheetContent>
         </Sheet>
       )}

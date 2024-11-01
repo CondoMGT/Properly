@@ -1,6 +1,7 @@
 "use client";
 
 import { MainNav } from "@/components/navs/main/Navbar";
+import { PartnerBanner } from "@/components/partner-banner";
 import { Button } from "@/components/ui/button";
 import { ChevronLastIcon, ChevronRight, LogIn } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -80,6 +81,8 @@ const LandingPage = () => {
           />
         </div>
       </div>
+
+      <PartnerBanner />
     </div>
   );
 };
