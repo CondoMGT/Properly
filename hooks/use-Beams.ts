@@ -46,24 +46,24 @@
 //   }, [userId, isStarted]);
 // };
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
 
 export const useBeams = (userId: string | undefined) => {
   const [isStarted, setIsStarted] = useState(false);
 
-  useEffect(() => {
+  const start = useCallback(() => {
     if (!userId || typeof window === "undefined") return;
 
-    const isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+    // const isMobile =
+    //   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    //     navigator.userAgent
+    //   );
 
-    if (isMobile) {
-      console.log("Pusher Beams not initialized on mobile device");
-      return;
-    }
+    // if (isMobile) {
+    //   console.log("Pusher Beams not initialized on mobile device");
+    //   return;
+    // }
 
     const beamsClient = new PusherPushNotifications.Client({
       instanceId: process.env.NEXT_PUBLIC_BEAMS_INSTANCE_ID!,
@@ -87,8 +87,8 @@ export const useBeams = (userId: string | undefined) => {
         }
 
         await beamsClient.start();
-        setIsStarted(true);
         await beamsClient.setUserId(userId, beamsTokenProvider);
+        setIsStarted(true);
       } catch (error) {
         console.error("Error starting Beams:", error);
       }
@@ -102,4 +102,6 @@ export const useBeams = (userId: string | undefined) => {
       }
     };
   }, [userId, isStarted]);
+
+  return { start, isStarted };
 };

@@ -116,8 +116,16 @@ export const LeftNavbar = () => {
       navigator.userAgent
     );
 
-  // Only initialize Beams on non-mobile devices
-  const isBeamsStarted = !isMobile ? useBeams(session?.data?.user?.id) : false;
+  // Always call useBeams, but only start it on non-mobile devices
+  const { start: startBeams, isStarted: isBeamsStarted } = useBeams(
+    session?.data?.user?.id
+  );
+
+  useEffect(() => {
+    if (!isMobile) {
+      startBeams();
+    }
+  }, [isMobile, startBeams]);
 
   useEffect(() => {
     // You can add any additional logic here if needed
