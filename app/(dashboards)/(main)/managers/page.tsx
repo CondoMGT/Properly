@@ -230,7 +230,7 @@ const ManagerPage = () => {
         </Card>
 
         {/* Right Column */}
-        <div className="space-y-6 md:space-y-4 flex flex-col">
+        <div className="space-y-6 md:space-y-4 flex flex-col mb-4">
           {/* Upcoming Schedule */}
           <Card className="flex-grow">
             <CardHeader>

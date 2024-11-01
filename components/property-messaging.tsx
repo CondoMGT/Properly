@@ -48,6 +48,11 @@ export const PropertyMessagingSystem = () => {
     setFilter(value);
   }, 300);
 
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const handleResize = () => {
@@ -69,7 +74,11 @@ export const PropertyMessagingSystem = () => {
 
   useEffect(() => {
     // Request notification permission
-    if (Notification.permission !== "granted") {
+    if (
+      !isMobile &&
+      ("Notification" in window || navigator.serviceWorker) &&
+      Notification.permission !== "granted"
+    ) {
       Notification.requestPermission();
     }
 
@@ -209,9 +218,9 @@ export const PropertyMessagingSystem = () => {
           </div>
         )}
         {selectedTenant && (
-          <div className="flex-1 pl-4 flex flex-col">
+          <div className="flex-1 pl-4 flex flex-col overflow-hidden">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-sm md:text-lg font-semibold truncate">
                 Chat with {selectedTenant?.name}
               </h3>
               <Button

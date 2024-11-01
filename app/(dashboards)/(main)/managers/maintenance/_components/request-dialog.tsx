@@ -177,42 +177,38 @@ export const RequestDialog = ({
         </DialogHeader>
         <Separator />
         <ScrollArea className="h-[300px]">
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="col-span-1 grid grid-cols-4 items-center gap-4">
-              <div className="col-span-3 flex flex-col">
-                <span className="text-sm font-semibold leading-[34px] tracking-tight">
-                  Request ID
-                </span>
-                <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request?.id.slice(0, 3).toUpperCase()}
-                </span>
-              </div>
-              <div className="col-span-3 flex flex-col">
-                <span className="text-sm font-semibold leading-[34px] tracking-tight">
-                  Issue
-                </span>
-                <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request?.issue}
-                </span>
-              </div>
+          <div className="grid grid-cols-6 gap-4 pb-4">
+            <div className="col-span-3 flex flex-col">
+              <span className="text-sm font-semibold leading-[34px] tracking-tight">
+                Request ID
+              </span>
+              <span className="text-sm font-normal leading-7 tracking-tight">
+                {request?.id.slice(0, 3).toUpperCase()}
+              </span>
             </div>
-            <div className="col-span-1 grid grid-cols-4 items-center gap-4">
-              <div className="col-span-3 flex flex-col">
-                <span className="text-sm font-semibold leading-[34px] tracking-tight">
-                  Tenant Name
-                </span>
-                <span className="text-sm font-normal leading-7 tracking-tight">
-                  {request?.user?.name}
-                </span>
-              </div>
-              <div className="col-span-3 flex flex-col">
-                <span className="text-sm font-semibold leading-[34px] tracking-tight">
-                  Property
-                </span>
-                <span className="text-sm font-normal leading-7 tracking-tight">
-                  {address}, Unit {request?.user?.tenant?.unit}
-                </span>
-              </div>
+            <div className="col-span-3 flex flex-col">
+              <span className="text-sm font-semibold leading-[34px] tracking-tight">
+                Tenant Name
+              </span>
+              <span className="text-sm font-normal leading-7 tracking-tight">
+                {request?.user?.name}
+              </span>
+            </div>
+            <div className="col-span-3 flex flex-col">
+              <span className="text-sm font-semibold leading-[34px] tracking-tight">
+                Issue
+              </span>
+              <span className="text-sm font-normal leading-7 tracking-tight">
+                {request?.issue}
+              </span>
+            </div>
+            <div className="col-span-3 flex flex-col">
+              <span className="text-sm font-semibold leading-[34px] tracking-tight">
+                Property
+              </span>
+              <span className="text-sm font-normal leading-7 tracking-tight">
+                {address}, Unit {request?.user?.tenant?.unit}
+              </span>
             </div>
           </div>
 

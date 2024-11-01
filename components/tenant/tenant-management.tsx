@@ -432,9 +432,9 @@ export const TenantManagement = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col space-y-2 md:flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Tenant Management</h1>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-custom-1 hover:bg-custom-1">
@@ -658,7 +658,7 @@ export const TenantManagement = () => {
               disabled={currentPage === 1}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              <span className="sr-only">Previous</span>
             </Button>
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
               Page {currentPage} of {totalPages}
@@ -671,7 +671,7 @@ export const TenantManagement = () => {
               }
               disabled={currentPage === totalPages}
             >
-              Next
+              <span className="sr-only">Next</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

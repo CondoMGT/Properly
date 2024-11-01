@@ -111,8 +111,17 @@ const MaintenancePage = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastChildRef = useRef<HTMLDivElement>(null);
 
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
   useEffect(() => {
-    if (Notification.permission !== "granted") {
+    if (
+      !isMobile &&
+      ("Notification" in window || navigator.serviceWorker) &&
+      Notification.permission !== "granted"
+    ) {
       Notification.requestPermission();
     }
 

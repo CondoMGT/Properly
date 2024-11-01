@@ -41,10 +41,18 @@ export const TenantMessage = () => {
   const [managerId, setManagerId] = useState<string | null>(null);
 
   // const { isUserOnline, getUserPath } = useUserPresence();
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
 
   useEffect(() => {
     // Request notification permission
-    if (Notification.permission !== "granted") {
+    if (
+      !isMobile &&
+      ("Notification" in window || navigator.serviceWorker) &&
+      Notification.permission !== "granted"
+    ) {
       Notification.requestPermission();
     }
 
