@@ -94,13 +94,12 @@ export const LeftNavbar = () => {
   }, []);
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
     if (typeof window !== "undefined") {
-      const handleResize = () => {
-        setIsLargeScreen(window.innerWidth >= 1024);
-      };
-
-      window.addEventListener("resize", handleResize);
       handleResize();
+      window.addEventListener("resize", handleResize);
 
       return () => window.removeEventListener("resize", handleResize);
     }
@@ -163,6 +162,31 @@ export const LeftNavbar = () => {
     </ScrollArea>
   );
 
+  const UserInfo = () => (
+    <div className="font-semibold flex gap-2 px-4 w-full">
+      <Avatar className="relative flex-shrink-0">
+        <AvatarImage
+          src={session?.data?.user?.image || ""}
+          alt="avatar"
+          className="object-cover rounded-full"
+        />
+        <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
+          <CircleUserRound className="text-white" />
+        </AvatarFallback>
+      </Avatar>
+      {(!isLargeScreen || !isCollapsed) && (
+        <div className="flex flex-col gap-1 items-start overflow-hidden">
+          <span className="text-gray-700 text-sm truncate w-full">
+            {session?.data?.user?.name}
+          </span>
+          <span className="text-gray-500 text-xs truncate w-full">
+            {session?.data?.user?.email}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       {isLargeScreen ? (
@@ -204,28 +228,29 @@ export const LeftNavbar = () => {
             </span>
           </Button>
           {session.status === "authenticated" && (
-            <div className="font-semibold flex gap-2 px-4">
-              <Avatar className="relative">
-                <AvatarImage
-                  src={session.data.user.image || ""}
-                  alt="avatar"
-                  className="object-cover rounded-full"
-                />
-                <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-                  <CircleUserRound className="text-white" />
-                </AvatarFallback>
-              </Avatar>
-              {!isCollapsed && (
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="text-gray-700 text-sm">
-                    {session.data.user?.name}
-                  </span>
-                  <span className="text-gray-500 text-xs truncate">
-                    {session.data.user?.email}
-                  </span>
-                </div>
-              )}
-            </div>
+            <UserInfo />
+            // <div className="font-semibold flex gap-2 px-4">
+            //   <Avatar className="relative">
+            //     <AvatarImage
+            //       src={session.data.user.image || ""}
+            //       alt="avatar"
+            //       className="object-cover rounded-full"
+            //     />
+            //     <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
+            //       <CircleUserRound className="text-white" />
+            //     </AvatarFallback>
+            //   </Avatar>
+            //   {!isCollapsed && (
+            //     <div className="flex flex-col gap-1 items-start">
+            //       <span className="text-gray-700 text-sm">
+            //         {session.data.user?.name}
+            //       </span>
+            //       <span className="text-gray-500 text-xs truncate">
+            //         {session.data.user?.email}
+            //       </span>
+            //     </div>
+            //   )}
+            // </div>
           )}
           {session.status === "loading" && (
             <div className="flex items-center space-x-4 px-4">
@@ -279,27 +304,28 @@ export const LeftNavbar = () => {
             </div>
             <NavContent />
             {session.status === "authenticated" && (
-              <div className="font-semibold flex gap-2 px-4">
-                <Avatar className="relative">
-                  <AvatarImage
-                    src={session.data.user.image || ""}
-                    alt="avatar"
-                    className="object-cover rounded-full"
-                  />
-                  <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
-                    <CircleUserRound className="text-white" />
-                  </AvatarFallback>
-                </Avatar>
+              // <div className="font-semibold flex gap-2 px-4">
+              //   <Avatar className="relative">
+              //     <AvatarImage
+              //       src={session.data.user.image || ""}
+              //       alt="avatar"
+              //       className="object-cover rounded-full"
+              //     />
+              //     <AvatarFallback className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
+              //       <CircleUserRound className="text-white" />
+              //     </AvatarFallback>
+              //   </Avatar>
 
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="text-gray-700 text-sm">
-                    {session.data.user?.name}
-                  </span>
-                  <span className="text-gray-500 text-xs truncate">
-                    {session.data.user?.email}
-                  </span>
-                </div>
-              </div>
+              //   <div className="flex flex-col gap-1 items-start">
+              //     <span className="text-gray-700 text-sm">
+              //       {session.data.user?.name}
+              //     </span>
+              //     <span className="text-gray-500 text-xs truncate">
+              //       {session.data.user?.email}
+              //     </span>
+              //   </div>
+              // </div>
+              <UserInfo />
             )}
             {session.status === "loading" && (
               <div className="flex items-center space-x-4 px-4">
