@@ -13,8 +13,8 @@ import {
   Settings,
   Users,
   Calendar,
-  Wifi,
-  WifiOff,
+  // Wifi,
+  // WifiOff,
 } from "lucide-react";
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { useState, useEffect, useCallback } from "react";
@@ -36,7 +36,7 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { useBeams } from "@/hooks/use-Beams";
+// import { useBeams } from "@/hooks/use-Beams";
 
 const navItems = [
   {
