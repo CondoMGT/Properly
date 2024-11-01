@@ -13,6 +13,8 @@ import {
   Settings,
   Users,
   Calendar,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { useState, useEffect, useCallback } from "react";
@@ -248,6 +250,31 @@ export const LeftNavbar = () => {
     </div>
   );
 
+  const BeamsStatus = () => (
+    <div className="hidden">
+      <div
+        className={`flex items-center gap-2 px-4 py-2 ${
+          isCollapsed ? "justify-center" : "justify-start"
+        }`}
+      >
+        {isBeamsStarted ? (
+          <Wifi className="h-4 w-4 text-green-500" />
+        ) : (
+          <WifiOff className="h-4 w-4 text-red-500" />
+        )}
+        {!isCollapsed && (
+          <span
+            className={`text-xs ${
+              isBeamsStarted ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {isBeamsStarted ? "Beams Connected" : "Beams Disconnected"}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
       {isLargeScreen ? (
@@ -288,7 +315,12 @@ export const LeftNavbar = () => {
               {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             </span>
           </Button>
-          {session.status === "authenticated" && <UserInfo />}
+          {session.status === "authenticated" && (
+            <>
+              <UserInfo />
+              {!isMobile && <BeamsStatus />}
+            </>
+          )}
           {session.status === "loading" && <UserInfoLoading />}
         </div>
       ) : (
