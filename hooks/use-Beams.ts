@@ -46,13 +46,13 @@
 //   }, [userId, isStarted]);
 // };
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
 
 export const useBeams = (userId: string | undefined) => {
   const [isStarted, setIsStarted] = useState(false);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     if (!userId || typeof window === "undefined") return;
 
     const isMobile =
@@ -92,15 +92,17 @@ export const useBeams = (userId: string | undefined) => {
           return;
         }
 
-        await beamsClient.start();
-        await beamsClient.setUserId(userId, beamsTokenProvider);
-        setIsStarted(true);
+        if (beamsClient) {
+          await beamsClient.start();
+          await beamsClient.setUserId(userId, beamsTokenProvider);
+          setIsStarted(true);
+        }
       } catch (error) {
         console.error("Error starting Beams:", error);
       }
     };
 
-    startBeams();
+    await startBeams();
 
     return () => {
       if (isStarted) {

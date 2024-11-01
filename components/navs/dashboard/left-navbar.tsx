@@ -112,22 +112,22 @@ export const LeftNavbar = () => {
   const session = useSession();
   const pathName = usePathname();
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
+  // const isMobile =
+  //   typeof window !== "undefined" &&
+  //   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  //     navigator.userAgent
+  //   );
 
-  // Always call useBeams, but only start it on non-mobile devices
-  const { start: startBeams, isStarted: isBeamsStarted } = useBeams(
-    session?.data?.user?.id
-  );
+  // // Always call useBeams, but only start it on non-mobile devices
+  // const { start: startBeams, isStarted: isBeamsStarted } = useBeams(
+  //   session?.data?.user?.id
+  // );
 
-  useEffect(() => {
-    if (!isMobile) {
-      startBeams();
-    }
-  }, [isMobile, startBeams]);
+  // useEffect(() => {
+  //   if (!isMobile) {
+  //     startBeams();
+  //   }
+  // }, [isMobile, startBeams]);
 
   useEffect(() => {
     // You can add any additional logic here if needed
@@ -137,18 +137,6 @@ export const LeftNavbar = () => {
   const handleResize = useCallback(() => {
     setIsLargeScreen(window.innerWidth >= 1024);
   }, []);
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     setIsLargeScreen(window.innerWidth >= 1024);
-  //   };
-  //   if (typeof window !== "undefined") {
-  //     handleResize();
-  //     window.addEventListener("resize", handleResize);
-
-  //     return () => window.removeEventListener("resize", handleResize);
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -250,30 +238,30 @@ export const LeftNavbar = () => {
     </div>
   );
 
-  const BeamsStatus = () => (
-    <div className="hidden">
-      <div
-        className={`flex items-center gap-2 px-4 py-2 ${
-          isCollapsed ? "justify-center" : "justify-start"
-        }`}
-      >
-        {isBeamsStarted ? (
-          <Wifi className="h-4 w-4 text-green-500" />
-        ) : (
-          <WifiOff className="h-4 w-4 text-red-500" />
-        )}
-        {!isCollapsed && (
-          <span
-            className={`text-xs ${
-              isBeamsStarted ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {isBeamsStarted ? "Beams Connected" : "Beams Disconnected"}
-          </span>
-        )}
-      </div>
-    </div>
-  );
+  // const BeamsStatus = () => (
+  //   <div className="hidden">
+  //     <div
+  //       className={`flex items-center gap-2 px-4 py-2 ${
+  //         isCollapsed ? "justify-center" : "justify-start"
+  //       }`}
+  //     >
+  //       {isBeamsStarted ? (
+  //         <Wifi className="h-4 w-4 text-green-500" />
+  //       ) : (
+  //         <WifiOff className="h-4 w-4 text-red-500" />
+  //       )}
+  //       {!isCollapsed && (
+  //         <span
+  //           className={`text-xs ${
+  //             isBeamsStarted ? "text-green-500" : "text-red-500"
+  //           }`}
+  //         >
+  //           {isBeamsStarted ? "Beams Connected" : "Beams Disconnected"}
+  //         </span>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
@@ -318,7 +306,7 @@ export const LeftNavbar = () => {
           {session.status === "authenticated" && (
             <>
               <UserInfo />
-              {!isMobile && <BeamsStatus />}
+              {/* {!isMobile && <BeamsStatus />} */}
             </>
           )}
           {session.status === "loading" && <UserInfoLoading />}
