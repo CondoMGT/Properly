@@ -10,6 +10,8 @@ import { getRequestInfoForManager } from "@/data/request";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { BeatLoader } from "react-spinners";
 import { RequestDialog } from "./maintenance/_components/request-dialog";
+import { pusherClient } from "@/lib/pusher";
+import { handleNotification } from "@/lib/helper";
 
 interface StatCardProp {
   title: string;
@@ -57,8 +59,8 @@ const MaintenanceRequest = ({
   propertyName: string;
 }) => {
   const statusColors = {
-    New: "bg-custom-0",
-    Pending: "bg-custom-7",
+    New: "bg-custom-7",
+    Pending: "bg-custom-0",
     Progress: "bg-custom-8",
     Closed: "bg-custom-9",
   };
@@ -153,13 +155,53 @@ const ManagerPage = () => {
           );
         });
 
-        setRequests(sortedReqInfo);
+        setRequests(sortedReqInfo.slice(0, 5));
       }
 
       setLoading(false);
     };
 
     getInfo();
+
+    const subscribeToMaintenance = () => {
+      pusherClient.subscribe("maintenance");
+
+      pusherClient.bind("update", ({ data }: { data: ReqInfo }) => {
+        setRequests((prev) => {
+          const updatedRequests = prev.map((req) =>
+            req.id === data.id
+              ? { ...req, status: data.status, issue: data.issue }
+              : req
+          );
+
+          // If the updated request is not in the list, add it
+          if (!updatedRequests.some((req) => req.id === data.id)) {
+            updatedRequests.push({
+              ...data,
+            });
+          }
+
+          return updatedRequests.sort((a, b) => {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          });
+        });
+
+        handleNotification({
+          title: "New Maintenance Request",
+          body: "You have a new  maintenance request",
+          icon: "/logo.svg",
+        });
+      });
+    };
+
+    subscribeToMaintenance();
+
+    // Cleanup function to unsubscribe when needed
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
   }, [user?.id]);
 
   // Mock data

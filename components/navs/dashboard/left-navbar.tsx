@@ -34,6 +34,10 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { pusherClient } from "@/lib/pusher";
+import { ReqInfo } from "@/app/(dashboards)/(main)/managers/maintenance/_components/maintenance-request-table";
+import { getManagerId } from "@/data/manager";
+import { MessageReceived } from "@/lib/types";
 // import { useBeams } from "@/hooks/use-Beams";
 
 const navItems = [
@@ -74,7 +78,7 @@ const managerNavItems = [
     layer: "bottom",
     menu: [
       { name: "Message", icon: MessageSquare, href: "/managers/message" },
-      { name: "Notification", icon: Bell, href: "/managers/notification" },
+      // { name: "Notification", icon: Bell, href: "/managers/notification" },
       { name: "Settings", icon: Settings, href: "/managers/settings" },
       { name: "Log Out", icon: LogOut, href: "" },
     ],
@@ -98,6 +102,11 @@ export const LeftNavbar = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  const [newRequest, setNewRequest] = useState(false);
+  const [tenantUpdate, setTenantUpdate] = useState(false);
+  const [managerUpdate, setManagerUpdate] = useState(false);
+  const [newMessage, setNewMessage] = useState(false);
 
   const [sheetError, setSheetError] = useState<Error | null>(null);
 
@@ -127,6 +136,91 @@ export const LeftNavbar = () => {
     }
   }, [handleResize]);
 
+  // REAL-TIME MAINTENANCE UPDATE
+  useEffect(() => {
+    pusherClient.subscribe("maintenance");
+
+    pusherClient.bind(
+      "update",
+      async ({ data, action }: { data: ReqInfo; action: string }) => {
+        const managerId = await getManagerId(data.userId);
+        if (
+          session.data?.user.role === "MANAGER" &&
+          session.data.user.id === managerId
+        ) {
+          if (action === "New Request") {
+            setNewRequest(true);
+          }
+
+          if (action === "Tenant Update") {
+            setTenantUpdate(true);
+          }
+        }
+
+        if (
+          session.data?.user.role === "TENANT" &&
+          session.data.user.id === data.userId
+        ) {
+          if (action === "Manager Update") {
+            setManagerUpdate(true);
+          }
+        }
+      }
+    );
+
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
+  }, [session.data?.user]);
+
+  // REAL-TIME MESSAGE UPDATE
+  useEffect(() => {
+    pusherClient.subscribe("chat-app");
+
+    pusherClient.bind("new-message", (data: MessageReceived) => {
+      if (
+        session.data?.user.role === "MANAGER" &&
+        session.data.user.id === data.receiverId
+      ) {
+        setNewMessage(true);
+      }
+
+      if (
+        session.data?.user.role === "TENANT" &&
+        session.data.user.id === data.receiverId
+      ) {
+        setNewMessage(true);
+      }
+    });
+
+    return () => {
+      pusherClient.unsubscribe("chat-app");
+    };
+  }, [session.data?.user]);
+
+  const clearNotifications = useCallback(() => {
+    if (session?.data?.user?.role === "MANAGER") {
+      if (pathName === "/managers/maintenance") {
+        setNewRequest(false);
+        setTenantUpdate(false);
+      }
+      if (pathName === "/managers/message") {
+        setNewMessage(false);
+      }
+    } else if (session?.data?.user?.role === "TENANT") {
+      if (pathName === "/tenants/message") {
+        setNewMessage(false);
+      }
+      if (pathName === "/tenants/notification") {
+        setManagerUpdate(false);
+      }
+    }
+  }, [pathName, session?.data?.user?.role]);
+
+  useEffect(() => {
+    clearNotifications();
+  }, [clearNotifications]);
+
   const NavContent = () => (
     <ScrollArea className="h-full py-6">
       <div className="flex flex-col h-full justify-between">
@@ -140,6 +234,18 @@ export const LeftNavbar = () => {
               className="flex flex-col space-y-2 px-2"
             >
               {item.menu.map((itemMenu) => {
+                const hasNotification =
+                  (itemMenu.name === "Maintenance" &&
+                    newRequest &&
+                    session?.data?.user?.role === "MANAGER") ||
+                  (itemMenu.name === "Maintenance" &&
+                    tenantUpdate &&
+                    session?.data?.user?.role === "MANAGER") ||
+                  (itemMenu.name === "Message" && newMessage) ||
+                  (itemMenu.name === "Notification" &&
+                    managerUpdate &&
+                    session?.data?.user?.role === "TENANT");
+
                 const button = (
                   <Button
                     variant="ghost"
@@ -147,7 +253,7 @@ export const LeftNavbar = () => {
                       isCollapsed ? "px-2" : "px-4"
                     } hover:bg-custom-1 hover:text-secondary ${
                       pathName === itemMenu.href && "bg-custom-1 text-secondary"
-                    }`}
+                    } relative`}
                   >
                     <itemMenu.icon
                       className={`h-5 w-5 ${
@@ -157,6 +263,9 @@ export const LeftNavbar = () => {
                     {!isLargeScreen || !isCollapsed ? (
                       <span>{itemMenu.name}</span>
                     ) : null}
+                    {hasNotification && (
+                      <span className="absolute top-2 right-2 w-4 h-4 bg-custom-8 rounded-full" />
+                    )}
                   </Button>
                 );
 
@@ -172,7 +281,21 @@ export const LeftNavbar = () => {
                   <Link
                     key={itemMenu.name}
                     href={itemMenu.href}
-                    onClick={() => setIsMobileNavOpen(false)}
+                    onClick={() => {
+                      setIsMobileNavOpen(false);
+                      if (itemMenu.name === "Maintenance") {
+                        setNewRequest(false);
+                        setTenantUpdate(false);
+                      }
+
+                      if (itemMenu.name === "Message") {
+                        setNewMessage(false);
+                      }
+
+                      if (itemMenu.name === "Notification") {
+                        setManagerUpdate(false);
+                      }
+                    }}
                   >
                     {button}
                   </Link>

@@ -64,11 +64,10 @@ import { getTenantRequestInfo } from "@/data/tenant";
 import { newMaintenance } from "@/actions/maintenance";
 import { uploadToCloudinary } from "@/actions/file/cloudinary-upload";
 import { getRequestInfoForTenant } from "@/data/request";
-import { RequestStatus } from "@prisma/client";
+import { MaintenanceRequest, RequestStatus } from "@prisma/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { format } from "date-fns";
 import { pusherClient } from "@/lib/pusher";
-import { ReqInfo } from "../../managers/maintenance/_components/maintenance-request-table";
 import { handleNotification } from "@/lib/helper";
 
 type Message = {
@@ -116,6 +115,43 @@ const MaintenancePage = () => {
       navigator.userAgent
     );
 
+  const subscribeToMaintenance = () => {
+    pusherClient.subscribe("maintenance");
+
+    pusherClient.bind("update", ({ data }: { data: MaintenanceRequest }) => {
+      setTenantRequests((prev) => {
+        const updatedRequests = prev.map((req) =>
+          req.id === data.id
+            ? { ...req, status: data.status, issue: data.issue }
+            : req
+        );
+
+        // If the updated request is not in the list, add it
+        if (!updatedRequests.some((req) => req.id === data.id)) {
+          updatedRequests.push({
+            id: data.id,
+            issue: data.issue,
+            createdAt: data.createdAt,
+            status: data.status,
+          });
+        }
+
+        return updatedRequests;
+      });
+
+      handleNotification({
+        title: "New Maintenance Request",
+        body: "You have an update on a maintenance request",
+        icon: "/logo.svg",
+      });
+    });
+
+    // Cleanup function to unsubscribe when needed
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
+  };
+
   useEffect(() => {
     if (
       !isMobile &&
@@ -135,36 +171,10 @@ const MaintenancePage = () => {
 
     fetchRequests();
 
-    const subscribeToMaintenance = () => {
-      pusherClient.subscribe("maintenance");
-
-      pusherClient.bind("update", (data: ReqInfo) => {
-        setTenantRequests((prev) => {
-          return prev?.map((p) => {
-            if (p.id === data.id) {
-              return {
-                status: data.status,
-                issue: data.issue,
-                createdAt: data.createdAt,
-                id: data.id,
-              };
-            }
-            return p;
-          });
-        });
-
-        handleNotification({
-          title: "Updated Maintenance Request",
-          body: "You have an update on a maintenance request",
-          icon: "/logo.svg",
-        });
-      });
-    };
-
-    subscribeToMaintenance();
+    const cleanup = subscribeToMaintenance();
 
     return () => {
-      pusherClient.unsubscribe("maintenance");
+      cleanup(); // Clean up on unmount
     };
   }, []);
 
@@ -357,6 +367,9 @@ const MaintenancePage = () => {
                 "Your ticket has been submitted successfully. A maintenance team will be assigned to address your issue."
               );
               toast.success(mainReq.success || "Request submitted.");
+
+              // Subscribe to maintenance updates after a successful ticket submission
+              subscribeToMaintenance();
             }
           } catch {
             toast.error(mainReq.error);
@@ -445,6 +458,10 @@ const MaintenancePage = () => {
     }
   };
 
+  const sortedRequests = tenantRequests.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
@@ -498,7 +515,7 @@ const MaintenancePage = () => {
                       <FormLabel>Issue Description</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Describe the issue to me..."
+                          placeholder="Describe the issue in much detail as you can...Tell me what you have tried if any"
                           className="resize-none"
                           rows={4}
                           {...field}
@@ -913,7 +930,7 @@ const MaintenancePage = () => {
 
           {tenantRequests &&
             tenantRequests.length > 0 &&
-            tenantRequests.map((req) => (
+            sortedRequests.map((req) => (
               <div
                 key={req.id}
                 className="flex justify-between items-center p-4 bg-custom-3 rounded-lg"
@@ -921,7 +938,8 @@ const MaintenancePage = () => {
                 <div className="space-y-2">
                   <h4 className="font-semibold">{req.issue}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Submitted: {format(new Date(req.createdAt), "MM/dd/yyyy")}
+                    Submitted:{" "}
+                    {format(new Date(req.createdAt), "MM/dd/yyyy h:mm a")}
                   </p>
                 </div>
                 <Badge

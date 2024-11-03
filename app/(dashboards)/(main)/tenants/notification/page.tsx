@@ -23,6 +23,7 @@ const NotificationPage = () => {
 
   const [requests, setRequests] = useState<ReqInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updated, setUpdated] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -40,7 +41,8 @@ const NotificationPage = () => {
     const subscribeToMaintenance = () => {
       pusherClient.subscribe("maintenance");
 
-      pusherClient.bind("update", (data: ReqInfo) => {
+      pusherClient.bind("update", ({ data }: { data: ReqInfo }) => {
+        setUpdated((prev) => [...prev, data.id]);
         setRequests((prev) => {
           return prev?.map((p) => {
             if (p.id === data.id) {
@@ -74,6 +76,14 @@ const NotificationPage = () => {
       </div>
     );
   }
+
+  const handleUpdated = (id: string) => {
+    setUpdated((prev) => prev.filter((p) => p !== id));
+  };
+
+  const sortedRequests = requests.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
   return (
     <div className="flex flex-col space-y-2">
       {requests.length === 0 && (
@@ -88,14 +98,29 @@ const NotificationPage = () => {
       )}
 
       {requests.length > 0 &&
-        requests.map((r) => <MaintenanceCard key={r.id} req={r} />)}
+        sortedRequests.map((r) => (
+          <MaintenanceCard
+            key={r.id}
+            req={r}
+            handleUpdated={handleUpdated}
+            updated={updated}
+          />
+        ))}
     </div>
   );
 };
 
 export default NotificationPage;
 
-const MaintenanceCard = ({ req }: { req: ReqInfo }) => {
+const MaintenanceCard = ({
+  req,
+  handleUpdated,
+  updated,
+}: {
+  req: ReqInfo;
+  handleUpdated: (id: string) => void;
+  updated: string[];
+}) => {
   const [viewDrawer, setViewDrawer] = useState(false);
 
   const [selectedRequest, setSelectedRequest] = useState<ReqInfo | null>(null);
@@ -106,7 +131,11 @@ const MaintenanceCard = ({ req }: { req: ReqInfo }) => {
   };
   return (
     <>
-      <Card className="w-full max-w-4xl mx-auto">
+      <Card
+        className={`w-full max-w-4xl mx-auto${
+          updated.includes(req.id) && " ring ring-custom-2 animate-pulse"
+        }`}
+      >
         <CardHeader>
           <div className="flex justify-between">
             <div>
@@ -135,7 +164,7 @@ const MaintenanceCard = ({ req }: { req: ReqInfo }) => {
                 </div>
 
                 <div className="text-sm font-nunito font-semibold">
-                  {format(new Date(req.createdAt), "yyyy-MM-dd")}
+                  {format(new Date(req.createdAt), "yyyy-MM-dd h:mm a")}
                 </div>
               </CardDescription>
             </div>
@@ -145,6 +174,7 @@ const MaintenanceCard = ({ req }: { req: ReqInfo }) => {
               onClick={() => {
                 setSelectedRequest(req);
                 setViewDrawer(true);
+                handleUpdated(req.id);
               }}
             >
               View

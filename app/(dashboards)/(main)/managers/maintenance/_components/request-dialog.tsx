@@ -389,6 +389,7 @@ export const RequestDialog = ({
                     <Button
                       className="w-40 bg-custom-1 hover:bg-custom-1"
                       type="submit"
+                      disabled={isPending}
                     >
                       {isPending ? (
                         <>

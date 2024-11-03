@@ -137,6 +137,7 @@ model MaintenanceRequest {
 
   maintenanceDate          DateTime?
   maintenanceCompletedDate DateTime?
+  scheduledDate            DateTime?
 
   userId String @db.Uuid
   user   users  @relation(fields: [userId], references: [id])

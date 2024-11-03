@@ -72,7 +72,7 @@ const statusColors = {
   Progress: "bg-custom-1",
   Pending: "bg-[#374151]",
   Closed: "bg-custom-2",
-  New: "bg-background",
+  New: "bg-custom-7",
 };
 
 const FormSchema = z.object({
@@ -156,7 +156,7 @@ export const NotificationDrawer = ({
     const subscribeToMaintenance = () => {
       pusherClient.subscribe("maintenance");
 
-      pusherClient.bind("update", (data: ReqInfo) => {
+      pusherClient.bind("update", ({ data }: { data: ReqInfo }) => {
         if (data.id === drawerRequest.id) {
           setDrawerRequest(data);
         }
@@ -279,9 +279,16 @@ export const NotificationDrawer = ({
                         </div>
                       ) : (
                         <div className="flex flex-col space-y-0.5">
-                          <span>{format(new Date(), "yyyy-MM-dd")}</span>
+                          <span>
+                            {drawerRequest.scheduledDate
+                              ? format(
+                                  new Date(drawerRequest.scheduledDate),
+                                  "yyyy-MM-dd"
+                                )
+                              : format(new Date(), "yyyy-MM-dd")}
+                          </span>
                           <span className="text-[#555555]">
-                            {drawerRequest.category} Specialist Scheduled
+                            {drawerRequest.category} Specialist Scheduled On
                           </span>
                         </div>
                       )}
@@ -299,7 +306,7 @@ export const NotificationDrawer = ({
                           )}
                         </span>
                         <span className="text-[#555555]">
-                          {drawerRequest.category} Work Completed
+                          {drawerRequest.category} Work Scheduled
                         </span>
                       </div>
                     </div>
@@ -392,6 +399,7 @@ export const NotificationDrawer = ({
                       <Button
                         className="w-40 bg-custom-1 hover:bg-custom-1"
                         type="submit"
+                        disabled={isPending}
                       >
                         {isPending ? (
                           <>
