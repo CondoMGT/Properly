@@ -33,7 +33,10 @@ export const updateRequest = async (id: string, data: RequestProp) => {
       };
     }
 
-    pusherServer.trigger("maintenance", "update", updatedRequest);
+    pusherServer.trigger("maintenance", "update", {
+      data: updatedRequest,
+      action: "Manager Update",
+    });
 
     // TODO: SEND NOTIFICATION TO TENANT
     try {
@@ -66,6 +69,7 @@ export const updateTenantRequest = async (id: string, data: Date) => {
       where: { id },
       data: {
         maintenanceDate: data,
+        scheduledDate: new Date(),
       },
     });
 
@@ -75,7 +79,10 @@ export const updateTenantRequest = async (id: string, data: Date) => {
       };
     }
 
-    pusherServer.trigger("maintenance", "update", updatedRequest);
+    pusherServer.trigger("maintenance", "update", {
+      data: updatedRequest,
+      action: "Tenant Update",
+    });
 
     // TODO: SEND NOTIFICATION TO TENANT
     try {

@@ -25,6 +25,7 @@ import {
   Check,
   CheckCheck,
   Download,
+  ExternalLink,
   Eye,
   FileCode,
   FileSpreadsheet,
@@ -67,6 +68,9 @@ export const RealTimeMessage = ({
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPdfDialogOpen, setIsPdfDialogOpen] = useState(false);
+
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(true);
 
   const [selectedAttachImage, setSelectedAttachImage] =
     useState<MessageAttachment | null>(null);
@@ -511,23 +515,34 @@ export const RealTimeMessage = ({
       {/* VIEW AND DOWNLOAD ATTACHED IMAGES */}
       {selectedAttachImage && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="sm:max-w-[800px]">
+          <DialogContent className="sm:max-w-[800px] sm:max-h-[90vh] bg-custom-3 overflow-hidden">
             <DialogHeader>
               <DialogTitle>{selectedAttachImage.name}</DialogTitle>
-              <DialogDescription className="sr-only">
+              <DialogDescription>
                 View and Download Attached Image
               </DialogDescription>
             </DialogHeader>
-            <div className="relative">
+            <div className="relative w-full h-[calc(100vh-200px)] sm:h-[calc(90vh-120px)]">
               <Image
                 src={selectedAttachImage.url}
                 alt={selectedAttachImage.name}
-                className="w-full h-auto"
+                fill
+                className={`object-contain transition-opacity duration-300 ${
+                  isImageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => setIsImageLoaded(true)}
               />
+              {!isImageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end mt-4">
               <Button
-                size="icon"
+                size="sm"
                 variant="secondary"
-                className="absolute top-2 right-2"
+                className="absolute bottom-6 right-6 bg-custom-1 hover:bg-custom-1 text-secondary"
                 onClick={() => {
                   const link = document.createElement("a");
                   link.href = selectedAttachImage.url;
@@ -537,8 +552,8 @@ export const RealTimeMessage = ({
                   document.body.removeChild(link);
                 }}
               >
-                <Download className="h-4 w-4" />
-                <span className="sr-only">Download image</span>
+                <Download className="h-4 w-4 mr-2" />
+                <span className="">Download</span>
               </Button>
             </div>
           </DialogContent>
@@ -548,28 +563,50 @@ export const RealTimeMessage = ({
       {/* VIEW AND DOWNLOAD ATTACHED PDF FILES */}
       {selectedAttachPdf && (
         <Dialog open={isPdfDialogOpen} onOpenChange={setIsPdfDialogOpen}>
-          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh]">
+          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh] bg-custom-3 overflow-hidden">
             <DialogHeader>
               <DialogTitle>{selectedAttachPdf?.name}</DialogTitle>
-              <DialogDescription className="sr-only">
-                View and Download PDF File
-              </DialogDescription>
+              <DialogDescription>View and Download PDF File</DialogDescription>
+              <div className="flex justify-end space-x-2 -mt-8">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="bg-custom-1 hover:bg-custom-1 text-secondary"
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = selectedAttachPdf.url;
+                    link.download = selectedAttachPdf.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  <span className="">Download</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="bg-custom-2 hover:bg-custom-2 text-secondary"
+                  onClick={() => window.open(selectedAttachPdf?.url, "_blank")}
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  <span className="">Open in New Tab</span>
+                </Button>
+              </div>
             </DialogHeader>
-            <div className="relative w-full h-[80vh]">
+            <div className="relative w-full h-[calc(90vh-120px)]">
+              {isPdfLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+                </div>
+              )}
               <iframe
-                src={selectedAttachPdf?.url}
+                src={`${selectedAttachPdf?.url}#toolbar=0`}
                 title={selectedAttachPdf?.name}
                 className="w-full h-full border-0 rounded"
+                onLoad={() => setIsPdfLoading(false)}
               />
-              <Button
-                size="icon"
-                variant="secondary"
-                className="absolute top-2 right-2"
-                onClick={() => window.open(selectedAttachPdf?.url, "_blank")}
-              >
-                <Download className="h-4 w-4" />
-                <span className="sr-only">Download PDF</span>
-              </Button>
             </div>
           </DialogContent>
         </Dialog>

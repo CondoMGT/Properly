@@ -60,7 +60,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Form,
@@ -149,6 +148,13 @@ export const ContractorManagement = () => {
   const user = useCurrentUser();
 
   const [loading, setLoading] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedContractor, setSelectedContractor] =
+    useState<Contractor | null>(null);
 
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
@@ -158,6 +164,40 @@ export const ContractorManagement = () => {
   const [skippedContractors, setSkippedContractors] = useState<SkippedTenant[]>(
     []
   );
+
+  const handlePopoverOpenChange = (id: string, isOpen: boolean) => {
+    setPopoverOpen((prev) => ({ ...prev, [id]: isOpen }));
+  };
+
+  const closePopover = (id: string) => {
+    setPopoverOpen((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleEditClick = (contractor: Contractor) => {
+    setSelectedContractor(contractor);
+    setEditDialogOpen(true);
+    closePopover(contractor.id);
+  };
+
+  const handleDeleteClick = (contractor: Contractor) => {
+    setSelectedContractor(contractor);
+    setDeleteDialogOpen(true);
+    closePopover(contractor.id);
+  };
+
+  const handleEditSubmit = (editedContractor: Contractor) => {
+    handleEditContractor(editedContractor);
+    setEditDialogOpen(false);
+    setSelectedContractor(null);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedContractor) {
+      handleDeleteContractor(selectedContractor.id);
+      setDeleteDialogOpen(false);
+      setSelectedContractor(null);
+    }
+  };
 
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState<string[]>([]);
@@ -547,6 +587,7 @@ export const ContractorManagement = () => {
           getOptionCount={(option) =>
             filteredContractors.filter((c) => c.specialty === option).length
           }
+          currentFilter={specialtyFilter}
         />
         <CommandCombobox
           options={availableServiceAreas}
@@ -556,6 +597,7 @@ export const ContractorManagement = () => {
           getOptionCount={(option) =>
             filteredContractors.filter((c) => c.serviceArea === option).length
           }
+          currentFilter={serviceAreaFilter}
         />
         <CommandCombobox
           options={availableRatings}
@@ -566,6 +608,7 @@ export const ContractorManagement = () => {
             filteredContractors.filter((c) => c.rating >= parseInt(option))
               .length
           }
+          currentFilter={ratingFilter}
         />
         <CommandCombobox
           options={["Yes", "No"]}
@@ -577,6 +620,7 @@ export const ContractorManagement = () => {
               (c) => c.emergency === (option === "Yes")
             ).length
           }
+          currentFilter={emergencyFilter}
         />
         <CommandCombobox
           options={["Yes", "No"]}
@@ -588,6 +632,7 @@ export const ContractorManagement = () => {
               (c) => c.insurance === (option === "Yes")
             ).length
           }
+          currentFilter={insuranceFilter}
         />
       </div>
       <div className="border rounded-md">
@@ -633,7 +678,12 @@ export const ContractorManagement = () => {
                   <TableCell>{`${contractor.startHour}:00 - ${contractor.endHour}:00`}</TableCell>
                   <TableCell>${contractor.ratePerHour}/hr</TableCell>
                   <TableCell>
-                    <Popover>
+                    <Popover
+                      open={popoverOpen[contractor.id]}
+                      onOpenChange={(isOpen) =>
+                        handlePopoverOpenChange(contractor.id, isOpen)
+                      }
+                    >
                       <PopoverTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <MoreHorizontal className="h-4 w-4" />
@@ -641,57 +691,20 @@ export const ContractorManagement = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-56">
                         <div className="grid gap-4">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="w-full justify-start"
-                              >
-                                <Edit className="mr-2 h-4 w-4" /> Edit
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                              <DialogHeader>
-                                <DialogTitle>Edit Contractor</DialogTitle>
-                              </DialogHeader>
-                              <ContractorForm
-                                onSubmit={handleEditContractor}
-                                initialData={contractor}
-                              />
-                            </DialogContent>
-                          </Dialog>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="w-full justify-start"
-                              >
-                                <Trash className="mr-2 h-4 w-4" /> Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete the contractor from the
-                                  database.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    handleDeleteContractor(contractor.id)
-                                  }
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleEditClick(contractor)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" /> Edit
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleDeleteClick(contractor)}
+                          >
+                            <Trash className="mr-2 h-4 w-4" /> Delete
+                          </Button>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -735,6 +748,44 @@ export const ContractorManagement = () => {
           </div>
         </div>
       )}
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Contractor</DialogTitle>
+          </DialogHeader>
+          {selectedContractor && (
+            <ContractorForm
+              onSubmit={handleEditSubmit}
+              initialData={selectedContractor}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete{" "}
+              <span className="font-extrabold text-black">
+                {selectedContractor?.name}{" "}
+              </span>
+              contractor from the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-custom-8 hover:bg-custom-8"
+              onClick={handleDeleteConfirm}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
@@ -745,12 +796,14 @@ function CommandCombobox({
   selected,
   onSelectionChange,
   getOptionCount,
+  currentFilter,
 }: {
   options: string[];
   placeholder: string;
   selected: string[];
   onSelectionChange: (value: string[]) => void;
   getOptionCount: (option: string) => number;
+  currentFilter: string[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -765,6 +818,10 @@ function CommandCombobox({
   const handleDeselect = (option: string) => {
     onSelectionChange(selected.filter((item) => item !== option));
   };
+
+  const filteredOptions = options.filter(
+    (option) => !currentFilter.length || currentFilter.includes(option)
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -812,7 +869,7 @@ function CommandCombobox({
           <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
-              {options.map((option) => (
+              {filteredOptions.map((option) => (
                 <CommandItem key={option} onSelect={() => handleSelect(option)}>
                   <Checkbox
                     checked={selected.includes(option)}

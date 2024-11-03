@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/client";
+import { pusherServer } from "@/lib/pusher";
 import { RequestPriority } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
@@ -47,7 +48,7 @@ export const newMaintenance = async (vals: newMaintenanceProps) => {
       });
     }
 
-    await prisma.maintenanceRequest.create({
+    const newRequest = await prisma.maintenanceRequest.create({
       data: {
         reqId: uuidv4(),
         issue,
@@ -58,10 +59,24 @@ export const newMaintenance = async (vals: newMaintenanceProps) => {
         propertyId,
         attachments: attach.id || null,
       },
+      include: {
+        user: {
+          select: {
+            name: true,
+            tenant: {
+              select: {
+                unit: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    revalidatePath("/tenants/maintenance");
-    revalidatePath("/managers/maintenance");
+    pusherServer.trigger("maintenance", "update", {
+      data: newRequest,
+      action: "New Request",
+    });
 
     return { success: "Maintenance request successfully added!" };
   } catch (error) {

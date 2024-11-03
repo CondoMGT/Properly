@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { Badge } from "@/components/ui/badge";
 import { Archive, Info } from "lucide-react";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -30,6 +29,8 @@ export const PropertyMessagingSystem = () => {
   const [messages, setMessages] = useState<Record<string, MessageReceived[]>>(
     {}
   );
+
+  const [updated, setUpdated] = useState<MessageReceived[]>([]);
 
   const pathname = usePathname();
 
@@ -104,6 +105,7 @@ export const PropertyMessagingSystem = () => {
       pusherClient.subscribe("chat-app");
 
       pusherClient.bind("new-message", (data: MessageReceived) => {
+        setUpdated((prev) => [...prev, data]);
         setMessages((prev) => {
           const currentMessages = prev[selectedTenant?.id as string] || [];
           return {
@@ -167,41 +169,47 @@ export const PropertyMessagingSystem = () => {
           </h3>
           <ScrollArea className="h-[520px]">
             {filteredTenants.length > 0 &&
-              filteredTenants.map((tenant) => (
-                <Button
-                  key={tenant.id}
-                  variant={
-                    selectedTenant?.id === tenant.id ? "secondary" : "ghost"
-                  }
-                  className={`w-full justify-start mb-2 py-4 hover:bg-custom-3 relative${
-                    selectedTenant?.id === tenant.id && " bg-custom-3"
-                  }`}
-                  onClick={() => {
-                    setSelectedTenant(tenant);
-                  }}
-                >
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage
-                      src={tenant.avatar as string}
-                      alt={tenant.name}
-                    />
-                    <AvatarFallback>{tenant.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  {!isMobileOpen && (
-                    <>
-                      <span className="flex-grow text-left">{tenant.name}</span>
-                      {tenant.unread > 0 && (
-                        <Badge
-                          variant="destructive"
-                          className="absolute right-2"
-                        >
-                          {tenant.unread}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                </Button>
-              ))}
+              filteredTenants.map((tenant) => {
+                const isNotify = updated.some((u) => u.senderId === tenant.id);
+                return (
+                  <Button
+                    key={tenant.id}
+                    variant={
+                      selectedTenant?.id === tenant.id ? "secondary" : "ghost"
+                    }
+                    className={`w-full justify-start mb-2 py-4 hover:bg-custom-3 relative${
+                      selectedTenant?.id === tenant.id && " bg-custom-3"
+                    }`}
+                    onClick={() => {
+                      setSelectedTenant(tenant);
+                      setUpdated((prev) =>
+                        prev.filter((p) => p.senderId !== tenant.id)
+                      );
+                    }}
+                  >
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage
+                        src={tenant.avatar as string}
+                        alt={tenant.name}
+                      />
+                      <AvatarFallback>{tenant.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    {!isMobileOpen && (
+                      <>
+                        <span className="flex-grow text-left">
+                          {tenant.name}
+                        </span>
+                        {isNotify && (
+                          <span className="absolute top-2 right-2 w-2 h-2 bg-custom-8 rounded-full" />
+                        )}
+                      </>
+                    )}
+                    {isMobileOpen && isNotify && (
+                      <span className="absolute top-0 right-2 w-2 h-2 bg-custom-8 rounded-full" />
+                    )}
+                  </Button>
+                );
+              })}
 
             {!messages && filteredTenants.length === 0 && (
               <div className="flex flex-col space-y-4 items-center justify-center border p-4 rounded bg-custom-3">
@@ -218,7 +226,7 @@ export const PropertyMessagingSystem = () => {
           </div>
         )}
         {selectedTenant && (
-          <div className="flex-1 pl-4 flex flex-col overflow-hidden">
+          <div className="flex-1 pl-4 pr-2 pb-2 flex flex-col overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-sm md:text-lg font-semibold truncate">
                 Chat with {selectedTenant?.name}

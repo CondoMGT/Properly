@@ -17,7 +17,7 @@ const Tenantslayout = ({ children }: { children: React.ReactNode }) => {
     modifiedPathname === "Tenants"
       ? "Dashboard"
       : modifiedPathname === "Maintenance"
-      ? "Request"
+      ? "Maintenance Dashboard"
       : modifiedPathname;
 
   const session = useSession();

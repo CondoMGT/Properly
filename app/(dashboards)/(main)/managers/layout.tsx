@@ -17,7 +17,7 @@ const Managerslayout = ({ children }: { children: React.ReactNode }) => {
     modifiedPathname === "Managers"
       ? "Dashboard"
       : modifiedPathname === "Maintenance"
-      ? "Request"
+      ? "Maintenance Dashboard"
       : modifiedPathname;
 
   const session = useSession();

@@ -18,6 +18,10 @@ import {
   PlusCircle,
   ChevronRight,
   ChevronLeft,
+  ChevronUp,
+  ArrowUpDown,
+  ChevronDown,
+  X,
 } from "lucide-react";
 import {
   Popover,
@@ -31,6 +35,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { RequestDialog } from "./request-dialog";
@@ -38,6 +43,7 @@ import { RequestStatus } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { pusherClient } from "@/lib/pusher";
 import { handleNotification } from "@/lib/helper";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type ReqInfo = {
   attachments: string | null;
@@ -49,6 +55,7 @@ export type ReqInfo = {
   issue: string;
   maintenanceDate: Date | null;
   maintenanceCompletedDate: Date | null;
+  scheduledDate: Date | null;
   priority: "Low" | "Medium" | "High";
   propertyId: string;
   reqId: string;
@@ -69,8 +76,6 @@ type MaintenanceTableProps = {
   propertyName: string | null;
 };
 
-type UpdatedReq = Omit<ReqInfo, "user">;
-
 type FilterValue = {
   searchType: "id" | "user" | "issue"; // Assuming these are the only search types
   searchValue: string;
@@ -81,6 +86,11 @@ type FilterValue = {
 const statusOptions = ["New", "Progress", "Pending", "Closed"];
 const priorityOptions = ["Low", "Medium", "High"];
 
+type SortConfig = {
+  key: keyof ReqInfo | null;
+  direction: "asc" | "desc" | null;
+};
+
 export const MaintenanceRequestsTable = ({
   requests,
   propertyName,
@@ -88,9 +98,15 @@ export const MaintenanceRequestsTable = ({
   const [loading, setLoading] = React.useState(false);
   const [viewDialog, setViewDialog] = React.useState(false);
 
+  const [sortConfig, setSortConfig] = React.useState<SortConfig>({
+    key: null,
+    direction: null,
+  });
+
   const [selectedRequest, setSelectedRequest] = React.useState<ReqInfo | null>(
     null
   );
+  const [updated, setUpdated] = React.useState<string[]>([]);
 
   const handleCloseViewDialog = () => {
     setSelectedRequest(null);
@@ -120,40 +136,6 @@ export const MaintenanceRequestsTable = ({
     ) {
       Notification.requestPermission();
     }
-
-    const subscribeToMaintenance = () => {
-      pusherClient.subscribe("maintenance");
-
-      pusherClient.bind("update", (data: UpdatedReq) => {
-        setFilteredRequests((prev) => {
-          return prev.map((p) => {
-            if (p.id === data.id) {
-              return {
-                ...p,
-                status: data.status,
-                priority: data.priority,
-                contractor: data.contractor,
-                category: data.category,
-              };
-            } else {
-              return p;
-            }
-          });
-        });
-
-        handleNotification({
-          title: "Updated Maintenance Request",
-          body: "You have an update on a maintenance request",
-          icon: "/logo.svg",
-        });
-      });
-    };
-
-    subscribeToMaintenance();
-
-    return () => {
-      pusherClient.unsubscribe("maintenance");
-    };
   }, []);
 
   React.useEffect(() => {
@@ -167,6 +149,54 @@ export const MaintenanceRequestsTable = ({
     };
 
     getInfo();
+
+    const subscribeToMaintenance = () => {
+      pusherClient.subscribe("maintenance");
+
+      pusherClient.bind(
+        "update",
+        ({ data, action }: { data: ReqInfo; action: string }) => {
+          setUpdated((prev) => [...prev, data.id]);
+          setFilteredRequests((prev) => {
+            let updatedRequests: ReqInfo[];
+
+            if (action === "New Request") {
+              // Check if the request already exists
+              const exists = prev.some((req) => req.id === data.id);
+              if (!exists) {
+                updatedRequests = [data, ...prev];
+              } else {
+                updatedRequests = prev;
+              }
+            } else {
+              updatedRequests = prev.map((req) =>
+                req.id === data.id ? { ...req, ...data } : req
+              );
+            }
+
+            return updatedRequests;
+          });
+
+          handleNotification({
+            title:
+              action === "New Request"
+                ? "New Maintenance Request"
+                : "Updated Maintenance Request",
+            body:
+              action === "New Request"
+                ? "A new maintenance request has been added"
+                : "A maintenance request has been updated",
+            icon: "/logo.svg",
+          });
+        }
+      );
+    };
+
+    subscribeToMaintenance();
+
+    return () => {
+      pusherClient.unsubscribe("maintenance");
+    };
   }, [requests]);
 
   const handleFilterChange = (
@@ -204,11 +234,21 @@ export const MaintenanceRequestsTable = ({
     setCurrentPage(1);
   };
 
+  const handleSort = (key: keyof ReqInfo) => {
+    let direction: "asc" | "desc" | null = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+      direction = null;
+    }
+    setSortConfig({ key, direction });
+  };
+
   const statusColors = {
     Progress: "bg-custom-1",
     Pending: "bg-[#374151]",
     Closed: "bg-custom-2",
-    New: "bg-background",
+    New: "bg-custom-7",
   };
 
   const priorityColors = {
@@ -232,12 +272,26 @@ export const MaintenanceRequestsTable = ({
 
     const selectedValue = Array.isArray(value) ? value : [];
 
+    const handleClearAll = () => {
+      onChange([]);
+      setOpen(false);
+    };
+
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="justify-start">
             {selectedValue && selectedValue.length > 0 ? (
-              `${selectedValue.length} selected`
+              <>
+                {`${selectedValue.length} selected`}
+                <X
+                  className="ml-2 h-3 w-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClearAll();
+                  }}
+                />
+              </>
             ) : (
               <>
                 <PlusCircle className="mr-2 h-4 w-4" /> {placeholder}
@@ -290,6 +344,19 @@ export const MaintenanceRequestsTable = ({
                   </CommandItem>
                 ))}
               </CommandGroup>
+              {selectedValue.length > 0 && (
+                <>
+                  <CommandSeparator />
+                  <CommandGroup>
+                    <CommandItem
+                      onSelect={handleClearAll}
+                      className="justify-center text-center"
+                    >
+                      Clear All
+                    </CommandItem>
+                  </CommandGroup>
+                </>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>
@@ -297,154 +364,277 @@ export const MaintenanceRequestsTable = ({
     );
   };
 
-  const pageCount = Math.ceil(filteredRequests.length / itemsPerPage);
-  const paginatedRequests = filteredRequests.slice(
+  const sortedRequests = React.useMemo(() => {
+    const sortableRequests = [...filteredRequests];
+    if (sortConfig.key !== null && sortConfig.direction !== null) {
+      sortableRequests.sort((a, b) => {
+        if (sortConfig.key === null) return 0;
+
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return sortConfig.direction === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
+        if (aValue instanceof Date && bValue instanceof Date) {
+          return sortConfig.direction === "asc"
+            ? aValue.getTime() - bValue.getTime()
+            : bValue.getTime() - aValue.getTime();
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableRequests;
+  }, [filteredRequests, sortConfig]);
+
+  const pageCount = Math.ceil(sortedRequests.length / itemsPerPage);
+  const paginatedRequests = sortedRequests.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  const SortIcon = ({ column }: { column: keyof ReqInfo }) => {
+    if (sortConfig.key === column) {
+      return sortConfig.direction === "asc" ? (
+        <ChevronUp className="h-4 w-4" />
+      ) : (
+        <ChevronDown className="h-4 w-4" />
+      );
+    }
+    return <ArrowUpDown className="h-4 w-4" />;
+  };
+
   return (
     <>
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex">
-            <select
-              className="px-3 py-2 bg-background border border-r-0 border-input rounded-l-md text-sm"
-              value={filters.searchType}
-              onChange={(e) =>
-                setFilters({ ...filters, searchType: e.target.value })
-              }
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-nunito font-semibold">
+              Maintenance Requests
+            </CardTitle>
+            <Button
+              variant="outline"
+              onClick={() => handleSort("createdAt")}
+              className="justify-start bg-custom-11 hover:bg-custom-11 text-secondary hover:text-secondary"
             >
-              <option value="id">ID</option>
-              <option value="user">Property</option>
-              <option value="issue">Issue</option>
-            </select>
-            <Input
-              className="rounded-l-none"
-              placeholder={`Filter by ${filters.searchType}`}
-              value={filters.searchValue}
-              onChange={(e) =>
-                handleFilterChange("searchValue", e.target.value)
-              }
-            />
+              <ArrowUpDown className="mr-2 h-4 w-4" />
+              Sort by Date
+              {sortConfig.key === "createdAt" && (
+                <span className="ml-1">
+                  ({sortConfig.direction === "asc" ? "Oldest" : "Newest"})
+                </span>
+              )}
+            </Button>
           </div>
-          <ComboboxFilter
-            options={statusOptions}
-            value={filters.status || []}
-            onChange={(value) => handleFilterChange("status", value)}
-            placeholder="Status"
-          />
-          <ComboboxFilter
-            options={priorityOptions}
-            value={filters.priority || []}
-            onChange={(value) => handleFilterChange("priority", value)}
-            placeholder="Priority"
-          />
-        </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Request ID</TableHead>
-              <TableHead>Property</TableHead>
-              <TableHead>Issue</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          {filteredRequests.length > 0 && (
-            <TableBody>
-              {paginatedRequests.map((request) => (
-                <TableRow key={request.id} className="*:py-5">
-                  <TableCell>
-                    {propertyName?.slice(0, 3).toUpperCase()}
-                    {request.id.slice(0, 3).toUpperCase()}
-                  </TableCell>
-                  <TableCell>Unit {request?.user?.tenant?.unit}</TableCell>
-                  <TableCell>{request.issue}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={request.status === "New" ? "outline" : "default"}
-                      className={`${
-                        statusColors[request.status]
-                      } flex justify-center items-center rounded-xl py-1`}
-                    >
-                      {request.status === "Progress"
-                        ? "In Progress"
-                        : request.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        priorityColors[request.priority]
-                      } flex items-center justify-center rounded-xl py-1`}
-                    >
-                      {request.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <BeatLoader color="#003366" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className=" w-full flex">
+                  <select
+                    className="px-3 py-2 bg-background border border-r-0 border-input rounded-l-md text-sm focus-visible:border-none"
+                    value={filters.searchType}
+                    onChange={(e) =>
+                      setFilters({ ...filters, searchType: e.target.value })
+                    }
+                  >
+                    <option value="id">ID</option>
+                    <option value="user">Property</option>
+                    <option value="issue">Issue</option>
+                  </select>
+                  <Input
+                    className="rounded-l-none focus-visible:ring-0"
+                    placeholder={`Filter by ${
+                      filters.searchType === "user"
+                        ? "property"
+                        : filters.searchType
+                    }`}
+                    value={filters.searchValue}
+                    onChange={(e) =>
+                      handleFilterChange("searchValue", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="w-full space-x-2 flex justify-end">
+                  <ComboboxFilter
+                    options={statusOptions}
+                    value={filters.status || []}
+                    onChange={(value) => handleFilterChange("status", value)}
+                    placeholder="Status"
+                  />
+                  <ComboboxFilter
+                    options={priorityOptions}
+                    value={filters.priority || []}
+                    onChange={(value) => handleFilterChange("priority", value)}
+                    placeholder="Priority"
+                  />
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      <span className="hidden md:inline">Request</span> ID
+                    </TableHead>
+                    <TableHead>Property</TableHead>
+                    <TableHead>Issue</TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("status")}
+                        className="font-semibold"
+                      >
+                        Status <SortIcon column="status" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort("priority")}
+                        className="font-semibold"
+                      >
+                        Priority <SortIcon column="priority" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                {sortedRequests.length > 0 && (
+                  <TableBody>
+                    {paginatedRequests.map((request) => (
+                      <TableRow key={request.id} className={`*:py-5`}>
+                        <TableCell
+                          className={`${
+                            updated.includes(request.id) &&
+                            "font-extrabold underline relative"
+                          }`}
+                        >
+                          {updated.includes(request.id) && (
+                            <div className="h-6 w-1 bg-red-500 absolute left-0" />
+                          )}
+                          {propertyName?.slice(0, 3).toUpperCase()}
+                          {request.id.slice(0, 3).toUpperCase()}
+                        </TableCell>
+                        <TableCell>
+                          Unit {request?.user?.tenant?.unit}
+                        </TableCell>
+                        <TableCell className="truncate">
+                          {request.issue}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              request.status === "New" ? "outline" : "default"
+                            }
+                            className={`${
+                              statusColors[request.status]
+                            } flex justify-center items-center rounded-xl py-1`}
+                          >
+                            {request.status === "Progress"
+                              ? "In Progress"
+                              : request.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`${
+                              priorityColors[request.priority]
+                            } flex items-center justify-center rounded-xl py-1`}
+                          >
+                            {request.priority}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setViewDialog(true);
+                              setUpdated((prev) =>
+                                prev.filter((p) => p !== request.id)
+                              );
+                            }}
+                            className="border-2 border-custom-2"
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                )}
+              </Table>
+              {loading && (
+                <div className="w-full mt-2 text-center text-gray-400">
+                  <BeatLoader color="#003366" />
+                </div>
+              )}
+              {!loading && filteredRequests.length === 0 && (
+                <div className="w-full mt-2 text-center text-gray-400">
+                  No item found.
+                </div>
+              )}
+              {paginatedRequests.length > 0 && (
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-500">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                    {Math.min(
+                      currentPage * itemsPerPage,
+                      filteredRequests.length
+                    )}{" "}
+                    of {filteredRequests.length} results
+                  </div>
+                  <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        setSelectedRequest(request);
-                        setViewDialog(true);
-                      }}
-                      className="border-2 border-custom-2"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
                     >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+                    <div className="text-sm font-medium">
+                      Page {currentPage} of {pageCount}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, pageCount))
+                      }
+                      disabled={currentPage === pageCount}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
-        </Table>
-        {loading && (
-          <div className="w-full mt-2 text-center text-gray-400">
-            <BeatLoader color="#003366" />
-          </div>
-        )}
-        {!loading && filteredRequests.length === 0 && (
-          <div className="w-full mt-2 text-center text-gray-400">
-            No item found.
-          </div>
-        )}
-        {paginatedRequests.length > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-              {Math.min(currentPage * itemsPerPage, filteredRequests.length)} of{" "}
-              {filteredRequests.length} results
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="text-sm font-medium">
-                Page {currentPage} of {pageCount}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, pageCount))
-                }
-                disabled={currentPage === pageCount}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
 
       {selectedRequest && (
         <RequestDialog

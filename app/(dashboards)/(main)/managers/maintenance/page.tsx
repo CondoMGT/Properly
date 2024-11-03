@@ -22,7 +22,7 @@ interface StatCardProp {
 
 // Stat Card Component
 const StatCard = ({ title, value, color, Icon, loading }: StatCardProp) => (
-  <Card>
+  <Card className={`cursor-pointer hover:bg-${color} hover:bg-opacity-5`}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-lg font-nunito font-semibold">
         {title}
@@ -52,9 +52,23 @@ const MaintenancePage = () => {
   const [requests, setRequests] = useState<ReqInfo[]>([]);
   const [propertyName, setPropertyName] = useState<string | null>(null);
 
-  const [open, setOpen] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [closed, setClosed] = useState(0);
+  const [stats, setStats] = useState({
+    open: 0,
+    progress: 0,
+    closed: 0,
+  });
+
+  const updateCounts = (reqInfo: ReqInfo[]) => {
+    const openReqs = reqInfo.filter((r) => r.status !== "Closed");
+    const progressReqs = reqInfo.filter((r) => r.status === "Progress");
+    const closedReqs = reqInfo.filter((r) => r.status === "Closed");
+
+    setStats({
+      open: openReqs.length,
+      progress: progressReqs.length,
+      closed: closedReqs.length,
+    });
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -73,60 +87,54 @@ const MaintenancePage = () => {
     };
 
     getInfo();
-  }, [user?.id]);
 
-  const updateCounts = (reqInfo: ReqInfo[]) => {
-    const openReqs = reqInfo.filter((r) => r.status !== "Closed");
-    const progressReqs = reqInfo.filter((r) => r.status === "Progress");
-    const closedReqs = reqInfo.filter((r) => r.status === "Closed");
+    pusherClient.subscribe("maintenance");
 
-    setOpen(openReqs.length);
-    setProgress(progressReqs.length);
-    setClosed(closedReqs.length);
-  };
-
-  useEffect(() => {
-    const subscribeToMaintenance = () => {
-      pusherClient.subscribe("maintenance");
-
-      pusherClient.bind("update", (data: ReqInfo) => {
-        // Update counts based on previous and new status
+    pusherClient.bind(
+      "update",
+      ({ data, action }: { data: ReqInfo; action: string }) => {
         setRequests((prev) => {
-          const updatedRequests = prev.map((p) =>
-            p.id === data.id ? { ...data } : p
-          );
-
-          // Update counts based on the updated requests
+          let updatedRequests;
+          if (action === "New Request") {
+            // Check if the request already exists
+            const exists = prev.some((req) => req.id === data.id);
+            if (!exists) {
+              updatedRequests = [data, ...prev];
+            } else {
+              updatedRequests = prev;
+            }
+          } else {
+            updatedRequests = prev.map((p) =>
+              p.id === data.id ? { ...p, ...data } : p
+            );
+          }
           updateCounts(updatedRequests);
-
           return updatedRequests;
         });
-      });
-    };
-
-    subscribeToMaintenance();
+      }
+    );
 
     return () => {
       pusherClient.unsubscribe("maintenance");
     };
-  }, []);
+  }, [user?.id]);
 
-  const stats = [
+  const statCards = [
     {
       title: "Open Requests",
-      value: `${open}`,
+      value: `${stats.open}`,
       Icon: MessageSquare,
       color: "custom-8",
     },
     {
       title: "In Progress",
-      value: `${progress}`,
+      value: `${stats.progress}`,
       Icon: Home,
       color: "custom-7",
     },
     {
       title: "Completed",
-      value: `${closed}`,
+      value: `${stats.closed}`,
       Icon: Users,
       color: "custom-2",
     },
@@ -136,32 +144,32 @@ const MaintenancePage = () => {
     <div className="min-h-screen container mx-auto space-y-6 pb-4">
       {/* <h1 className="text-3xl font-bold mb-6">Property Management Dashboard</h1> */}
 
-      {/* Stats Section */}
+      {/* StatCards Section */}
       <div className="grid gap-4 md:grid-cols-3">
-        {stats.map((stat, index) => (
+        {statCards.map((stat, index) => (
           <StatCard key={index} {...stat} loading={loading} />
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-nunito font-semibold">
-            Maintenance Requests
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
+      {loading ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-nunito font-semibold">
+              Maintenance Requests
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="flex items-center justify-center">
               <BeatLoader color="#003366" />
             </div>
-          ) : (
-            <MaintenanceRequestsTable
-              requests={requests}
-              propertyName={propertyName}
-            />
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      ) : (
+        <MaintenanceRequestsTable
+          requests={requests}
+          propertyName={propertyName}
+        />
+      )}
     </div>
   );
 };
