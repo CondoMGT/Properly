@@ -35,6 +35,11 @@ export default function SignIn() {
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      code: "",
+    },
   });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
@@ -78,16 +83,14 @@ export default function SignIn() {
           </Link>
         </div>
 
-        <div className="w-full opacity-20">
-          <Image
-            src="/leohoho.png"
-            alt="Hero"
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
-          />
-        </div>
+        <Image
+          src="/leohoho.png"
+          alt="Hero"
+          fill
+          priority
+          className="object-cover opacity-20"
+          sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
+        />
 
         <div className="relative z-20 mt-auto text-foreground">
           <blockquote className="space-y-2">
@@ -132,7 +135,7 @@ export default function SignIn() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="font-semibold">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -153,7 +156,7 @@ export default function SignIn() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="font-semibold">Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"

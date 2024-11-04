@@ -32,6 +32,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email as string;
         session.user.image = token.picture;
+        session.user.phoneNumber = token.phoneNumber as string;
       }
 
       return session;
@@ -47,6 +48,7 @@ export const {
       token.email = existingUser.email;
       token.picture = existingUser.image;
       token.role = existingUser.role;
+      token.phoneNumber = existingUser.phoneNumber;
 
       return token;
     },

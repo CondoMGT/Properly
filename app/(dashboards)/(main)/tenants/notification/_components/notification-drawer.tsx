@@ -204,10 +204,14 @@ export const NotificationDrawer = ({
                       drawerRequest.status === "New" ? "outline" : "default"
                     }
                     className={`${
-                      statusColors[drawerRequest.status]
-                    } flex justify-center items-center rounded-xl py-1`}
+                      statusColors[
+                        ["Progress", "New"].includes(drawerRequest.status)
+                          ? "Progress"
+                          : drawerRequest.status
+                      ]
+                    } flex justify-center items-center rounded-xl py-1 text-secondary`}
                   >
-                    {drawerRequest.status === "Progress"
+                    {["Progress", "New"].includes(drawerRequest.status)
                       ? "In Progress"
                       : drawerRequest.status}
                   </Badge>

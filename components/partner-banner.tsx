@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 type Partner = {
   id: number;
@@ -15,94 +16,94 @@ const partners: Partner[] = [
   {
     id: 1,
     name: "Acme Properties",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 2,
     name: "Zenith Real Estate",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
-  { id: 3, name: "Summit Homes", logo: "/placeholder.svg?height=80&width=80" },
-  { id: 4, name: "Urban Living", logo: "/placeholder.svg?height=80&width=80" },
+  { id: 3, name: "Summit Homes", logo: "" },
+  { id: 4, name: "Urban Living", logo: "" },
   {
     id: 5,
     name: "Coastal Rentals",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 6,
     name: "Mountain View Properties",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 7,
     name: "City Center Management",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 8,
     name: "Suburban Spaces",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 9,
     name: "Luxury Estates",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 10,
     name: "Green Living Apartments",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 11,
     name: "Historic Home Rentals",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 12,
     name: "Student Housing Solutions",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 13,
     name: "Corporate Suites",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 14,
     name: "Beachfront Bungalows",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 15,
     name: "Skyline Apartments",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 16,
     name: "Eco-Friendly Homes",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 17,
     name: "Senior Living Communities",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 18,
     name: "Vacation Rental Experts",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 19,
     name: "Downtown Lofts",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
   {
     id: 20,
     name: "Family-Friendly Estates",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "",
   },
 ];
 
@@ -163,9 +164,11 @@ export const PartnerBanner = () => {
                   className="w-48 flex-shrink-0 bg-custom-3"
                 >
                   <CardContent className="p-4 flex flex-col items-center justify-center h-40">
-                    <img
-                      src={partner.logo}
+                    <Image
+                      src={partner.logo || "/leo.png"}
                       alt={`${partner.name} logo`}
+                      width={80}
+                      height={80}
                       className="w-20 h-20 object-contain mb-2"
                     />
                     <p className="text-sm font-medium text-center">

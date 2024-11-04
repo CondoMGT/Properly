@@ -4,8 +4,8 @@ import React from "react";
 
 const TenantPage = () => {
   return (
-    <Card>
-      <CardContent>
+    <Card className="mb-4">
+      <CardContent className="pb-0">
         <TenantManagement />
       </CardContent>
     </Card>

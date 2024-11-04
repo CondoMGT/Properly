@@ -505,10 +505,10 @@ export const TenantManagement = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto pt-10 pb-5">
       <div className="flex flex-col space-y-2 md:flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Tenant Management</h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-center gap-2">
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-custom-1 hover:bg-custom-1">
@@ -552,68 +552,71 @@ export const TenantManagement = () => {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 space-y-2 md:space-y-0 md:gap-2 mb-4">
         <Input
           placeholder="Filter by name"
           value={nameFilter}
+          className="w-full col-span-1"
           onChange={(e) => setNameFilter(e.target.value)}
         />
-        <CommandCombobox
-          options={dateOptions.startMonths}
-          placeholder="Start Month"
-          selected={dateFilters.startMonths}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, startMonths: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) =>
-                c.startDate.toLocaleString("default", { month: "long" }) ===
-                option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.startYears}
-          placeholder="Start Year"
-          selected={dateFilters.startYears}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, startYears: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) => c.startDate.getFullYear().toString() === option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.endMonths}
-          placeholder="End Month"
-          selected={dateFilters.endMonths}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, endMonths: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) =>
-                c.endDate.toLocaleString("default", { month: "long" }) ===
-                option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.endYears}
-          placeholder="End Year"
-          selected={dateFilters.endYears}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, endYears: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) => c.endDate.getFullYear().toString() === option
-            ).length
-          }
-        />
+        <div className="col-span-2 w-full grid grid-cols-1 md:grid-cols-4 gap-2">
+          <CommandCombobox
+            options={dateOptions.startMonths}
+            placeholder="Start Month"
+            selected={dateFilters.startMonths}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, startMonths: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) =>
+                  c.startDate.toLocaleString("default", { month: "long" }) ===
+                  option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.startYears}
+            placeholder="Start Year"
+            selected={dateFilters.startYears}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, startYears: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) => c.startDate.getFullYear().toString() === option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.endMonths}
+            placeholder="End Month"
+            selected={dateFilters.endMonths}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, endMonths: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) =>
+                  c.endDate.toLocaleString("default", { month: "long" }) ===
+                  option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.endYears}
+            placeholder="End Year"
+            selected={dateFilters.endYears}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, endYears: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) => c.endDate.getFullYear().toString() === option
+              ).length
+            }
+          />
+        </div>
       </div>
       <div className="border rounded-md">
         <Table>
