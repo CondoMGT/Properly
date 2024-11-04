@@ -108,3 +108,39 @@ export const getPropertyId = async (userId: string) => {
     return null;
   }
 };
+
+export const getPropertyTenants = async (userId: string) => {
+  try {
+    const property = await prisma.propertyManager.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        properties: {
+          select: {
+            tenants: {
+              select: {
+                id: true,
+                unit: true,
+                startDate: true,
+                endDate: true,
+                user: {
+                  select: {
+                    name: true,
+                    email: true,
+                    phoneNumber: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return property?.properties;
+  } catch (error) {
+    console.error("Error fetching tenants for property:", error);
+    return null;
+  }
+};

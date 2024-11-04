@@ -14,6 +14,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -54,7 +55,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Form,
@@ -78,6 +78,9 @@ import {
   SkippedTenant,
   SkippedTenantsModal,
 } from "@/components/tenant/skipped-tenants-modal";
+import { getPropertyTenants } from "@/data/manager";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { BeatLoader } from "react-spinners";
 
 type Tenant = {
   id: string;
@@ -111,6 +114,17 @@ type ImportResult = {
 };
 
 export const TenantManagement = () => {
+  const user = useCurrentUser();
+
+  const [loading, setLoading] = useState(true);
+
+  const [popoverOpen, setPopoverOpen] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [filteredTenants, setFilteredTenants] = useState<Tenant[]>([]);
   const [nameFilter, setNameFilter] = useState("");
@@ -125,6 +139,32 @@ export const TenantManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    const fetchTenants = async () => {
+      const data = await getPropertyTenants(user?.id as string);
+
+      if (data) {
+        const formattedData = data?.map((d) => {
+          return d.tenants.map((t) => ({
+            id: t.id as string,
+            name: t.user.name as string,
+            email: t.user.email as string,
+            unit: t.unit,
+            phoneNumber: t.user.phoneNumber as string,
+            startDate: t.startDate as Date,
+            endDate: t.endDate as Date,
+          }));
+        });
+
+        setTenants(formattedData.flat() as Tenant[]);
+      }
+
+      setLoading(false);
+    };
+
+    fetchTenants();
+  }, [user?.id]);
 
   useEffect(() => {
     handleFilterChange();
@@ -430,6 +470,40 @@ export const TenantManagement = () => {
     };
   }, [tenants]);
 
+  const handlePopoverOpenChange = (id: string, isOpen: boolean) => {
+    setPopoverOpen((prev) => ({ ...prev, [id]: isOpen }));
+  };
+
+  const closePopover = (id: string) => {
+    setPopoverOpen((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleEditClick = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setEditDialogOpen(true);
+    closePopover(tenant.id);
+  };
+
+  const handleDeleteClick = (tenant: Tenant) => {
+    setSelectedTenant(tenant);
+    setDeleteDialogOpen(true);
+    closePopover(tenant.id);
+  };
+
+  // const handleEditSubmit = (editedTenant: Tenant) => {
+  //   handleEditTenant(editedTenant);
+  //   setEditDialogOpen(false);
+  //   setSelectedTenant(null);
+  // };
+
+  const handleDeleteConfirm = () => {
+    if (selectedTenant) {
+      handleDeleteTenant(selectedTenant.id);
+      setDeleteDialogOpen(false);
+      setSelectedTenant(null);
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col space-y-2 md:flex-row justify-between items-center mb-4">
@@ -555,7 +629,15 @@ export const TenantManagement = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedTenants.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <div className="flex w-full justify-center items-center">
+                    <BeatLoader color="#003366" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : paginatedTenants.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center">
                   No tenants available
@@ -571,7 +653,12 @@ export const TenantManagement = () => {
                   <TableCell>{tenant.startDate.toLocaleDateString()}</TableCell>
                   <TableCell>{tenant.endDate.toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <Popover>
+                    <Popover
+                      open={popoverOpen[tenant.id]}
+                      onOpenChange={(isOpen) =>
+                        handlePopoverOpenChange(tenant.id, isOpen)
+                      }
+                    >
                       <PopoverTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <MoreHorizontal className="h-4 w-4" />
@@ -579,61 +666,20 @@ export const TenantManagement = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-56">
                         <div className="grid gap-4">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="w-full justify-start"
-                              >
-                                <Edit className="mr-2 h-4 w-4" /> Edit
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                              <DialogHeader>
-                                <DialogTitle>Edit Tenant</DialogTitle>
-                              </DialogHeader>
-                              <TenantForm
-                                onSubmit={(data) => {
-                                  const editedTenant: Tenant = {
-                                    ...data,
-                                    id: tenant.id,
-                                  };
-                                  handleEditTenant(editedTenant);
-                                }}
-                                initialData={tenant}
-                              />
-                            </DialogContent>
-                          </Dialog>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="w-full justify-start"
-                              >
-                                <Trash className="mr-2 h-4 w-4" /> Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete the tenant from the
-                                  database.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteTenant(tenant.id)}
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleEditClick(tenant)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" /> Edit
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleDeleteClick(tenant)}
+                          >
+                            <Trash className="mr-2 h-4 w-4" /> Delete
+                          </Button>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -677,6 +723,53 @@ export const TenantManagement = () => {
           </div>
         </div>
       )}
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Tenant</DialogTitle>
+            <DialogDescription>
+              Edit tenant details and Save changes.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedTenant && (
+            <TenantForm
+              onSubmit={(data) => {
+                const editedTenant: Tenant = {
+                  ...data,
+                  id: selectedTenant.id,
+                };
+                handleEditTenant(editedTenant);
+              }}
+              initialData={selectedTenant}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete{" "}
+              <span className="font-extrabold text-black">
+                {selectedTenant?.name}{" "}
+              </span>
+              from the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-custom-8 hover:bg-custom-8"
+              onClick={handleDeleteConfirm}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
