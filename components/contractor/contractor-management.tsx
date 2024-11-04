@@ -14,6 +14,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -147,7 +148,7 @@ const serviceAreas = [
 export const ContractorManagement = () => {
   const user = useCurrentUser();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [popoverOpen, setPopoverOpen] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -220,15 +221,25 @@ export const ContractorManagement = () => {
     };
 
     fetchPropertyInfo();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     setLoading(true);
     const fetchPropertyContractors = async () => {
-      const contractors = await fetchContractors(propertyId as string);
+      if (propertyId) {
+        setLoading(true);
 
-      if (contractors) {
-        setContractors(contractors);
+        try {
+          const contractors = await fetchContractors(propertyId as string);
+          if (contractors) {
+            setContractors(contractors);
+          }
+        } catch (error) {
+          console.error("Error fetching contractors:", error);
+          toast.error("Something went wrong. Please refresh the page.");
+        } finally {
+          setLoading(false);
+        }
       }
 
       setLoading(false);
@@ -238,7 +249,9 @@ export const ContractorManagement = () => {
   }, [propertyId]);
 
   useEffect(() => {
-    handleFilterChange();
+    if (!loading) {
+      handleFilterChange();
+    }
   }, [
     contractors,
     nameFilter,
@@ -247,6 +260,7 @@ export const ContractorManagement = () => {
     ratingFilter,
     emergencyFilter,
     insuranceFilter,
+    loading,
   ]);
 
   useEffect(() => {
@@ -650,7 +664,7 @@ export const ContractorManagement = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading && (
+            {loading ? (
               <TableRow>
                 <TableCell colSpan={8}>
                   <div className="flex w-full justify-center items-center">
@@ -658,16 +672,13 @@ export const ContractorManagement = () => {
                   </div>
                 </TableCell>
               </TableRow>
-            )}
-            {!loading && paginatedContractors.length === 0 ? (
+            ) : paginatedContractors.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center">
                   No contractors available
                 </TableCell>
               </TableRow>
             ) : (
-              !loading &&
-              paginatedContractors.length > 0 &&
               paginatedContractors.map((contractor) => (
                 <TableRow key={contractor.id}>
                   <TableCell>{contractor.name}</TableCell>
@@ -715,7 +726,7 @@ export const ContractorManagement = () => {
           </TableBody>
         </Table>
       </div>
-      {paginatedContractors && paginatedContractors.length > 0 && (
+      {!loading && paginatedContractors.length > 0 && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
             Showing {paginatedContractors.length} of{" "}
@@ -753,6 +764,9 @@ export const ContractorManagement = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Contractor</DialogTitle>
+            <DialogDescription>
+              Edit contractor details and Save changes.
+            </DialogDescription>
           </DialogHeader>
           {selectedContractor && (
             <ContractorForm

@@ -19,6 +19,7 @@ import { RealTimeMessage } from "@/components/messages/realtime-message";
 import { useBeams } from "@/hooks/use-Beams";
 import { usePathname } from "next/navigation";
 import { handleNotification } from "@/lib/helper";
+import { format } from "date-fns";
 
 // Mock data for the tenant
 const tenant = {
@@ -150,7 +151,13 @@ export const TenantMessage = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <DollarSign className="mr-2" />
-                      <span>Next rent due: {tenant.rentDue}</span>
+                      <span>
+                        Next rent due:{" "}
+                        {format(
+                          new Date().setMonth(new Date().getMonth() + 1),
+                          "PPP"
+                        ) || tenant.rentDue}
+                      </span>
                     </div>
                     <span className="font-bold">${tenant.rentAmount}</span>
                   </div>
