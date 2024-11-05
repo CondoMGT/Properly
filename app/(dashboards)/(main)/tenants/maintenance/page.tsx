@@ -225,22 +225,20 @@ const MaintenancePage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt: `You are Bri, an AI assistant helping tenants solve issues in their apartment. Your primary goal is to assist with maintenance requests and apartment-related problems.
+          prompt: `You are Bri, an AI assistant helping tenants solve issues in their apartment. Your primary goal is to assist with maintenance requests and apartment-related problems. Make your response clear and concise.
 
-            The tenant's message is: "${currentInput}".
-            ${
-              currentImage
-                ? "The tenant has also provided an image of the issue."
-                : ""
-            }
+          The tenant's message is: "${currentInput}".
+          ${
+            currentImage
+              ? "The tenant has also provided an image of the issue."
+              : ""
+          }
 
-            If the tenant's message is related to apartment maintenance or issues, provide a helpful response with possible solutions. Your response should not exceed 200 words.
+          If the tenant's message is related to apartment maintenance or issues, provide a helpful response with possible solutions. Keep your response under 200 words.
 
-            If the tenant's message is unrelated to apartment issues (e.g., general chit-chat or off-topic questions), politely acknowledge their message and gently redirect the conversation back to apartment-related topics. For example, you could say something like: "I appreciate your interest! While I enjoy our chat, I'm best equipped to help with apartment-related issues. Is there anything about your apartment I can assist you with today?"
+          If the tenant's message is unrelated to apartment issues (e.g., general chit-chat or off-topic questions), politely acknowledge their message and gently redirect the conversation back to apartment-related topics. For example, you could say something like: "I appreciate your interest! While I enjoy our chat, I'm best equipped to help with apartment-related issues. Is there anything about your apartment I can assist you with today?"
 
-            Introduce yourself as Bri only when the user first interacts with you. For subsequent interactions, do not introduce yourself again.
-
-            Remember to keep your total response under 200 words.`,
+          Introduce yourself as Bri only when the user first interacts with you. For subsequent interactions, do not introduce yourself again.`,
           image: currentImage,
         }),
       });
@@ -449,6 +447,9 @@ const MaintenancePage = () => {
 
   const handleDialogClose = () => {
     if (dialogOpen && escalated) {
+      resetForm();
+      setDialogOpen(false);
+    } else if (dialogOpen && !showResolution) {
       resetForm();
       setDialogOpen(false);
     } else if (dialogOpen && !escalated) {
@@ -694,12 +695,16 @@ const MaintenancePage = () => {
                           <Avatar className="w-8 h-8">
                             <AvatarImage
                               src={
-                                message.type === "user" ? "" : "/ellipse.svg"
+                                message.type === "user"
+                                  ? (user?.image as string)
+                                  : "/ellipse.svg"
                               }
                               alt={message.type === "user" ? "User" : "Bree"}
                             />
                             <AvatarFallback>
-                              {message.type === "user" ? "U" : "B"}
+                              {message.type === "user"
+                                ? user?.name?.charAt(0)
+                                : "B"}
                             </AvatarFallback>
                           </Avatar>
                           <div
