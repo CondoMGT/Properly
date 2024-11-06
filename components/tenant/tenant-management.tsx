@@ -1196,7 +1196,7 @@ function AddTenantForm({
                       <RadioGroupItem value="oauth" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Add tenant(s) via OAuth
+                      Add tenant(s) via OAuth (Google/Facebook Login)
                     </FormLabel>
                   </FormItem>
                 </RadioGroup>
@@ -1467,7 +1467,7 @@ function OAuthEmailsForm({
             className="bg-custom-1 hover:bg-custom-1"
             disabled={fields.length === 0}
           >
-            Send OAuth Invitations
+            Send Invitations
           </Button>
         </div>
       </form>
