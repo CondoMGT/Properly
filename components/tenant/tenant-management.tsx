@@ -31,6 +31,7 @@ import {
   X,
   ChevronDown,
   CalendarIcon,
+  Trash2,
 } from "lucide-react";
 import {
   Command,
@@ -65,7 +66,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { TenantFormValues, TenantSchema } from "@/schemas";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -123,25 +124,15 @@ const AddTenantSchema = z.object({
 
 type AddTenantFormValues = z.infer<typeof AddTenantSchema>;
 
+const OAuthEmailSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  unit: z.string().min(1, "Unit is required"),
+  startDate: z.date({ required_error: "Start date is required" }),
+  endDate: z.date({ required_error: "End date is required" }),
+});
+
 const OAuthEmailsSchema = z.object({
-  emails: z.string().refine(
-    (value) => {
-      const emails = value
-        .split("\n")
-        .map((e) => e.trim())
-        .filter((e) => e !== "");
-      const uniqueEmails = new Set(emails);
-      return (
-        emails.length > 0 &&
-        emails.every((email) => z.string().email().safeParse(email).success) &&
-        emails.length === uniqueEmails.size
-      );
-    },
-    {
-      message:
-        "Please enter valid email addresses, one per line, with no duplicates",
-    }
-  ),
+  tenants: z.array(OAuthEmailSchema),
 });
 
 type OAuthEmailsFormValues = z.infer<typeof OAuthEmailsSchema>;
@@ -260,19 +251,11 @@ export const TenantManagement = () => {
   };
 
   const handleOAuthEmailsSubmit = (values: OAuthEmailsFormValues) => {
-    const emailList = Array.from(
-      new Set(
-        values.emails
-          .split("\n")
-          .map((e) => e.trim())
-          .filter((e) => e !== "")
-      )
-    );
     // Handle OAuth emails submission
-    console.log("OAuth emails:", emailList);
-    // You would typically send these emails to your backend to handle OAuth invitations
+    console.log("OAuth tenants:", values.tenants);
+    // You would typically send these tenant details to your backend to handle OAuth invitations
     toast.success("OAuth invitations sent", {
-      description: `Invitations sent to ${emailList.length} email(s).`,
+      description: `Invitations sent to ${values.tenants.length} tenant(s).`,
     });
     setShowAddTenantModal(false);
     setAddMethod(null);
@@ -1237,89 +1220,239 @@ function OAuthEmailsForm({
   onSubmit: (data: OAuthEmailsFormValues) => void;
   handleBack: () => void;
 }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
+  const [showTable, setShowTable] = useState(false);
+
   const form = useForm<OAuthEmailsFormValues>({
     resolver: zodResolver(OAuthEmailsSchema),
     defaultValues: {
-      emails: "",
+      tenants: [],
     },
   });
 
-  const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
-  const [highlightedEmails, setHighlightedEmails] = useState<string>("");
-  const [showHighlight, setShowHighlight] = useState(false);
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "tenants",
+  });
 
   useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (value.emails !== undefined) {
-        setIsTextAreaEmpty(value.emails.trim() === "");
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+    setIsTextAreaEmpty(emailInput.trim() === "");
+  }, [emailInput]);
 
-  const validateAndHighlightEmails = (value: string) => {
-    const emails = value.split("\n");
-    const highlightedLines = emails.map((email) => {
-      const trimmedEmail = email.trim();
-      if (trimmedEmail === "") return email;
-      return z.string().email().safeParse(trimmedEmail).success
-        ? email
-        : `<span style="color: red;">${email}</span>`;
+  const handleAddEmails = () => {
+    const emails = emailInput
+      .split("\n")
+      .filter((email) => email.trim() !== "");
+    emails.forEach((email) => {
+      append({
+        email: email.trim(),
+        unit: "",
+        startDate: new Date(),
+        endDate: new Date(),
+      });
     });
+    setEmailInput("");
+    setShowTable(true);
+  };
 
-    setHighlightedEmails(highlightedLines.join("\n"));
+  const handleAddRow = () => {
+    append({ email: "", unit: "", startDate: new Date(), endDate: new Date() });
   };
 
   const handleSubmit = (values: OAuthEmailsFormValues) => {
-    const isValid = OAuthEmailsSchema.safeParse(values).success;
-
-    if (isValid) {
-      onSubmit(values);
-      setShowHighlight(false);
-    } else {
-      validateAndHighlightEmails(values.emails);
-      setShowHighlight(true);
-    }
+    onSubmit(values);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="emails"
-          render={({ field }) => (
+        {!showTable && (
+          <>
             <FormItem>
-              <FormLabel className="fonr-semibold">Email Addresses</FormLabel>
+              <FormLabel className="font-semibold">Email Addresses</FormLabel>
               <FormControl>
-                <div className="relative">
-                  <Textarea
-                    placeholder="Enter email addresses, one per line"
-                    className="h-[200px] resize-none font-mono"
-                    {...field}
-                  />
-                  {showHighlight && (
-                    <div
-                      className="absolute inset-0 pointer-events-none font-mono whitespace-pre-wrap break-words"
-                      dangerouslySetInnerHTML={{ __html: highlightedEmails }}
-                      style={{
-                        padding: "0.5rem 0.75rem", // Match Textarea padding
-                        lineHeight: "1.5", // Match Textarea line height
-                        fontFamily: "inherit", // Use the same font as the Textarea
-                        fontSize: "inherit", // Use the same font size as the Textarea
-                      }}
-                    />
-                  )}
-                </div>
+                <Textarea
+                  placeholder="Enter email addresses, one per line"
+                  className="h-[100px] resize-none font-mono"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                />
               </FormControl>
-              <FormDescription>
-                Enter one email address per line. Invalid emails and duplicates
-                will be highlighted in red.
-              </FormDescription>
-              <FormMessage />
             </FormItem>
-          )}
-        />
+            <Button
+              type="button"
+              onClick={handleAddEmails}
+              disabled={isTextAreaEmpty}
+              className="w-full bg-custom-2 hover:bg-custom-2"
+            >
+              Add Emails to Table
+            </Button>
+          </>
+        )}
+
+        {showTable && (
+          <ScrollArea className="h-[300px] w-full rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Email</TableHead>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Start Date</TableHead>
+                  <TableHead>End Date</TableHead>
+                  <TableHead className="w-[70px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell className="p-2">
+                      <FormField
+                        control={form.control}
+                        name={`tenants.${index}.email`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input {...field} className="w-full" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell className="p-2">
+                      <FormField
+                        control={form.control}
+                        name={`tenants.${index}.unit`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input {...field} className="w-full" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell className="p-2">
+                      <FormField
+                        control={form.control}
+                        name={`tenants.${index}.startDate`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "MM/d/yy")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    {/* <CalendarIcon className="ml-auto h-4 w-4 opacity-50" /> */}
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date < new Date() ||
+                                    date < new Date("1900-01-01")
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell className="p-2">
+                      <FormField
+                        control={form.control}
+                        name={`tenants.${index}.endDate`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "MM/d/yy")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    {/* <CalendarIcon className="ml-auto h-4 w-4 opacity-50" /> */}
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) =>
+                                    date <= new Date() ||
+                                    date < new Date("1900-01-01")
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </TableCell>
+                    <TableCell className="p-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => remove(index)}
+                        className="h-8 w-8 p-0 text-custom-8"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        )}
+
+        {showTable && (
+          <Button
+            type="button"
+            onClick={handleAddRow}
+            className="w-full bg-custom-2 hover:bg-custom-2"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add More Tenants
+          </Button>
+        )}
+
         <div className="flex items-center justify-between">
           <Button
             type="button"
@@ -1332,7 +1465,7 @@ function OAuthEmailsForm({
           <Button
             type="submit"
             className="bg-custom-1 hover:bg-custom-1"
-            disabled={isTextAreaEmpty}
+            disabled={fields.length === 0}
           >
             Send OAuth Invitations
           </Button>
