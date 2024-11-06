@@ -63,7 +63,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center bg-custom-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center bg-custom-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 max-lg:bg-gradient-to-tr from-custom-2/25 to-custom-1/25">
       <div className="lg:p-8 w-full">
         <div className="relative z-20 flex lg:hidden items-center justify-center w-[90%] text-lg font-medium my-8">
           <Link
@@ -267,6 +267,7 @@ export default function SignUp() {
               <Button
                 className="w-full bg-custom-1 hover:bg-custom-1"
                 type="submit"
+                disabled={isPending}
               >
                 {isPending ? (
                   <>
@@ -290,7 +291,7 @@ export default function SignUp() {
               Already have an account? Sign In
             </Link>
           </div>
-          <Socials text="signing up" />
+          <Socials text="signing up" show={false} />
         </div>
       </div>
 

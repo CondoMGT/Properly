@@ -57,7 +57,7 @@ export const getTenantsForManager = async (userId: string) => {
 
 export const getManagerId = async (userId: string) => {
   try {
-    const manager = await prisma.users.findUnique({
+    const manager = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         tenant: {
@@ -84,7 +84,7 @@ export const getManagerId = async (userId: string) => {
 
 export const getPropertyId = async (userId: string) => {
   try {
-    const propertyInfo = await prisma.users.findUnique({
+    const propertyInfo = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         propertyManager: {

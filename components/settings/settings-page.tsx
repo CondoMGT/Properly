@@ -114,7 +114,7 @@ export const UserSettings = ({ user }: { user: UserType }) => {
       </div>
 
       <Tabs defaultValue="account" className="mt-6">
-        <TabsList>
+        <TabsList className="bg-custom-1 text-secondary">
           <TabsTrigger value="account">Account</TabsTrigger>
           {user.role === "TENANT" && (
             <TabsTrigger value="rental">Rental</TabsTrigger>

@@ -33,7 +33,7 @@ interface ScheduleItemProp {
 
 // Stat Card Component
 const StatCard = ({ title, value, color, Icon }: StatCardProp) => (
-  <Card>
+  <Card className={`cursor-pointer hover:bg-${color} hover:bg-opacity-5`}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-lg font-nunito font-semibold">
         {title}
@@ -102,6 +102,7 @@ const MaintenanceRequest = ({
             setSelectedRequest(req);
             setViewDialog(true);
           }}
+          className="border-2 border-custom-2"
         >
           View
         </Button>
@@ -122,11 +123,15 @@ const MaintenanceRequest = ({
 
 // Schedule Item Component
 const ScheduleItem = ({ time, title }: ScheduleItemProp) => (
-  <div className="flex items-center space-x-4 py-2">
-    <Calendar className="h-6 w-6 text-custom-0" />
-    <div className="flex flex-col space-y-2">
-      <span className="font-normal leading-normal tracking-tight">{title}</span>
-      <span className="font-semibold text-[#555555] text-sm leading-none tracking-tight">
+  <div className="flex items-center py-2">
+    <div className="">
+      <Calendar className="h-4 w-4 mr-2 text-custom-0" />
+    </div>
+    <div className="flex flex-col space-y-2 overflow-hidden w-full">
+      <span className="font-normal text-sm leading-normal truncate flex items-center">
+        {title}
+      </span>
+      <span className="font-semibold text-[#555555] text-xs leading-none tracking-tight">
         Today at {time}
       </span>
     </div>
@@ -149,7 +154,7 @@ const ManagerPage = () => {
       if (data && data.property) {
         setPropertyName(data.property.name as string);
 
-        const sortedReqInfo = data.reqInfo.sort((a, b) => {
+        const sortedReqInfo = (data.reqInfo as ReqInfo[]).sort((a, b) => {
           return (
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
@@ -244,9 +249,10 @@ const ManagerPage = () => {
       </div>
 
       {/* Main Content Section */}
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* <div className="grid gap-6 md:grid-cols-3"> */}
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Maintenance Requests */}
-        <Card className="md:col-span-2 flex flex-col">
+        <Card className="flex-1 md:col-span-2 flex flex-col">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
@@ -272,7 +278,7 @@ const ManagerPage = () => {
         </Card>
 
         {/* Right Column */}
-        <div className="space-y-6 md:space-y-4 flex flex-col mb-4">
+        <div className="space-y-6 md:space-y-4 flex flex-col">
           {/* Upcoming Schedule */}
           <Card className="flex-grow">
             <CardHeader>
@@ -286,7 +292,7 @@ const ManagerPage = () => {
           </Card>
 
           {/* Average Response Time */}
-          <Card className="flex-[20%]">
+          <Card className="">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-lg font-semibold font-nunito">
                 Average Response Time

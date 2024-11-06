@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/client";
 import { pusherServer } from "@/lib/pusher";
 import { RequestPriority } from "@prisma/client";
-import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 
 interface newMaintenanceProps {

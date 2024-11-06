@@ -55,7 +55,7 @@ export const newPassword = async (
 
   const hashedPassword = await saltAndHashPassword(password);
 
-  await prisma.users.update({
+  await prisma.user.update({
     where: {
       id: existingUser.id,
     },

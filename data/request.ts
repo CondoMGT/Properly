@@ -50,7 +50,7 @@ export const getAllRequestInfoForTenant = async (userId: string) => {
 export const getRequestInfoForManager = async (userId: string) => {
   try {
     // FIND THE PROPERTY
-    const property = await prisma.users.findUnique({
+    const property = await prisma.user.findUnique({
       where: {
         id: userId,
       },

@@ -45,6 +45,7 @@
     "cmdk": "^1.0.0",
     "csv-parse": "^5.5.6",
     "date-fns": "^2.30.0",
+    "input-otp": "^1.4.1",
     "lucide-react": "^0.447.0",
     "multer": "^1.4.5-lts.1",
     "next": "14.2.11",

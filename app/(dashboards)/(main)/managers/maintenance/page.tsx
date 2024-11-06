@@ -78,9 +78,9 @@ const MaintenancePage = () => {
       if (data && data.property) {
         setPropertyName(data.property.name as string);
 
-        setRequests(data.reqInfo);
+        setRequests(data.reqInfo as ReqInfo[]);
 
-        updateCounts(data.reqInfo);
+        updateCounts(data.reqInfo as ReqInfo[]);
 
         setLoading(false);
       }
