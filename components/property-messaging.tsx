@@ -134,7 +134,7 @@ export const PropertyMessagingSystem = () => {
       const res = await getTenantsForManager(user?.id as string);
 
       if (res) {
-        setAllTenant(res.map((r) => r.user));
+        setAllTenant(res.map((r) => r.user) as AllUser[]);
       }
     };
 
