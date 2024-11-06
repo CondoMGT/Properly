@@ -545,7 +545,7 @@ export const ContractorManagement = () => {
   }, [filteredContractors]);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto pt-10 pb-5">
       <div className="flex flex-col space-y-2 md:flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Contractor Management</h1>
         <div className="flex flex-wrap gap-2">

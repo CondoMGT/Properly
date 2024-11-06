@@ -1,7 +1,12 @@
-import React from "react";
+"use client";
+
+import { UserSettings, UserType } from "@/components/settings/settings-page";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 const SettingsPage = () => {
-  return <div>SettingsPage</div>;
+  const user = useCurrentUser();
+
+  return <UserSettings user={user as UserType} />;
 };
 
 export default SettingsPage;

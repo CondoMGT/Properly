@@ -13,18 +13,18 @@ enum waitListType {
   Manager
 }
 
-model users {
-  id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name     String
-  email    String @unique
-  password String
+model User {
+  id       String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name     String?
+  email    String? @unique
+  password String?
 
   firstTimerLogin DateTime?
 
   phoneNumber String?
   image       String?
 
-  verified DateTime?
+  emailVerified DateTime?
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -40,7 +40,9 @@ model users {
   maintenanceRequests MaintenanceRequest[]
 
   // notifications Notification[]
-  // accounts Account[]
+  accounts Account[]
+
+  @@map("users")
 }
 
 model VerificationToken {
@@ -64,32 +66,31 @@ model TwoFactorToken {
 model TwoFactorConfirmation {
   id     String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   userId String @db.Uuid
-  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
 }
 
-// model Account {
+model Account {
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-//   userId            String  @db.Uuid
-//   type              String
-//   provider          String
-//   providerAccountId String
-//   refresh_token     String?
-//   access_token      String?
-//   expires_at        Int?
-//   token_type        String?
-//   scope             String?
-//   id_token          String?
-//   session_state     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@id([provider, providerAccountId])
-// }
+  @@id([provider, providerAccountId])
+}
 
 model PasswordResetToken {
   id      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
@@ -114,7 +115,7 @@ model Tenant {
   startDate DateTime?
   endDate   DateTime?
   userId    String    @unique @db.Uuid
-  user      users     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
@@ -140,7 +141,7 @@ model MaintenanceRequest {
   scheduledDate            DateTime?
 
   userId String @db.Uuid
-  user   users  @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   propertyId String   @db.Uuid
   property   Property @relation(fields: [propertyId], references: [id])
@@ -215,7 +216,7 @@ model PropertyManager {
   properties Property[]
 
   userId String @unique @db.Uuid
-  user   users  @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Message {
@@ -230,8 +231,8 @@ model Message {
   readBySender   Boolean @default(true) // Tracks if sender has read
   readByReceiver Boolean @default(false) // Tracks if receiver has read
 
-  sender   users @relation("SentMessages", fields: [senderId], references: [id])
-  receiver users @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
   attachments       String?     @unique @db.Uuid
   attachmentMessage Attachment? @relation("messageAttachment", fields: [attachments], references: [id])

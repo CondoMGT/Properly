@@ -25,12 +25,12 @@ export const newVerification = async (token: string) => {
     };
   }
 
-  await prisma.users.update({
+  await prisma.user.update({
     where: {
       id: existingUser.id,
     },
     data: {
-      verified: new Date(),
+      emailVerified: new Date(),
       email: existingToken.email,
     },
   });

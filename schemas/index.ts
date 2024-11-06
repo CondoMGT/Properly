@@ -1,3 +1,4 @@
+import { Palanquin } from "next/font/google";
 import { z } from "zod";
 
 export const WaitingListSchema = z.object({
@@ -47,6 +48,16 @@ export const RegisterSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: "Please enter a valid phone number." }),
+  cycle: z
+    .enum(["monthly", "annually"], {
+      required_error: "Billing cycle is required",
+    })
+    .optional(),
+  plan: z
+    .string({
+      required_error: "Please select a plan that meets your needs",
+    })
+    .optional(),
 });
 
 export const ResetSchema = z.object({

@@ -19,12 +19,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { register } from "@/actions/auth/register";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Socials } from "@/components/auth/socials";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function SignUp() {
+  const searchParams = useSearchParams();
+
   const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
@@ -33,6 +36,15 @@ export default function SignUp() {
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phoneNumber: "",
+      password: "",
+      cycle:
+        (searchParams.get("billing") as "monthly" | "annually") || "monthly",
+      plan: (searchParams.get("plan") as string) || "freemium",
+    },
   });
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
@@ -51,9 +63,9 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center bg-custom-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center bg-custom-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 max-lg:bg-gradient-to-tr from-custom-2/25 to-custom-1/25">
       <div className="lg:p-8 w-full">
-        <div className="relative z-20 flex lg:hidden items-center justify-center w-[90%] text-lg font-medium mb-8">
+        <div className="relative z-20 flex lg:hidden items-center justify-center w-[90%] text-lg font-medium my-8">
           <Link
             href="/"
             className="text-custom-1 text-3xl font-bold font-kyiv flex items-center"
@@ -85,7 +97,7 @@ export default function SignUp() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel className="font-semibold">Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Jane Doe" {...field} />
                     </FormControl>
@@ -98,7 +110,9 @@ export default function SignUp() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel className="font-semibold">
+                      Email Address
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -116,7 +130,9 @@ export default function SignUp() {
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel className="font-semibold">
+                      Phone Number
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="+1 555 555-5555" {...field} />
                     </FormControl>
@@ -130,7 +146,7 @@ export default function SignUp() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="font-semibold">Password</FormLabel>
                     <FormControl>
                       <div className="flex items-center relative">
                         <Input
@@ -141,12 +157,12 @@ export default function SignUp() {
                           type={showPassword ? "text" : "password"}
                         />
                         {!showPassword ? (
-                          <Eye
+                          <EyeOff
                             className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
                             onClick={() => setShowPassword((prev) => !prev)}
                           />
                         ) : (
-                          <EyeOff
+                          <Eye
                             className="w-4 h-4 text-gray-500 absolute right-2 z-50 cursor-pointer"
                             onClick={() => setShowPassword((prev) => !prev)}
                           />
@@ -158,9 +174,100 @@ export default function SignUp() {
                 )}
               />
 
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <FormField
+                  control={form.control}
+                  name="cycle"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 col-span-1">
+                      <FormLabel className="font-semibold">
+                        Billing Cycle
+                      </FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          // className="flex flex-col space-y-1"
+                          className="grid grid-cols-2 md:grid-cols-1 space-y-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="monthly" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Monthly
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="annually" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Annually
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="plan"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 col-span-2">
+                      <FormLabel className="font-semibold">Plan</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          // className="flex flex-col space-y-1"
+                          className="grid grid-cols-2 space-y-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="freemium" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Freemium
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="starter" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Starter
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="pro" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Pro</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="enterprise" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Enterprise
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <Button
                 className="w-full bg-custom-1 hover:bg-custom-1"
                 type="submit"
+                disabled={isPending}
               >
                 {isPending ? (
                   <>
@@ -184,7 +291,7 @@ export default function SignUp() {
               Already have an account? Sign In
             </Link>
           </div>
-          <Socials text="signing up" />
+          <Socials text="signing up" show={false} />
         </div>
       </div>
 
@@ -206,16 +313,14 @@ export default function SignUp() {
           </Link>
         </div>
 
-        <div className="w-full opacity-20">
-          <Image
-            src="/leo.png"
-            alt="Hero"
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
-          />
-        </div>
+        <Image
+          src="/leo.png"
+          alt="Hero"
+          fill
+          priority
+          className="object-cover opacity-40"
+          sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
+        />
 
         <div className="relative z-20 mt-auto text-foreground">
           <blockquote className="space-y-2 font-semibold">

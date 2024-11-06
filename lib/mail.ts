@@ -51,9 +51,9 @@ export const firstTimeLoginEmail = async (
   email: string,
   tempPassword: string
 ) => {
-  const resetLink = `${domain}/auth/login`;
-
   const session = await auth();
+
+  const resetLink = `${domain}/auth/login`;
 
   const transporter = await mailerTransporter();
 

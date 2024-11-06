@@ -17,7 +17,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -81,6 +80,9 @@ import {
 import { getPropertyTenants } from "@/data/manager";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { BeatLoader } from "react-spinners";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { z } from "zod";
+import { Textarea } from "@/components/ui/textarea";
 
 type Tenant = {
   id: string;
@@ -102,6 +104,8 @@ type DateFilter = {
 type TenantFormProps = {
   onSubmit: (data: TenantFormValues) => void;
   initialData?: Partial<TenantFormValues>;
+  handleBack?: () => void;
+  newTenant: boolean;
 };
 
 type ImportResult = {
@@ -112,6 +116,35 @@ type ImportResult = {
     reason: string;
   }[];
 };
+
+const AddTenantSchema = z.object({
+  addMethod: z.enum(["regular", "oauth"]),
+});
+
+type AddTenantFormValues = z.infer<typeof AddTenantSchema>;
+
+const OAuthEmailsSchema = z.object({
+  emails: z.string().refine(
+    (value) => {
+      const emails = value
+        .split("\n")
+        .map((e) => e.trim())
+        .filter((e) => e !== "");
+      const uniqueEmails = new Set(emails);
+      return (
+        emails.length > 0 &&
+        emails.every((email) => z.string().email().safeParse(email).success) &&
+        emails.length === uniqueEmails.size
+      );
+    },
+    {
+      message:
+        "Please enter valid email addresses, one per line, with no duplicates",
+    }
+  ),
+});
+
+type OAuthEmailsFormValues = z.infer<typeof OAuthEmailsSchema>;
 
 export const TenantManagement = () => {
   const user = useCurrentUser();
@@ -135,6 +168,9 @@ export const TenantManagement = () => {
     endYears: [],
   });
   const [skippedTenants, setSkippedTenants] = useState<SkippedTenant[]>([]);
+
+  const [showAddTenantModal, setShowAddTenantModal] = useState(false);
+  const [addMethod, setAddMethod] = useState<"regular" | "oauth" | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -208,9 +244,42 @@ export const TenantManagement = () => {
 
   const handleAddTenant = (newTenant: Tenant) => {
     setTenants([...tenants, newTenant]);
+    setShowAddTenantModal(false);
+    setAddMethod(null);
     toast.success("Tenant Added", {
       description: `${newTenant.name} has been added to the list.`,
     });
+  };
+
+  const handleAddTenantClick = () => {
+    setShowAddTenantModal(true);
+  };
+
+  const handleAddMethodSubmit = (values: AddTenantFormValues) => {
+    setAddMethod(values.addMethod);
+  };
+
+  const handleOAuthEmailsSubmit = (values: OAuthEmailsFormValues) => {
+    const emailList = Array.from(
+      new Set(
+        values.emails
+          .split("\n")
+          .map((e) => e.trim())
+          .filter((e) => e !== "")
+      )
+    );
+    // Handle OAuth emails submission
+    console.log("OAuth emails:", emailList);
+    // You would typically send these emails to your backend to handle OAuth invitations
+    toast.success("OAuth invitations sent", {
+      description: `Invitations sent to ${emailList.length} email(s).`,
+    });
+    setShowAddTenantModal(false);
+    setAddMethod(null);
+  };
+
+  const handleBackClick = () => {
+    setAddMethod(null);
   };
 
   const handleEditTenant = (editedTenant: Tenant) => {
@@ -505,31 +574,17 @@ export const TenantManagement = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto pt-10 pb-5">
       <div className="flex flex-col space-y-2 md:flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Tenant Management</h1>
-        <div className="flex flex-wrap gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-custom-1 hover:bg-custom-1">
-                <Plus className="mr-2 h-4 w-4" /> Add Tenant
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-custom-4">
-              <DialogHeader>
-                <DialogTitle>Add New Tenant</DialogTitle>
-              </DialogHeader>
-              <TenantForm
-                onSubmit={(data) => {
-                  const newTenant: Tenant = {
-                    ...data,
-                    id: Math.random().toString(36).substr(2, 9),
-                  };
-                  handleAddTenant(newTenant);
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Button
+            className="bg-custom-1 hover:bg-custom-1"
+            onClick={handleAddTenantClick}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Tenant
+          </Button>
+
           <Button
             className="bg-custom-2 hover:bg-custom-2"
             onClick={handleExport}
@@ -552,68 +607,71 @@ export const TenantManagement = () => {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 space-y-2 md:space-y-0 md:gap-2 mb-4">
         <Input
           placeholder="Filter by name"
           value={nameFilter}
+          className="w-full col-span-1"
           onChange={(e) => setNameFilter(e.target.value)}
         />
-        <CommandCombobox
-          options={dateOptions.startMonths}
-          placeholder="Start Month"
-          selected={dateFilters.startMonths}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, startMonths: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) =>
-                c.startDate.toLocaleString("default", { month: "long" }) ===
-                option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.startYears}
-          placeholder="Start Year"
-          selected={dateFilters.startYears}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, startYears: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) => c.startDate.getFullYear().toString() === option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.endMonths}
-          placeholder="End Month"
-          selected={dateFilters.endMonths}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, endMonths: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) =>
-                c.endDate.toLocaleString("default", { month: "long" }) ===
-                option
-            ).length
-          }
-        />
-        <CommandCombobox
-          options={dateOptions.endYears}
-          placeholder="End Year"
-          selected={dateFilters.endYears}
-          onSelectionChange={(selected) =>
-            setDateFilters({ ...dateFilters, endYears: selected })
-          }
-          getOptionCount={(option) =>
-            filteredTenants.filter(
-              (c) => c.endDate.getFullYear().toString() === option
-            ).length
-          }
-        />
+        <div className="col-span-2 w-full grid grid-cols-1 md:grid-cols-4 gap-2">
+          <CommandCombobox
+            options={dateOptions.startMonths}
+            placeholder="Start Month"
+            selected={dateFilters.startMonths}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, startMonths: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) =>
+                  c.startDate.toLocaleString("default", { month: "long" }) ===
+                  option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.startYears}
+            placeholder="Start Year"
+            selected={dateFilters.startYears}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, startYears: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) => c.startDate.getFullYear().toString() === option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.endMonths}
+            placeholder="End Month"
+            selected={dateFilters.endMonths}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, endMonths: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) =>
+                  c.endDate.toLocaleString("default", { month: "long" }) ===
+                  option
+              ).length
+            }
+          />
+          <CommandCombobox
+            options={dateOptions.endYears}
+            placeholder="End Year"
+            selected={dateFilters.endYears}
+            onSelectionChange={(selected) =>
+              setDateFilters({ ...dateFilters, endYears: selected })
+            }
+            getOptionCount={(option) =>
+              filteredTenants.filter(
+                (c) => c.endDate.getFullYear().toString() === option
+              ).length
+            }
+          />
+        </div>
       </div>
       <div className="border rounded-md">
         <Table>
@@ -724,6 +782,43 @@ export const TenantManagement = () => {
         </div>
       )}
 
+      <Dialog open={showAddTenantModal} onOpenChange={setShowAddTenantModal}>
+        <DialogContent className="sm:max-w-[425px] bg-custom-4">
+          <DialogHeader>
+            <DialogTitle>Add New Tenant</DialogTitle>
+            <DialogDescription>
+              {addMethod === null
+                ? "Choose how you want to add a new tenant."
+                : addMethod === "regular"
+                ? "Add New Tenant information below"
+                : "Add all new tenants emails"}
+            </DialogDescription>
+          </DialogHeader>
+          {addMethod === null ? (
+            <AddTenantForm onSubmit={handleAddMethodSubmit} />
+          ) : addMethod === "regular" ? (
+            <TenantForm
+              onSubmit={(data) => {
+                const newTenant: Tenant = {
+                  ...data,
+                  id: Math.random().toString(36).substr(2, 9),
+                };
+                handleAddTenant(newTenant);
+                setShowAddTenantModal(false);
+                setAddMethod(null);
+              }}
+              handleBack={handleBackClick}
+              newTenant
+            />
+          ) : (
+            <OAuthEmailsForm
+              onSubmit={handleOAuthEmailsSubmit}
+              handleBack={handleBackClick}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -742,6 +837,7 @@ export const TenantManagement = () => {
                 handleEditTenant(editedTenant);
               }}
               initialData={selectedTenant}
+              newTenant={false}
             />
           )}
         </DialogContent>
@@ -873,7 +969,12 @@ function CommandCombobox({
   );
 }
 
-function TenantForm({ onSubmit, initialData }: TenantFormProps) {
+function TenantForm({
+  onSubmit,
+  initialData,
+  handleBack,
+  newTenant,
+}: TenantFormProps) {
   const form = useForm<TenantFormValues>({
     resolver: zodResolver(TenantSchema),
     defaultValues: {
@@ -1047,7 +1148,21 @@ function TenantForm({ onSubmit, initialData }: TenantFormProps) {
               </FormItem>
             )}
           />
-          <div className="flex justify-end">
+          <div
+            className={`flex items-center ${
+              newTenant ? "justify-between" : "justify-end"
+            }`}
+          >
+            {newTenant && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleBack}
+                className="pl-0"
+              >
+                <ChevronLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+            )}
             <Button type="submit" className="bg-custom-1 hover:bg-custom-1">
               Submit
             </Button>
@@ -1055,5 +1170,174 @@ function TenantForm({ onSubmit, initialData }: TenantFormProps) {
         </form>
       </Form>
     </ScrollArea>
+  );
+}
+
+function AddTenantForm({
+  onSubmit,
+}: {
+  onSubmit: (data: AddTenantFormValues) => void;
+}) {
+  const form = useForm<AddTenantFormValues>({
+    resolver: zodResolver(AddTenantSchema),
+    defaultValues: {
+      addMethod: "regular",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="addMethod"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Add Method</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="regular" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Add tenant manually
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="oauth" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Add tenant(s) via OAuth
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-custom-1 hover:bg-custom-1">
+          Next
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+function OAuthEmailsForm({
+  onSubmit,
+  handleBack,
+}: {
+  onSubmit: (data: OAuthEmailsFormValues) => void;
+  handleBack: () => void;
+}) {
+  const form = useForm<OAuthEmailsFormValues>({
+    resolver: zodResolver(OAuthEmailsSchema),
+    defaultValues: {
+      emails: "",
+    },
+  });
+
+  const [isTextAreaEmpty, setIsTextAreaEmpty] = useState(true);
+  const [highlightedEmails, setHighlightedEmails] = useState<string>("");
+  const [showHighlight, setShowHighlight] = useState(false);
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.emails !== undefined) {
+        setIsTextAreaEmpty(value.emails.trim() === "");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  const validateAndHighlightEmails = (value: string) => {
+    const emails = value.split("\n");
+    const highlightedLines = emails.map((email) => {
+      const trimmedEmail = email.trim();
+      if (trimmedEmail === "") return email;
+      return z.string().email().safeParse(trimmedEmail).success
+        ? email
+        : `<span style="color: red;">${email}</span>`;
+    });
+
+    setHighlightedEmails(highlightedLines.join("\n"));
+  };
+
+  const handleSubmit = (values: OAuthEmailsFormValues) => {
+    const isValid = OAuthEmailsSchema.safeParse(values).success;
+
+    if (isValid) {
+      onSubmit(values);
+      setShowHighlight(false);
+    } else {
+      validateAndHighlightEmails(values.emails);
+      setShowHighlight(true);
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="emails"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="fonr-semibold">Email Addresses</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Textarea
+                    placeholder="Enter email addresses, one per line"
+                    className="h-[200px] resize-none font-mono"
+                    {...field}
+                  />
+                  {showHighlight && (
+                    <div
+                      className="absolute inset-0 pointer-events-none font-mono whitespace-pre-wrap break-words"
+                      dangerouslySetInnerHTML={{ __html: highlightedEmails }}
+                      style={{
+                        padding: "0.5rem 0.75rem", // Match Textarea padding
+                        lineHeight: "1.5", // Match Textarea line height
+                        fontFamily: "inherit", // Use the same font as the Textarea
+                        fontSize: "inherit", // Use the same font size as the Textarea
+                      }}
+                    />
+                  )}
+                </div>
+              </FormControl>
+              <FormDescription>
+                Enter one email address per line. Invalid emails and duplicates
+                will be highlighted in red.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex items-center justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleBack}
+            className="pl-0"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Back
+          </Button>
+          <Button
+            type="submit"
+            className="bg-custom-1 hover:bg-custom-1"
+            disabled={isTextAreaEmpty}
+          >
+            Send OAuth Invitations
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

@@ -23,9 +23,9 @@ const Tenantslayout = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
 
   return (
-    <div className="w-full h-screen max-w-[1312px] mx-auto pt-[56px] px-4 flex flex-col gap-8">
+    <div className="w-full min-h-screen max-w-[1312px] mx-auto pt-[56px] px-4 flex flex-col gap-8 max-lg:bg-gradient-to-tr from-custom-2/25 to-custom-1/25">
       {session.status === "loading" ? (
-        <div className="h-full flex justify-center items-center">
+        <div className="h-screen flex justify-center items-center">
           <Loader className="animate-spin w-24 h-24 text-custom-1" />
         </div>
       ) : session.status === "authenticated" ? (

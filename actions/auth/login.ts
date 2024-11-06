@@ -40,10 +40,10 @@ export const login = async (
   if (existingUser.role === "TENANT" && !existingUser.firstTimerLogin) {
     const passwordToken = await generatePasswordResetToken(existingUser.email);
 
-    redirect(`/auth/new-password?token=${passwordToken}`);
+    redirect(`/auth/new-password?token=${passwordToken.token}`);
   }
 
-  if (!existingUser.verified) {
+  if (!existingUser.emailVerified) {
     const verificationToken = await generateVerificationToken(
       existingUser.email
     );
@@ -144,6 +144,7 @@ export const login = async (
         case "CredentialsSignin":
           return { error: "Invalid Credentials!" };
         default:
+          console.error("No result", error);
           return { error: "Something went wrong!" };
       }
     }

@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const ContractorPage = () => {
   return (
-    <Card>
-      <CardContent>
+    <Card className="mb-4">
+      <CardContent className="pb-0">
         <ContractorManagement />
       </CardContent>
     </Card>

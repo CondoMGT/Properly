@@ -30,7 +30,7 @@ const NotificationPage = () => {
       const data = await getAllRequestInfoForTenant(user?.id as string);
 
       if (data) {
-        setRequests(data);
+        setRequests(data as ReqInfo[]);
       }
 
       setLoading(false);

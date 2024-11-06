@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/client";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
+import { getTwofactorConfirmationByUserId } from "./data/auth/two-factor-confirmation";
 
 export const {
   handlers: { GET, POST },
@@ -11,11 +12,54 @@ export const {
   signOut,
   auth,
 } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date(), firstTimerLogin: new Date() },
+      });
+    },
+  },
   callbacks: {
-    async signIn({ user }) {
-      const existingUser = await getUserById(user?.id as string);
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") {
+        // const existingUser = await getUserByEmail(user.email as string);
 
-      if (!existingUser) return false;
+        // if (!existingUser) {
+        //   await prisma.user.create({
+        //     data: {
+        //       name: user.name as string,
+        //       email: user.email as string,
+        //       image: user.image as string,
+        //     },
+        //   });
+        // }
+
+        return true;
+      }
+
+      const existingUser = await getUserById(user?.id as string);
+      // Check is user email is verified
+      if (!existingUser || !existingUser.emailVerified) return false;
+
+      // Check for 2FA Authentication
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwofactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        if (!twoFactorConfirmation) return false;
+
+        await prisma.twoFactorConfirmation.delete({
+          where: {
+            id: twoFactorConfirmation.id,
+          },
+        });
+      }
 
       return true;
     },
@@ -32,11 +76,12 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email as string;
         session.user.image = token.picture;
+        session.user.phoneNumber = token.phoneNumber as string;
       }
 
       return session;
     },
-    async jwt({ token }) {
+    async jwt({ token, user }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
@@ -47,10 +92,12 @@ export const {
       token.email = existingUser.email;
       token.picture = existingUser.image;
       token.role = existingUser.role;
+      token.phoneNumber = existingUser.phoneNumber;
 
       return token;
     },
   },
+  // debug: true,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   ...authConfig,
