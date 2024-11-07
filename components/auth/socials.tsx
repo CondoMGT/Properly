@@ -3,11 +3,13 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
+import { FcGoogle } from "react-icons/fc";
+
 import { Separator } from "@/components/ui/separator";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
+import { useState } from "react";
 
 export const Socials = ({
   text,
@@ -16,13 +18,26 @@ export const Socials = ({
   text: string;
   show?: boolean;
 }) => {
+  const [pending, setPending] = useState(false);
+  const [facebookPending, setFacebookPending] = useState(false);
   const searchParams = useSearchParams();
 
   const callbackUrl = searchParams.get("callbackUrl");
 
   const onClick = (provider: "google" | "facebook") => {
+    if (provider === "google") {
+      setPending(true);
+    } else {
+      setFacebookPending(true);
+    }
     signIn(provider, {
       callbackUrl: callbackUrl || "/tenants",
+    }).finally(() => {
+      if (provider === "google") {
+        setPending(false);
+      } else {
+        setFacebookPending(false);
+      }
     });
   };
   return (
@@ -36,16 +51,28 @@ export const Socials = ({
           <div className="flex flex-col gap-2">
             <Button
               className="w-full bg-custom-1 hover:bg-custom-1"
+              disabled={pending}
               onClick={() => onClick("google")}
             >
-              <FontAwesomeIcon icon={faGoogle} className="w-4 h-4 mr-2" />
+              <FcGoogle
+                className={`size-5 mr-2 ${pending && "animate-bounce"}`}
+              />
               Continue with Google
             </Button>
             <Button
               className="w-full bg-custom-1 hover:bg-custom-1"
+              disabled={facebookPending}
               onClick={() => onClick("facebook")}
             >
-              <FontAwesomeIcon icon={faFacebook} className="w-4 h-4 mr-2" />
+              <Image
+                src="/facebook.svg"
+                alt="Facebook"
+                width={20}
+                height={20}
+                className={`w-5 h-5 mr-2 ${
+                  facebookPending && "animate-bounce"
+                }`}
+              />
               Continue with Facebook
             </Button>
           </div>
