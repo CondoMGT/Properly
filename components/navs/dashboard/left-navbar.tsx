@@ -38,6 +38,7 @@ import { pusherClient } from "@/lib/pusher";
 import { ReqInfo } from "@/app/(dashboards)/(main)/managers/maintenance/_components/maintenance-request-table";
 import { getManagerId } from "@/data/manager";
 import { MessageReceived } from "@/lib/types";
+import usePresenceStore from "@/hooks/usePresenceStore";
 // import { useBeams } from "@/hooks/use-Beams";
 
 const navItems = [
@@ -66,7 +67,7 @@ const managerNavItems = [
       { name: "Dashboard", icon: Grid2x2Plus, href: "/managers" },
       { name: "Maintenance", icon: Wrench, href: "/managers/maintenance" },
       { name: "Tenant", icon: Users, href: "/managers/tenant" },
-      { name: "Schedule", icon: Calendar, href: "/managers/schedule" },
+      // { name: "Schedule", icon: Calendar, href: "/managers/schedule" },
       {
         name: "Contractor",
         icon: HiOutlineWrenchScrewdriver,
@@ -98,6 +99,8 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error }) => (
 );
 
 export const LeftNavbar = () => {
+  const updatePath = usePresenceStore((state) => state.updatePath);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
@@ -109,6 +112,9 @@ export const LeftNavbar = () => {
   const [newMessage, setNewMessage] = useState(false);
 
   const [sheetError, setSheetError] = useState<Error | null>(null);
+
+  const membersId = usePresenceStore((state) => state.membersId);
+  console.log("Presence Store", membersId);
 
   useEffect(() => {
     if (sheetError) {
@@ -294,6 +300,10 @@ export const LeftNavbar = () => {
 
                       if (itemMenu.name === "Notification") {
                         setManagerUpdate(false);
+                      }
+
+                      if (session.data.user.id) {
+                        updatePath(session.data.user.id, itemMenu.href);
                       }
                     }}
                   >
