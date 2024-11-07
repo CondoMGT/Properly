@@ -276,7 +276,7 @@ export const NotificationDrawer = ({
                                 generateTimeSlots();
                               }}
                             >
-                              Pick a date
+                              Set an Appointment
                             </Button>
                           </div>
                           <span className="text-[#555555]">Ticket created</span>
