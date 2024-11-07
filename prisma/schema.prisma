@@ -121,6 +121,19 @@ model Tenant {
   property   Property @relation(fields: [propertyId], references: [id])
 }
 
+model OAuthInvittation {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  email String @unique
+
+  unit String
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  propertyId String @db.Uuid
+}
+
 model MaintenanceRequest {
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
 

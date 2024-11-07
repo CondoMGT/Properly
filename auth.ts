@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/client";
-import { getUserById } from "./data/user";
+import { getUserByEmail, getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
 import { getTwofactorConfirmationByUserId } from "./data/auth/two-factor-confirmation";
 
@@ -28,6 +28,13 @@ export const {
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") {
         // const existingUser = await getUserByEmail(user.email as string);
+
+        // TODO:::
+        // - Check if user in invitation table
+        // - If not return false
+        // - Else extract information from invitation table and populate tenants table
+        // - Also get userId from user table
+        // - Delete user from invitation table
 
         // if (!existingUser) {
         //   await prisma.user.create({
