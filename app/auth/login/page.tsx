@@ -60,6 +60,7 @@ export default function SignIn() {
 
       try {
         if (data?.error) {
+          console.error(data.error);
           toast.error(data?.error || "Something went wrong!");
         }
 
@@ -69,10 +70,11 @@ export default function SignIn() {
           session.update();
         }
 
-        if (data.twoFactor) {
+        if (data?.twoFactor) {
           setShowTwoFactor(true);
         }
-      } catch {
+      } catch (error) {
+        console.error("ERROR", error);
         toast.error("Something went wrong!");
       }
     });
