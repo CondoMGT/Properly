@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRole } from "@prisma/client";
+import { getUsersAccountByUserId } from "@/data/user";
 
 export type UserType = {
   id: string;
@@ -27,6 +28,17 @@ export type UserType = {
 export const UserSettings = ({ user }: { user: UserType }) => {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [profilePicture, setProfilePicture] = useState(user?.image);
+  const [userAccount, setUserAccount] = useState(0);
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      const accountCount = await getUsersAccountByUserId(user?.id);
+
+      setUserAccount(accountCount || 0);
+    };
+
+    fetchAccount();
+  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -93,17 +105,19 @@ export const UserSettings = ({ user }: { user: UserType }) => {
                 defaultValue={user.phoneNumber || ""}
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="two-factor"
-                checked={twoFactorEnabled}
-                onCheckedChange={setTwoFactorEnabled}
-                className="data-[state=checked]:bg-custom-1 data-[state=unchecked]:bg-custom-3"
-              />
-              <Label htmlFor="two-factor">
-                Enable Two-Factor Authentication
-              </Label>
-            </div>
+            {userAccount === 0 && (
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="two-factor"
+                  checked={twoFactorEnabled}
+                  onCheckedChange={setTwoFactorEnabled}
+                  className="data-[state=checked]:bg-custom-1 data-[state=unchecked]:bg-custom-3"
+                />
+                <Label htmlFor="two-factor">
+                  Enable Two-Factor Authentication
+                </Label>
+              </div>
+            )}
           </CardContent>
           <CardFooter>
             <Button className="bg-custom-1 hover:bg-custom-1">

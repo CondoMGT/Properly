@@ -16,7 +16,6 @@ import { getTenantMessagesWithManager } from "@/data/tenant";
 import { pusherClient } from "@/lib/pusher";
 import { AllUser, MessageReceived } from "@/lib/types";
 import { RealTimeMessage } from "@/components/messages/realtime-message";
-// import { useUserPresence } from "@/contexts/PresenceContext";
 import { Input } from "@/components/ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { useBeams } from "@/hooks/use-Beams";
@@ -70,8 +69,6 @@ export const PropertyMessagingSystem = () => {
   const user = useCurrentUser();
 
   useBeams(user?.id);
-
-  // const { isUserOnline, getUserPath, users } = useUserPresence();
 
   useEffect(() => {
     // Request notification permission

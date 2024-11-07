@@ -23,3 +23,15 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+
+export const getUsersAccountByUserId = async (userId: string) => {
+  try {
+    const accountCount = await prisma.account.count({
+      where: { userId },
+    });
+
+    return accountCount;
+  } catch {
+    return null;
+  }
+};

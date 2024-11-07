@@ -15,7 +15,6 @@ import { pusherClient } from "@/lib/pusher";
 import { MessageReceived } from "@/lib/types";
 
 import { RealTimeMessage } from "@/components/messages/realtime-message";
-// import { useUserPresence } from "@/contexts/PresenceContext";
 import { useBeams } from "@/hooks/use-Beams";
 import { usePathname } from "next/navigation";
 import { handleNotification } from "@/lib/helper";
@@ -41,7 +40,6 @@ export const TenantMessage = () => {
 
   const [managerId, setManagerId] = useState<string | null>(null);
 
-  // const { isUserOnline, getUserPath } = useUserPresence();
   const isMobile =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -87,7 +85,7 @@ export const TenantMessage = () => {
   }, []);
 
   // Filter Messages to remove duplicate
-  const filteredMessages = messages.filter(
+  const filteredMessages = (messages || []).filter(
     (m, index, self) => self.indexOf(m) === index
   );
 

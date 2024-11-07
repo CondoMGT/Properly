@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const socketId = formData.get("socket_id");
-    const channel = formData.get("channel_name");
+    const socketId = formData.get("socket_id") as string;
+    const channel = formData.get("channel_name") as string;
 
     if (!socketId || !channel) {
       return new Response("Bad request", { status: 400 });
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
     };
 
     const authResponse = pusherServer.authorizeChannel(
-      socketId.toString(),
-      channel.toString(),
+      socketId,
+      channel,
       userData
     );
 

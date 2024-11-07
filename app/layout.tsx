@@ -5,7 +5,6 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { PresenceProvider } from "@/contexts/PresenceContext";
 import { Layout } from "@/components/Layout";
 
 const geistSans = localFont({
@@ -70,9 +69,7 @@ export default async function RootLayout({
         >
           <Toaster richColors />
 
-          <PresenceProvider>
-            <Layout>{children}</Layout>
-          </PresenceProvider>
+          <Layout>{children}</Layout>
         </body>
       </html>
     </SessionProvider>

@@ -450,7 +450,7 @@ export const MaintenanceRequestsTable = ({
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className=" w-full flex">
                   <select
-                    className="px-3 py-2 h-9 bg-background rounded-l-md text-sm focus-visible:ring-0"
+                    className="px-3 py-2 h-9 bg-background rounded-l-md border border-r-0 text-sm"
                     value={filters.searchType}
                     onChange={(e) =>
                       setFilters({ ...filters, searchType: e.target.value })
